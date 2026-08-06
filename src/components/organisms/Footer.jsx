@@ -33,7 +33,7 @@ Los mejores juguetes para niños y familias.
 
 <div className="social">
 <a 
-href= "https://www.instagram.com/mte.toys/"
+href= "https://www.instagram.com/mte.toys.cl?igsh=bzk0cjZ5aTVzZ20="
 target="_blank" 
 rel="noopener noreferrer"
 >

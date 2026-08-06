@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+
 import Navbar from "./components/organisms/Navbar";
 import Contact from "./components/organisms/Contact";
 import Home from "./pages/user/Home";
@@ -12,6 +13,7 @@ import Footer from "./components/organisms/Footer";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Checkout from "./pages/user/Checkout";
+
 
 
 function App(){

@@ -1,3 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+body {
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+#root {
+  width: 100%;
+}
 .site-header {
   position: fixed;
   top: 0;
