@@ -4,126 +4,144 @@ import LogoMTE from "../../assets/LogoMTE.png";
 import { useCart } from "../../context/CartContext";
 import { useSearch } from "../../context/SearchContext";
 import { useUser } from "../../context/UserContext";
+import products from "../../data/products";
 
-function Navbar(){
+function Navbar() {
 
-const {cart}=useCart();
-const {search,setSearch}=useSearch();
-const {user,logout}=useUser();
+  const { cart } = useCart();
+  const { search, setSearch } = useSearch();
+  const { user, logout } = useUser();
 
+  const filteredProducts =
+    search.trim() === ""
+      ? []
+      : products
+          .filter((product) =>
+            product.name.toLowerCase().includes(search.toLowerCase())
+          )
+          .slice(0, 5);
 
-return(
-<header>
+  return (
+    <header>
 
-<nav className="navbar">
+      <nav className="navbar">
 
-<div className="logo">
-<Link to="/">
-<img src={LogoMTE} alt="MTE Toys"/>
-</Link>
-</div>
+        <div className="logo">
+          <Link to="/">
+            <img src={LogoMTE} alt="MTE Toys" />
+          </Link>
+        </div>
 
+        <div className="search">
 
-<div className="search">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar juguetes..."
+          />
 
-<input
-value={search}
-onChange={(e)=>setSearch(e.target.value)}
-placeholder="Buscar juguetes..."
-/>
+          <button>
+            🔍
+          </button>
 
-<button>
-🔍
-</button>
+          {filteredProducts.length > 0 && (
+            <div className="search-results">
 
-</div>
+              {filteredProducts.map((product) => (
 
+                <Link
+                  key={product.id}
+                  to={`/producto/${product.id}`}
+                  className="search-item"
+                  onClick={() => setSearch("")}
+                >
 
-<div className="actions">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                  />
 
+                  <span>{product.name}</span>
 
-{
-user ? (
+                </Link>
 
-<div className="user-menu">
+              ))}
 
-<span>
-👤 {user.name}
-</span>
+            </div>
+          )}
 
-<button onClick={logout}>
-Salir
-</button>
+        </div>
 
-</div>
+        <div className="actions">
 
-)
+          {user ? (
 
-:
+            <div className="user-menu">
 
-(
+              <span>
+                👤 {user.name}
+              </span>
 
-<Link 
-to="/login"
-className="user"
->
-👤
-</Link>
+              <button onClick={logout}>
+                Salir
+              </button>
 
-)
+            </div>
 
-}
+          ) : (
 
+            <Link
+              to="/login"
+              className="user"
+            >
+              👤
+            </Link>
 
+          )}
 
-<Link 
-to="/carrito"
-className="cart"
->
+          <Link
+            to="/carrito"
+            className="cart"
+          >
 
-🛒
+            🛒
 
-<span className="cart-count">
-{cart.length}
-</span>
+            <span className="cart-count">
+              {cart.length}
+            </span>
 
-</Link>
+          </Link>
 
+        </div>
 
-</div>
+      </nav>
 
+      <div className="menu">
 
-</nav>
+        <Link to="/">
+          Inicio
+        </Link>
 
+        <Link to="/productos">
+          Juguetes
+        </Link>
 
+        <Link to="/productos">
+          Categorías
+        </Link>
 
-<div className="menu">
+        <Link to="/productos">
+          Marcas
+        </Link>
 
-<Link to="/">
-Inicio
-</Link>
+        <Link to="/contacto">
+          Contacto
+        </Link>
 
-<Link to="/productos">
-Juguetes
-</Link>
+      </div>
 
-<Link to="/productos">
-Categorías
-</Link>
-
-<Link to="/productos">
-Marcas
-</Link>
-
-<Link to="/contacto">
-Contacto
-</Link>
-
-</div>
-
-
-</header>
-);
+    </header>
+  );
 
 }
 

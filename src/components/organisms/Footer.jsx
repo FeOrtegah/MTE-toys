@@ -32,17 +32,27 @@ Los mejores juguetes para niños y familias.
 <h3>Síguenos</h3>
 
 <div className="social">
-
+<a 
+href= "https://www.instagram.com/mte.toys/"
+target="_blank" 
+rel="noopener noreferrer"
+>
 <img 
 src="/logos_externos/instagram.png"
 alt="Instagram"
-/>
+
+/></a>
+<a 
+href= "https://wa.me/message/Y4UICHE5IKVID1"
+target="_blank" 
+rel="noopener noreferrer"
+>
 
 <img 
 src="/logos_externos/whatsapp.png"
 alt="WhatsApp"
 />
-
+</a>
 </div>
 
 </div>

@@ -24,6 +24,7 @@
 /* BUSCADOR */
 
 .search {
+  position:relative;
   display:flex;
   width:450px;
 }
@@ -62,6 +63,48 @@
 
   transform:scale(1.05);
 
+}
+.search-results{
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.18);
+  overflow: hidden;
+  z-index: 999;
+}
+
+.search-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #222;
+  transition: background .2s;
+}
+
+.search-item:hover{
+  background: #f5f5f5;
+}
+
+.search-item img{
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.search-item span{
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.search-item:not(:last-child){
+  border-bottom: 1px solid #eee;
 }
 
 
