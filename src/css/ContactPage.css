@@ -1,0 +1,39 @@
+.contact-page{
+
+padding:40px;
+text-align:center;
+
+}
+
+
+.contact-page form{
+
+display:flex;
+flex-direction:column;
+gap:15px;
+
+max-width:400px;
+margin:auto;
+
+}
+
+
+.contact-page input,
+.contact-page textarea{
+
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+
+}
+
+
+.contact-page button{
+
+padding:12px;
+background:#43b96d;
+color:white;
+border:none;
+border-radius:20px;
+
+}

@@ -1,0 +1,110 @@
+.checkout-page{
+padding:40px;
+}
+
+.checkout-container{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:30px;
+max-width:1200px;
+margin:auto;
+}
+
+.billing,
+.order{
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 5px 15px #ddd;
+}
+
+.billing input,
+.billing textarea{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+.billing textarea{
+height:120px;
+resize:none;
+}
+
+.row{
+display:flex;
+gap:15px;
+}
+
+.row input{
+width:50%;
+}
+
+.account{
+display:flex;
+align-items:center;
+gap:8px;
+margin:15px 0;
+}
+
+
+.order-header,
+.order-item,
+.total{
+display:flex;
+justify-content:space-between;
+gap:15px;
+margin-bottom:15px;
+}
+
+
+.line{
+height:1px;
+background:#ddd;
+margin:20px 0;
+}
+
+
+.final{
+font-size:22px;
+font-weight:bold;
+}
+
+
+.order button{
+width:100%;
+padding:15px;
+margin-top:25px;
+border:none;
+border-radius:25px;
+background:#43b96d;
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:.3s;
+}
+
+
+.order button:hover{
+background:#ffc400;
+color:black;
+transform:scale(1.03);
+}
+
+
+@media(max-width:900px){
+
+.checkout-container{
+grid-template-columns:1fr;
+}
+
+.row{
+flex-direction:column;
+}
+
+.row input{
+width:100%;
+}
+
+}

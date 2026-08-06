@@ -1,0 +1,20 @@
+.contact {
+  height: 70px;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  font-size: 14px;
+}
+.phone{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.phone img{
+width:22px;
+height:22px;
+object-fit:contain;
+}
