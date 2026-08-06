@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 import Navbar from "./components/organisms/Navbar";
 import Contact from "./components/organisms/Contact";
@@ -15,11 +16,71 @@ import Checkout from "./pages/user/Checkout";
 
 function App(){
 
+const [showNavbar, setShowNavbar] = useState(true);
+const [showContact, setShowContact] = useState(true);
+
+useEffect(() => {
+
+let lastScrollY = window.scrollY;
+let timer;
+
+const handleScroll = () => {
+
+const currentScrollY = window.scrollY;
+
+if (currentScrollY <= 100) {
+
+setShowContact(true);
+setShowNavbar(true);
+
+clearTimeout(timer);
+
+} else {
+
+setShowContact(false);
+
+if (currentScrollY > lastScrollY) {
+
+setShowNavbar(false);
+
+clearTimeout(timer);
+
+timer = setTimeout(() => {
+
+setShowNavbar(true);
+
+}, 3000);
+
+} else {
+
+setShowNavbar(true);
+
+clearTimeout(timer);
+
+}
+
+}
+
+lastScrollY = currentScrollY;
+
+};
+
+window.addEventListener("scroll", handleScroll);
+
+return () => {
+window.removeEventListener("scroll", handleScroll);
+clearTimeout(timer);
+};
+
+}, []);
+
 return(
 <div className="app">
 
+<header className={`site-header ${showNavbar ? "navbar-show" : "navbar-hide"} ${showContact ? "with-contact" : "without-contact"}`}>
 <Contact/>
 <Navbar/>
+</header>
 
 <main className="content">
 

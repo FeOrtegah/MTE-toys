@@ -25,7 +25,7 @@ const products = [
     discount:true
   },
   {
-    id:1,
+    id:4,
     name:"Dinosaurio gigante",
     price:19990,
     oldPrice:24990,

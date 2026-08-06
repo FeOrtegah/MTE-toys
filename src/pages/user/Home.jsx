@@ -1,54 +1,85 @@
-<section className="benefits">
-
-  <div className="benefit-card">
-
-    <img
-      src="/benfits/camion.png"
-      alt="Envíos rápidos"
-    />
-
-    <h3>Envíos rápidos</h3>
-    <p>Compra segura y rápida</p>
-
-  </div>
+import "../../css/Home.css";
+import Banner from "../../components/organisms/Banner";
+import Categories from "../../components/organisms/Categories";
+import FeaturedProducts from "../../components/organisms/FeaturedProducts";
 
 
-  <div className="benefit-card">
+function Home(){
 
-    <img
-      src="/benfits/caja-de-regalo.png"
-      alt="Regalos"
-    />
+  return(
 
-    <h3>Regalos</h3>
-    <p>Para toda ocasión</p>
+    <main className="home">
 
-  </div>
+      <Banner />
 
 
-  <div className="benefit-card">
+      <section className="benefits">
 
-    <img
-      src="/benfits/tarjeta-de-credito.png"
-      alt="Pagos seguros"
-    />
+        <div className="benefit-card">
 
-    <h3>Pagos seguros</h3>
-    <p>Múltiples métodos de pago</p>
+          <img
+            src="/benefits/camion.png"
+            alt="Envíos rápidos"
+          />
 
-  </div>
+          <h3>Envíos rápidos</h3>
+          <p>Compra segura y rápida</p>
+
+        </div>
 
 
-  <div className="benefit-card">
+        <div className="benefit-card">
 
-    <img
-      src="/benfits/estrellas.png"
-      alt="Grandes marcas"
-    />
+          <img
+            src="/benefits/caja-de-regalo.png"
+            alt="Regalos"
+          />
 
-    <h3>Grandes marcas</h3>
-    <p>Los mejores juguetes</p>
+          <h3>Regalos</h3>
+          <p>Para toda ocasión</p>
 
-  </div>
+        </div>
 
-</section>
+
+        <div className="benefit-card">
+
+          <img
+            src="/benefits/tarjeta-de-credito.png"
+            alt="Pagos seguros"
+          />
+
+          <h3>Pagos seguros</h3>
+          <p>Múltiples métodos de pago</p>
+
+        </div>
+
+
+        <div className="benefit-card">
+
+          <img
+            src="/benefits/estrella.png"
+            alt="Grandes marcas"
+          />
+
+          <h3>Grandes marcas</h3>
+          <p>Los mejores juguetes</p>
+
+        </div>
+
+      </section>
+
+
+      <Categories />
+
+
+      <FeaturedProducts />
+
+
+    </main>
+
+  );
+
+}
+
+
+export default Home;

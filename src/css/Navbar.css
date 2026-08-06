@@ -1,3 +1,60 @@
+/* ====== TOP CONTACT (franja superior) ====== */
+
+.contact {
+  height: 25px;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  font-size: 14px;
+}
+
+.phone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* ====== HEADER (contenedor general fijo) ====== */
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1100;
+  transition: transform .4s ease;
+}
+
+/* Arriba del todo: contact visible + navbar en su lugar */
+header.with-contact.navbar-show {
+  transform: translateY(0);
+}
+
+/* Scrolleado + subiendo: contact oculto, navbar pegado arriba */
+header.without-contact.navbar-show {
+  transform: translateY(-25px); /* sube lo que ocupaba .contact */
+}
+
+/* Scrolleado + bajando: todo oculto (contact + navbar + menu) */
+header.without-contact.navbar-hide {
+  transform: translateY(-175px); /* 25px contact + 100px navbar + 50px menu */
+}
+
+/* Caso de seguridad (no debería ocurrir con la lógica actual) */
+header.with-contact.navbar-hide {
+  transform: translateY(-175px);
+}
+
+/* ====== NAVBAR ====== */
+
 .navbar {
   height: 100px;
   background: #050505;
@@ -7,64 +64,49 @@
   padding: 0 40px;
 }
 
-
 /* LOGO */
 
 .logo img {
-  width:130px;
-  transition:.3s;
+  width: 130px;
+  transition: .3s;
 }
 
 .logo img:hover {
-  transform:scale(1.1);
+  transform: scale(1.1);
 }
-
-
 
 /* BUSCADOR */
 
 .search {
-  position:relative;
-  display:flex;
-  width:450px;
+  position: relative;
+  display: flex;
+  width: 450px;
 }
 
 .search input {
-
-  flex:1;
-  padding:12px 15px;
-
-  border:none;
-  outline:none;
-
-  border-radius:20px 0 0 20px;
-
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  outline: none;
+  border-radius: 20px 0 0 20px;
 }
-
 
 .search button {
-
-  width:60px;
-
-  border:none;
-
-  background:#ffc400;
-
-  cursor:pointer;
-
-  border-radius:0 20px 20px 0;
-
-  transition:.3s;
-
+  width: 60px;
+  border: none;
+  background: #ffc400;
+  cursor: pointer;
+  border-radius: 0 20px 20px 0;
+  transition: .3s;
 }
-
 
 .search button:hover {
-
-  transform:scale(1.05);
-
+  transform: scale(1.05);
 }
-.search-results{
+
+/* RESULTADOS DE BÚSQUEDA */
+
+.search-results {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
@@ -76,187 +118,122 @@
   z-index: 999;
 }
 
-.search-item{
+.search-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 15px;
   text-decoration: none;
   color: #222;
-  transition: background .2s;
+  transition: .2s;
 }
 
-.search-item:hover{
+.search-item:hover {
   background: #f5f5f5;
 }
 
-.search-item img{
+.search-item img {
   width: 55px;
   height: 55px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid #eee;
 }
 
-.search-item span{
+.search-item span {
   font-size: 15px;
   font-weight: 500;
 }
 
-.search-item:not(:last-child){
+.search-item:not(:last-child) {
   border-bottom: 1px solid #eee;
 }
 
-
-
-/* ACCIONES */
+/* ACCIONES (usuario / carrito) */
 
 .actions {
-
-  display:flex;
-
-  align-items:center;
-
-  gap:25px;
-
-  font-size:25px;
-
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 25px;
 }
-
 
 .user {
-
-  text-decoration:none;
-
-  transition:.3s;
-
+  text-decoration: none;
+  transition: .3s;
 }
-
 
 .user:hover {
-
-  transform:scale(1.2);
-
+  transform: scale(1.2);
 }
-
-
 
 /* CARRITO */
 
 .cart {
-
-  position:relative;
-
-  text-decoration:none;
-
-  color:white;
-
-  transition:.3s;
-
+  position: relative;
+  text-decoration: none;
+  color: white;
+  transition: .3s;
 }
-
 
 .cart:hover {
-
-  transform:scale(1.15);
-
+  transform: scale(1.15);
 }
-
 
 .cart-count {
-
-  position:absolute;
-
-  top:-12px;
-
-  right:-15px;
-
-
-  background:#ed4b25;
-
-  color:white;
-
-
-  width:22px;
-
-  height:22px;
-
-
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-
-  border-radius:50%;
-
-
-  font-size:12px;
-
-  font-weight:bold;
-
+  position: absolute;
+  top: -12px;
+  right: -15px;
+  background: #ed4b25;
+  color: white;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
 }
-
-
 
 /* MENU */
 
 .menu {
-
-  height:50px;
-
-  background:#43b96d;
-
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-  gap:35px;
-
+  height: 50px;
+  background: #43b96d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 35px;
 }
-
 
 .menu a {
-
-  color:white;
-
-  text-decoration:none;
-
-  font-weight:bold;
-
-  padding:10px 15px;
-
-  border-radius:20px;
-
-  transition:.3s;
-
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 20px;
+  transition: .3s;
 }
-
 
 .menu a:hover {
-
-  background:#ffc400;
-
-  color:black;
-
+  background: #ffc400;
+  color: black;
 }
 
-/* USER MENU */
-.user-menu{
-display:flex;
-align-items:center;
-gap:10px;
-color:white;
+/* USUARIO LOGUEADO */
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
 }
 
-.user-menu button{
-border:none;
-background:#ed4b25;
-color:white;
-padding:5px 12px;
-border-radius:15px;
-cursor:pointer;
+.user-menu button {
+  border: none;
+  background: #ed4b25;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  cursor: pointer;
 }

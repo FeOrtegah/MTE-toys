@@ -6,142 +6,110 @@ import { useSearch } from "../../context/SearchContext";
 import { useUser } from "../../context/UserContext";
 import products from "../../data/products";
 
-function Navbar() {
+function Navbar(){
 
-  const { cart } = useCart();
-  const { search, setSearch } = useSearch();
-  const { user, logout } = useUser();
+const {cart}=useCart();
+const {search,setSearch}=useSearch();
+const {user,logout}=useUser();
 
-  const filteredProducts =
-    search.trim() === ""
-      ? []
-      : products
-          .filter((product) =>
-            product.name.toLowerCase().includes(search.toLowerCase())
-          )
-          .slice(0, 5);
+const filteredProducts =
+search.trim()===""
+?
+[]
+:
+products
+.filter(product=>
+product.name.toLowerCase().includes(search.toLowerCase())
+)
+.slice(0,5);
 
-  return (
-    <header>
+return(
 
-      <nav className="navbar">
+<>
 
-        <div className="logo">
-          <Link to="/">
-            <img src={LogoMTE} alt="MTE Toys" />
-          </Link>
-        </div>
+<nav className="navbar">
 
-        <div className="search">
+<div className="logo">
+<Link to="/">
+<img src={LogoMTE} alt="MTE Toys"/>
+</Link>
+</div>
 
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar juguetes..."
-          />
+<div className="search">
 
-          <button>
-            🔍
-          </button>
+<input
+value={search}
+onChange={(e)=>setSearch(e.target.value)}
+placeholder="Buscar juguetes..."
+/>
 
-          {filteredProducts.length > 0 && (
-            <div className="search-results">
+<button>
+🔍
+</button>
 
-              {filteredProducts.map((product) => (
+{filteredProducts.length>0 && (
+<div className="search-results">
+{filteredProducts.map(product=>(
+<Link
+key={product.id}
+to={`/producto/${product.id}`}
+className="search-item"
+onClick={()=>setSearch("")}
+>
+<img
+src={product.image}
+alt={product.name}
+/>
+<span>
+{product.name}
+</span>
+</Link>
+))}
+</div>
+)}
 
-                <Link
-                  key={product.id}
-                  to={`/producto/${product.id}`}
-                  className="search-item"
-                  onClick={() => setSearch("")}
-                >
+</div>
 
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                  />
+<div className="actions">
 
-                  <span>{product.name}</span>
+{
+user ?
+<div className="user-menu">
+<span>
+👤 {user.name}
+</span>
+<button onClick={logout}>
+Salir
+</button>
+</div>
+:
+<Link to="/login" className="user">
+👤
+</Link>
+}
 
-                </Link>
+<Link to="/carrito" className="cart">
+🛒
+<span className="cart-count">
+{cart.length}
+</span>
+</Link>
 
-              ))}
+</div>
 
-            </div>
-          )}
+</nav>
 
-        </div>
+<div className="menu">
+<Link to="/">Inicio</Link>
+<Link to="/productos">Juguetes</Link>
+<Link to="/productos">Categorías</Link>
+<Link to="/productos">Marcas</Link>
+<Link to="/contacto">Contacto</Link>
+</div>
 
-        <div className="actions">
+</>
 
-          {user ? (
-
-            <div className="user-menu">
-
-              <span>
-                👤 {user.name}
-              </span>
-
-              <button onClick={logout}>
-                Salir
-              </button>
-
-            </div>
-
-          ) : (
-
-            <Link
-              to="/login"
-              className="user"
-            >
-              👤
-            </Link>
-
-          )}
-
-          <Link
-            to="/carrito"
-            className="cart"
-          >
-
-            🛒
-
-            <span className="cart-count">
-              {cart.length}
-            </span>
-
-          </Link>
-
-        </div>
-
-      </nav>
-
-      <div className="menu">
-
-        <Link to="/">
-          Inicio
-        </Link>
-
-        <Link to="/productos">
-          Juguetes
-        </Link>
-
-        <Link to="/productos">
-          Categorías
-        </Link>
-
-        <Link to="/productos">
-          Marcas
-        </Link>
-
-        <Link to="/contacto">
-          Contacto
-        </Link>
-
-      </div>
-
-    </header>
-  );
+);
 
 }
 
