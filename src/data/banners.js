@@ -4,7 +4,7 @@ const banners = [
 id:1,
 title:"Juguetes para todos",
 text:"Encuentra los mejores juguetes",
-image:"/banners/banner1.jpeg"
+image:"/banners/banner1.png"
 },
 
 {
