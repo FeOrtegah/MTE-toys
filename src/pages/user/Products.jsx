@@ -1,5 +1,5 @@
-import { useState } from "react";
-import products from "../../data/products";
+import { useState, useEffect } from "react";
+import { getProducts } from "../../services/productService";
 import ProductCard from "../../components/organisms/ProductCard";
 import { useSearch } from "../../context/SearchContext";
 import "../../css/Products.css";
@@ -12,6 +12,19 @@ const {search}=useSearch();
 
 
 const [category,setCategory]=useState("Todos");
+const [products,setProducts]=useState([]);
+const [loading,setLoading]=useState(true);
+const [error,setError]=useState(null);
+
+
+useEffect(()=>{
+
+getProducts()
+.then(data=>setProducts(data))
+.catch(err=>setError(err.message))
+.finally(()=>setLoading(false));
+
+},[]);
 
 
 
@@ -44,6 +57,17 @@ return matchesSearch && matchesCategory;
 
 
 });
+
+
+
+if(loading){
+return <main className="products-page"><p>Cargando productos...</p></main>;
+}
+
+
+if(error){
+return <main className="products-page"><p>Error al cargar productos: {error}</p></main>;
+}
 
 
 
