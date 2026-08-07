@@ -91,6 +91,13 @@ sum+(item.price*item.quantity),
 }
 
 
+function clearCart(){
+
+setCart([]);
+
+}
+
+
 return(
 <CartContext.Provider
 value={{
@@ -99,7 +106,8 @@ addToCart,
 removeFromCart,
 increase,
 decrease,
-total
+total,
+clearCart
 }}
 >
 {children}

@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
-import products from "../../data/products";
+import { useState, useEffect } from "react";
+import { getProductById } from "../../services/api";
 import { useCart } from "../../context/CartContext";
 import "../../css/ProductDetail.css";
 
@@ -10,10 +11,20 @@ function ProductDetail(){
 
   const { addToCart } = useCart();
 
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const product = products.find(
-    item => item.id === Number(id)
-  );
+  useEffect(() => {
+    getProductById(id)
+      .then(setProduct)
+      .catch(() => setProduct(null))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+
+  if (loading) {
+    return <p>Cargando producto...</p>;
+  }
 
 
   if(!product){
@@ -62,8 +73,7 @@ function ProductDetail(){
 
 
         <p>
-          Producto de excelente calidad.
-          Ideal para regalar y disfrutar.
+          {product.description || "Producto de excelente calidad. Ideal para regalar y disfrutar."}
         </p>
 
 

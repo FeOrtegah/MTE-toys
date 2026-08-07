@@ -1,23 +1,79 @@
+import { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { createOrder } from "../../services/api";
 import "../../css/Checkout.css";
 
 function Checkout(){
 
-const {cart,total}=useCart();
+const {cart,total,clearCart}=useCart();
 const {user}=useUser();
 const navigate=useNavigate();
 
-function finishOrder(){
-alert("Pedido realizado correctamente");
-navigate("/");
+const [form, setForm] = useState({
+  nombre: "",
+  apellidos: "",
+  email: user?.email || "",
+  telefono: "",
+  direccion: "",
+});
+
+const [enviando, setEnviando] = useState(false);
+const [error, setError] = useState("");
+
+function handleChange(e){
+  setForm({ ...form, [e.target.name]: e.target.value });
+}
+
+async function finishOrder(){
+
+  if(!form.nombre || !form.email || !form.telefono || !form.direccion){
+    setError("Completa todos los campos obligatorios (*)");
+    return;
+  }
+
+  if(cart.length === 0){
+    setError("Tu carrito está vacío");
+    return;
+  }
+
+  setError("");
+  setEnviando(true);
+
+  try {
+    const orderData = {
+      cliente: {
+        nombre: `${form.nombre} ${form.apellidos}`.trim(),
+        email: form.email,
+        telefono: form.telefono,
+        direccion: form.direccion,
+      },
+      items: cart.map(item => ({
+        producto: item.id,
+        cantidad: item.quantity,
+      })),
+    };
+
+    await createOrder(orderData);
+
+    clearCart();
+    alert("Pedido realizado correctamente. Nos contactaremos contigo para coordinar el pago.");
+    navigate("/");
+
+  } catch (err) {
+    setError(err.message || "Ocurrió un error al procesar tu pedido");
+  } finally {
+    setEnviando(false);
+  }
 }
 
 return(
 <main className="checkout-page">
 
 <h1>Finalizar compra</h1>
+
+{error && <p style={{color: "red"}}>{error}</p>}
 
 <div className="checkout-container">
 
@@ -28,22 +84,44 @@ return(
 <input placeholder="Cédula de identidad *"/>
 
 <div className="row">
-<input placeholder="Nombre *"/>
-<input placeholder="Apellidos *"/>
+<input
+  name="nombre"
+  placeholder="Nombre *"
+  value={form.nombre}
+  onChange={handleChange}
+/>
+<input
+  name="apellidos"
+  placeholder="Apellidos"
+  value={form.apellidos}
+  onChange={handleChange}
+/>
 </div>
 
-<input placeholder="Dirección *"/>
+<input
+  name="direccion"
+  placeholder="Dirección *"
+  value={form.direccion}
+  onChange={handleChange}
+/>
 
 <input placeholder="Departamento"/>
 
 <div className="row">
 <input placeholder="Ciudad *"/>
-<input placeholder="Teléfono *"/>
+<input
+  name="telefono"
+  placeholder="Teléfono *"
+  value={form.telefono}
+  onChange={handleChange}
+/>
 </div>
 
-<input 
-placeholder="Correo electrónico *"
-defaultValue={user?.email || ""}
+<input
+  name="email"
+  placeholder="Correo electrónico *"
+  value={form.email}
+  onChange={handleChange}
 />
 
 <input placeholder="Razón social (opcional)"/>
@@ -59,7 +137,7 @@ defaultValue={user?.email || ""}
 Información adicional
 </h2>
 
-<textarea 
+<textarea
 placeholder="Notas sobre tu pedido, por ejemplo, notas especiales para la entrega."
 />
 
@@ -118,10 +196,11 @@ ${(item.price*item.quantity).toLocaleString("es-CL")}
 </div>
 
 
-<button 
+<button
 onClick={finishOrder}
+disabled={enviando}
 >
-Realizar pedido
+{enviando ? "Procesando..." : "Realizar pedido"}
 </button>
 
 

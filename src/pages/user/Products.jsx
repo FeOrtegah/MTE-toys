@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProducts } from "../../services/productService";
+import { getProducts } from "../../services/api";
 import ProductCard from "../../components/organisms/ProductCard";
 import { useSearch } from "../../context/SearchContext";
 import "../../css/Products.css";
@@ -7,25 +7,18 @@ import "../../css/Products.css";
 
 function Products(){
 
-
 const {search}=useSearch();
 
-
+const [products, setProducts] = useState([]);
+const [loading, setLoading] = useState(true);
 const [category,setCategory]=useState("Todos");
-const [products,setProducts]=useState([]);
-const [loading,setLoading]=useState(true);
-const [error,setError]=useState(null);
 
-
-useEffect(()=>{
-
-getProducts()
-.then(data=>setProducts(data))
-.catch(err=>setError(err.message))
-.finally(()=>setLoading(false));
-
-},[]);
-
+useEffect(() => {
+  getProducts()
+    .then(setProducts)
+    .catch((err) => console.error("Error al cargar productos:", err))
+    .finally(() => setLoading(false));
+}, []);
 
 
 const categories=[
@@ -60,15 +53,9 @@ return matchesSearch && matchesCategory;
 
 
 
-if(loading){
-return <main className="products-page"><p>Cargando productos...</p></main>;
+if (loading) {
+  return <p>Cargando productos...</p>;
 }
-
-
-if(error){
-return <main className="products-page"><p>Error al cargar productos: {error}</p></main>;
-}
-
 
 
 return (
