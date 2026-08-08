@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "../../css/Navbar.css";
 import LogoMTE from "../../assets/LogoMTE.png";
 import { useCart } from "../../context/CartContext";
 import { useSearch } from "../../context/SearchContext";
 import { useUser } from "../../context/UserContext";
-import products from "../../data/products";
+import { getProducts } from "../../services/api";
 
 function Navbar(){
 
@@ -12,12 +13,22 @@ const {cart}=useCart();
 const {search,setSearch}=useSearch();
 const {user,logout}=useUser();
 
+const [allProducts,setAllProducts]=useState([]);
+
+useEffect(()=>{
+
+getProducts()
+.then(setAllProducts)
+.catch(()=>setAllProducts([]));
+
+},[]);
+
 const filteredProducts =
 search.trim()===""
 ?
 []
 :
-products
+allProducts
 .filter(product=>
 product.name.toLowerCase().includes(search.toLowerCase())
 )
@@ -76,7 +87,7 @@ alt={product.name}
 user ?
 <div className="user-menu">
 <span>
-👤 {user.name}
+👤 {user.name || user.email}
 </span>
 <button onClick={logout}>
 Salir
