@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUser } from "../../context/UserContext";
+import { login as loginRequest } from "../../services/authService";
 import "../../css/Auth.css";
 
 function Login(){
@@ -10,25 +11,44 @@ const navigate=useNavigate();
 
 const [email,setEmail]=useState("");
 const [password,setPassword]=useState("");
+const [error,setError]=useState("");
+const [loading,setLoading]=useState(false);
 
 
-function handleLogin(e){
+async function handleLogin(e){
 
 e.preventDefault();
 
 if(!email || !password){
-alert("Completa todos los campos");
+setError("Completa todos los campos");
 return;
 }
 
+setError("");
+setLoading(true);
+
+try{
+
+const data = await loginRequest({email, password});
+
+localStorage.setItem("token", data.token);
 
 login({
-name:"Felipe",
-email:email
+email: data.email,
+rol: data.rol
 });
 
-
 navigate("/");
+
+}catch(err){
+
+setError(err.message || "No se pudo iniciar sesión");
+
+}finally{
+
+setLoading(false);
+
+}
 
 }
 
@@ -45,6 +65,7 @@ onSubmit={handleLogin}
 Iniciar sesión
 </h1>
 
+{error && <p className="auth-error">{error}</p>}
 
 <input
 type="email"
@@ -62,8 +83,8 @@ onChange={(e)=>setPassword(e.target.value)}
 />
 
 
-<button type="submit">
-Ingresar
+<button type="submit" disabled={loading}>
+{loading ? "Ingresando..." : "Ingresar"}
 </button>
 
 

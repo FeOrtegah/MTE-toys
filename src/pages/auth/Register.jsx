@@ -1,6 +1,7 @@
 import { Link,useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUser } from "../../context/UserContext";
+import { register as registerRequest, login as loginRequest } from "../../services/authService";
 import "../../css/Auth.css";
 
 
@@ -12,29 +13,50 @@ const navigate=useNavigate();
 const [name,setName]=useState("");
 const [email,setEmail]=useState("");
 const [password,setPassword]=useState("");
+const [error,setError]=useState("");
+const [loading,setLoading]=useState(false);
 
 
-function handleRegister(e){
+async function handleRegister(e){
 
 e.preventDefault();
 
-
 if(!name || !email || !password){
-alert("Completa todos los campos");
+setError("Completa todos los campos");
 return;
 }
 
+setError("");
+setLoading(true);
 
-const newUser={
+try{
+
+// Crea la cuenta en el backend (rol "cliente" por defecto)
+await registerRequest({email, password});
+
+// El registro no devuelve token, así que iniciamos sesión
+// automáticamente para que quede logueado de una vez.
+const data = await loginRequest({email, password});
+
+localStorage.setItem("token", data.token);
+
+login({
 name,
-email
-};
-
-
-login(newUser);
+email: data.email,
+rol: data.rol
+});
 
 navigate("/");
 
+}catch(err){
+
+setError(err.message || "No se pudo crear la cuenta");
+
+}finally{
+
+setLoading(false);
+
+}
 
 }
 
@@ -52,6 +74,7 @@ onSubmit={handleRegister}
 Crear cuenta
 </h1>
 
+{error && <p className="auth-error">{error}</p>}
 
 <input
 placeholder="Nombre"
@@ -76,8 +99,8 @@ onChange={(e)=>setPassword(e.target.value)}
 />
 
 
-<button>
-Registrarme
+<button disabled={loading}>
+{loading ? "Creando cuenta..." : "Registrarme"}
 </button>
 
 
