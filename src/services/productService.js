@@ -1,7 +1,7 @@
 import { request } from "./api.js";
 
 /**
- * El backend guarda los productos en español (nombre, precio, imagen,
+ * El backend guarda los productos en español (nombre, precio, imagenes,
  * categoria, stock) y con _id de Mongo. Los componentes del frontend
  * (ProductCard, Products, etc.) ya están escritos esperando
  * {id, name, price, image, category}. Esta función traduce uno a otro
@@ -12,7 +12,8 @@ function adaptProduct(p) {
     id: p._id,
     name: p.nombre,
     price: p.precio,
-    image: p.imagen,
+    image: p.imagenes?.[0] || "",
+    images: p.imagenes || [],
     category: p.categoria,
     stock: p.stock,
     descripcion: p.descripcion,
