@@ -1,5 +1,4 @@
-import request from "./api.js";
-
+import { request } from "./api.js";
 // Pública: el cliente crea su pedido al comprar
 export const createOrder = (order) =>
   request("/orders", { method: "POST", body: order });

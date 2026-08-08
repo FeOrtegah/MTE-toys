@@ -1,4 +1,4 @@
-import request from "./api.js";
+import { request } from "./api.js";
 
 /**
  * El backend guarda los productos en español (nombre, precio, imagen,
