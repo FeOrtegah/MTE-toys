@@ -7,6 +7,7 @@ function adaptProduct(p) {
     price: p.precio,
     precioOferta: p.precioOferta ?? null,
     enOferta: p.enOferta ?? false,
+    destacado: p.destacado ?? false,
     image: p.imagenes?.[0] || "",
     images: p.imagenes || [],
     category: p.categoria,
@@ -16,7 +17,6 @@ function adaptProduct(p) {
   };
 }
 
-// Rutas públicas
 export const getProducts = async () => {
   const productos = await request("/products");
   return productos.map(adaptProduct);
@@ -27,7 +27,6 @@ export const getProductById = async (id) => {
   return adaptProduct(producto);
 };
 
-// Admin
 export const getAllProductsAdmin = async () => {
   const productos = await request("/products/admin/all", { auth: true });
   return productos.map(adaptProduct);

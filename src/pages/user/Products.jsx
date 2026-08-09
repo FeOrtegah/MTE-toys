@@ -1,130 +1,49 @@
-import { useState, useEffect } from "react";
-import { getProducts } from "../../services/api";
-import ProductCard from "../../components/organisms/ProductCard";
-import { useSearch } from "../../context/SearchContext";
-import "../../css/Products.css";
+import { request } from "./api.js";
 
-
-function Products(){
-
-const {search}=useSearch();
-
-const [products, setProducts] = useState([]);
-const [loading, setLoading] = useState(true);
-const [category,setCategory]=useState("Todos");
-
-useEffect(() => {
-  getProducts()
-    .then(setProducts)
-    .catch((err) => console.error("Error al cargar productos:", err))
-    .finally(() => setLoading(false));
-}, []);
-
-
-const categories=[
-"Todos",
-"Peluches",
-"Vehículos",
-"Figuras"
-];
-
-
-
-const filteredProducts = products.filter(product=>{
-
-
-const matchesSearch =
-product.name
-.toLowerCase()
-.includes(search.toLowerCase());
-
-
-
-const matchesCategory =
-category==="Todos" ||
-product.category===category;
-
-
-
-return matchesSearch && matchesCategory;
-
-
-});
-
-
-
-if (loading) {
-  return <p>Cargando productos...</p>;
+function adaptProduct(p) {
+  return {
+    id: p._id,
+    name: p.nombre,
+    price: p.precio,
+    precioOferta: p.precioOferta ?? null,
+    enOferta: p.enOferta ?? false,
+    destacado: p.destacado ?? false,
+    image: p.imagenes?.[0] || "",
+    images: p.imagenes || [],
+    category: p.categoria,
+    stock: p.stock,
+    activo: p.activo,
+    descripcion: p.descripcion,
+  };
 }
 
+export const getProducts = async () => {
+  const productos = await request("/products");
+  return productos.map(adaptProduct);
+};
 
-return (
+export const getProductById = async (id) => {
+  const producto = await request(`/products/${id}`);
+  return adaptProduct(producto);
+};
 
-<main className="products-page">
+export const getAllProductsAdmin = async () => {
+  const productos = await request("/products/admin/all", { auth: true });
+  return productos.map(adaptProduct);
+};
 
+export const createProduct = (product) =>
+  request("/products", { method: "POST", body: product, auth: true });
 
-<h1>
-Juguetes
-</h1>
+export const updateProduct = (id, product) =>
+  request(`/products/${id}`, { method: "PUT", body: product, auth: true });
 
+export const deleteProduct = (id) =>
+  request(`/products/${id}`, { method: "DELETE", auth: true });
 
-
-<div className="categories">
-
-
-{
-categories.map(cat=>(
-
-<button
-
-key={cat}
-
-onClick={()=>setCategory(cat)}
-
->
-
-{cat}
-
-</button>
-
-))
-
-}
-
-
-</div>
-
-
-
-
-<section className="products-grid">
-
-
-{
-
-filteredProducts.map(product=>(
-
-<ProductCard
-
-key={product.id}
-
-product={product}
-
-/>
-
-))
-
-}
-
-
-</section>
-
-
-</main>
-
-);
-
-}
-
-
-export default Products;
+export const decreaseStock = (id, cantidad) =>
+  request(`/products/${id}/decrease-stock`, {
+    method: "PATCH",
+    body: { cantidad },
+    auth: true,
+  });

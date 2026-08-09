@@ -11,6 +11,7 @@ function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     getProductById(id)
@@ -22,10 +23,18 @@ function ProductDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <p>Cargando producto...</p>;
-  if (!product) return <h2>Producto no encontrado</h2>;
+  if (loading) return <p className="detail-status">Cargando producto...</p>;
+  if (!product) return <h2 className="detail-status">Producto no encontrado</h2>;
 
   const images = product.images?.length ? product.images : [product.image];
+  const sinStock = product.stock === 0;
+  const pocoStock = product.stock > 0 && product.stock <= 5;
+
+  function handleAddToCart() {
+    addToCart(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  }
 
   return (
     <main className="product-detail">
@@ -48,11 +57,33 @@ function ProductDetail() {
       </div>
 
       <div className="detail-info">
+        <span className="detail-category">{product.category}</span>
+
         <h1>{product.name}</h1>
-        <p className="detail-category">{product.category}</p>
-        <h2>${product.price.toLocaleString("es-CL")}</h2>
-        <p>{product.description || "Producto de excelente calidad. Ideal para regalar y disfrutar."}</p>
-        <button onClick={() => addToCart(product)}>🛒 Agregar al carrito</button>
+
+        <div className="detail-price-row">
+          {product.offer && product.oldPrice && (
+            <span className="detail-old-price">${product.oldPrice.toLocaleString("es-CL")}</span>
+          )}
+          <span className="detail-price">${product.price.toLocaleString("es-CL")}</span>
+          {product.offer && <span className="detail-offer-badge">Oferta</span>}
+        </div>
+
+        <div className={`detail-stock ${sinStock ? "sin-stock" : pocoStock ? "poco-stock" : "en-stock"}`}>
+          {sinStock
+            ? "Sin stock"
+            : pocoStock
+            ? `¡Últimas ${product.stock} unidades!`
+            : `En stock (${product.stock} disponibles)`}
+        </div>
+
+        <p className="detail-description">
+          {product.description || "Producto de excelente calidad. Ideal para regalar y disfrutar."}
+        </p>
+
+        <button className="detail-add-btn" onClick={handleAddToCart} disabled={sinStock}>
+          {sinStock ? "No disponible" : added ? "✔ Agregado" : "🛒 Agregar al carrito"}
+        </button>
       </div>
     </main>
   );

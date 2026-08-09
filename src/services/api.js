@@ -1,10 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-/**
- * Wrapper genérico para llamadas a rutas que no tienen su propia función
- * arriba (auth, products/orders protegidos, etc.). Usado por
- * productService.js, orderService.js y authService.js.
- */
 export async function request(path, { method = "GET", body, auth = false } = {}) {
   const headers = { "Content-Type": "application/json" };
 
@@ -34,8 +29,6 @@ export async function request(path, { method = "GET", body, auth = false } = {})
   return data;
 }
 
-// Traduce los campos del backend (español) a los que usa el frontend (inglés),
-// y resuelve el precio a mostrar según si está en oferta o no.
 function mapProduct(p) {
   const enOferta = Boolean(p.enOferta) && p.precioOferta != null;
 
@@ -45,6 +38,7 @@ function mapProduct(p) {
     price: enOferta ? p.precioOferta : p.precio,
     oldPrice: enOferta ? p.precio : undefined,
     offer: enOferta,
+    destacado: Boolean(p.destacado),
     image: p.imagenes?.[0] || "",
     images: p.imagenes || [],
     category: p.categoria,
