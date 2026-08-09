@@ -19,6 +19,8 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(searchParams.get("categoria") || "Todos");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
     getProducts()
@@ -47,10 +49,18 @@ function Products() {
     setSearchParams(searchParams);
   }
 
+  function limpiarFiltros() {
+    handleCategoryClick("Todos");
+    setMinPrice("");
+    setMaxPrice("");
+  }
+
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = category === "Todos" || product.category === category;
-    return matchesSearch && matchesCategory;
+    const matchesMin = minPrice === "" || product.price >= Number(minPrice);
+    const matchesMax = maxPrice === "" || product.price <= Number(maxPrice);
+    return matchesSearch && matchesCategory && matchesMin && matchesMax;
   });
 
   if (loading) {
@@ -61,25 +71,58 @@ function Products() {
     <main className="products-page">
       <h1>Juguetes</h1>
 
-      <div className="categories">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            className={category === cat ? "active" : ""}
-            onClick={() => handleCategoryClick(cat)}
-          >
-            {cat === "Todos" ? "Todos" : capitalizar(cat)}
-          </button>
-        ))}
-      </div>
+      <div className="products-layout">
+        <aside className="products-filters">
+          <div className="filter-block">
+            <h3>Categoría</h3>
+            <ul className="filter-category-list">
+              {categories.map((cat) => (
+                <li key={cat}>
+                  <button
+                    className={category === cat ? "active" : ""}
+                    onClick={() => handleCategoryClick(cat)}
+                  >
+                    {cat === "Todos" ? "Todos" : capitalizar(cat)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-      <section className="products-grid">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
-        ) : (
-          <p className="no-products">No hay productos en esta categoría todavía.</p>
-        )}
-      </section>
+          <div className="filter-block">
+            <h3>Precio</h3>
+            <div className="filter-price-inputs">
+              <input
+                type="number"
+                placeholder="Mín"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                min="0"
+              />
+              <span>—</span>
+              <input
+                type="number"
+                placeholder="Máx"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                min="0"
+              />
+            </div>
+          </div>
+
+          <button className="filter-clear" onClick={limpiarFiltros}>
+            Limpiar filtros
+          </button>
+        </aside>
+
+        <section className="products-grid">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
+          ) : (
+            <p className="no-products">No hay productos que coincidan con los filtros.</p>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

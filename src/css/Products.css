@@ -8,40 +8,98 @@ font-size:32px;
 margin-bottom:30px;
 }
 
-.categories{
+.products-layout{
 display:flex;
-justify-content:center;
-gap:15px;
-margin-bottom:40px;
-flex-wrap:wrap;
+gap:35px;
+align-items:flex-start;
 }
 
-.categories button{
-padding:10px 25px;
-border:none;
-border-radius:20px;
-background:#eee;
+.products-filters{
+width:230px;
+flex-shrink:0;
+background:#fafafa;
+border-radius:16px;
+padding:24px;
+position:sticky;
+top:200px;
+}
+
+.filter-block{
+margin-bottom:28px;
+}
+
+.filter-block h3{
+font-size:16px;
+margin-bottom:14px;
 color:#333;
+}
+
+.filter-category-list{
+list-style:none;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.filter-category-list button{
+width:100%;
+text-align:left;
+padding:9px 14px;
+border:none;
+border-radius:10px;
+background:transparent;
+color:#444;
 cursor:pointer;
-transition:.3s;
-font-weight:500;
+transition:.2s;
+font-size:14px;
 }
 
-.categories button:hover{
-background:#ffc400;
-color:black;
-transform:translateY(-3px);
+.filter-category-list button:hover{
+background:#eee;
 }
 
-.categories button.active{
+.filter-category-list button.active{
 background:#43b96d;
 color:white;
+font-weight:600;
+}
+
+.filter-price-inputs{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.filter-price-inputs input{
+width:70px;
+padding:8px;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:13px;
+}
+
+.filter-clear{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+border-radius:10px;
+background:white;
+color:#555;
+cursor:pointer;
+transition:.2s;
+font-size:14px;
+}
+
+.filter-clear:hover{
+background:#f1f1f1;
 }
 
 .products-grid{
+flex:1;
 display:grid;
-grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+grid-template-columns:repeat(3, 1fr);
 gap:25px;
+align-content:start;
 }
 
 .no-products{
@@ -49,4 +107,25 @@ grid-column:1/-1;
 text-align:center;
 color:#777;
 padding:40px 0;
+}
+
+@media(max-width:900px){
+.products-grid{
+grid-template-columns:repeat(2, 1fr);
+}
+}
+
+@media(max-width:700px){
+.products-layout{
+flex-direction:column;
+}
+
+.products-filters{
+width:100%;
+position:static;
+}
+
+.products-grid{
+grid-template-columns:1fr;
+}
 }
