@@ -34,12 +34,17 @@ export async function request(path, { method = "GET", body, auth = false } = {})
   return data;
 }
 
-// Traduce los campos del backend (español) a los que usa el frontend (inglés)
+// Traduce los campos del backend (español) a los que usa el frontend (inglés),
+// y resuelve el precio a mostrar según si está en oferta o no.
 function mapProduct(p) {
+  const enOferta = Boolean(p.enOferta) && p.precioOferta != null;
+
   return {
     id: p._id,
     name: p.nombre,
-    price: p.precio,
+    price: enOferta ? p.precioOferta : p.precio,
+    oldPrice: enOferta ? p.precio : undefined,
+    offer: enOferta,
     image: p.imagenes?.[0] || "",
     images: p.imagenes || [],
     category: p.categoria,

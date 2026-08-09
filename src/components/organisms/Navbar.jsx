@@ -82,6 +82,11 @@ alt={product.name}
 </div>
 
 <div className="actions">
+    {user?.rol === "admin" && (
+  <Link to="/admin" className="admin-link">
+    ⚙️ Admin
+  </Link>
+)}
 
 {
 user ?
