@@ -1,49 +1,87 @@
-import { request } from "./api.js";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { getProducts } from "../../services/api";
+import ProductCard from "../../components/organisms/ProductCard";
+import { useSearch } from "../../context/SearchContext";
+import "../../css/Products.css";
 
-function adaptProduct(p) {
-  return {
-    id: p._id,
-    name: p.nombre,
-    price: p.precio,
-    precioOferta: p.precioOferta ?? null,
-    enOferta: p.enOferta ?? false,
-    destacado: p.destacado ?? false,
-    image: p.imagenes?.[0] || "",
-    images: p.imagenes || [],
-    category: p.categoria,
-    stock: p.stock,
-    activo: p.activo,
-    descripcion: p.descripcion,
-  };
+function capitalizar(texto) {
+  return texto
+    .split(" ")
+    .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+    .join(" ");
 }
 
-export const getProducts = async () => {
-  const productos = await request("/products");
-  return productos.map(adaptProduct);
-};
+function Products() {
+  const { search } = useSearch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-export const getProductById = async (id) => {
-  const producto = await request(`/products/${id}`);
-  return adaptProduct(producto);
-};
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState(searchParams.get("categoria") || "Todos");
 
-export const getAllProductsAdmin = async () => {
-  const productos = await request("/products/admin/all", { auth: true });
-  return productos.map(adaptProduct);
-};
+  useEffect(() => {
+    getProducts()
+      .then(setProducts)
+      .catch((err) => console.error("Error al cargar productos:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
-export const createProduct = (product) =>
-  request("/products", { method: "POST", body: product, auth: true });
+  useEffect(() => {
+    const desdeUrl = searchParams.get("categoria");
+    if (desdeUrl) setCategory(desdeUrl);
+  }, [searchParams]);
 
-export const updateProduct = (id, product) =>
-  request(`/products/${id}`, { method: "PUT", body: product, auth: true });
+  const categories = useMemo(() => {
+    const unicas = [...new Set(products.map((p) => p.category).filter(Boolean))];
+    return ["Todos", ...unicas];
+  }, [products]);
 
-export const deleteProduct = (id) =>
-  request(`/products/${id}`, { method: "DELETE", auth: true });
+  function handleCategoryClick(cat) {
+    setCategory(cat);
+    if (cat === "Todos") {
+      searchParams.delete("categoria");
+    } else {
+      searchParams.set("categoria", cat);
+    }
+    setSearchParams(searchParams);
+  }
 
-export const decreaseStock = (id, cantidad) =>
-  request(`/products/${id}/decrease-stock`, {
-    method: "PATCH",
-    body: { cantidad },
-    auth: true,
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = category === "Todos" || product.category === category;
+    return matchesSearch && matchesCategory;
   });
+
+  if (loading) {
+    return <p>Cargando productos...</p>;
+  }
+
+  return (
+    <main className="products-page">
+      <h1>Juguetes</h1>
+
+      <div className="categories">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            className={category === cat ? "active" : ""}
+            onClick={() => handleCategoryClick(cat)}
+          >
+            {cat === "Todos" ? "Todos" : capitalizar(cat)}
+          </button>
+        ))}
+      </div>
+
+      <section className="products-grid">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
+        ) : (
+          <p className="no-products">No hay productos en esta categoría todavía.</p>
+        )}
+      </section>
+    </main>
+  );
+}
+
+export default Products;
