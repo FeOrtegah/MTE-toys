@@ -118,8 +118,7 @@ Salir
 <div className="menu">
 <Link to="/">Inicio</Link>
 <Link to="/productos">Juguetes</Link>
-<Link to="/productos">Categorías</Link>
-<Link to="/productos">Marcas</Link>
+<Link to="/marcas">Marcas</Link>
 <Link to="/contacto">Contacto</Link>
 </div>
 

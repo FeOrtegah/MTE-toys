@@ -6,6 +6,7 @@ import Navbar from "./components/organisms/Navbar";
 import Contact from "./components/organisms/Contact";
 import Home from "./pages/user/Home";
 import Products from "./pages/user/Products";
+import Brands from "./pages/user/Brands";
 import Cart from "./pages/user/Cart";
 import ContactPage from "./pages/user/Contact";
 import ProductDetail from "./pages/user/ProductDetail";
@@ -93,6 +94,7 @@ return(
 <Route path="/registro" element={<Register/>}/>
 <Route path="/" element={<Home/>}/>
 <Route path="/productos" element={<Products/>}/>
+<Route path="/marcas" element={<Brands/>}/>
 <Route path="/producto/:id" element={<ProductDetail/>}/>
 <Route path="/carrito" element={<Cart/>}/>
 <Route path="/contacto" element={<ContactPage/>}/>
