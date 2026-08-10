@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   getAllProductsAdmin,
+  createProduct,
   updateProduct,
   deleteProduct,
 } from "../../services/productService";
@@ -9,7 +10,20 @@ import {
   createCombo,
   deleteCombo,
 } from "../../services/comboService";
+import { uploadImages } from "../../services/uploadService";
 import "../../css/AdminDashboard.css";
+
+const PRODUCTO_VACIO = {
+  nombre: "",
+  descripcion: "",
+  precio: "",
+  precioOferta: "",
+  enOferta: false,
+  destacado: false,
+  categoria: "",
+  stock: "",
+  imagenes: [],
+};
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
@@ -19,6 +33,10 @@ function AdminDashboard() {
 
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState({});
+
+  const [productForm, setProductForm] = useState(PRODUCTO_VACIO);
+  const [subiendoImagenes, setSubiendoImagenes] = useState(false);
+  const [creandoProducto, setCreandoProducto] = useState(false);
 
   const [comboForm, setComboForm] = useState({
     nombre: "",
@@ -58,6 +76,7 @@ function AdminDashboard() {
       precio: p.price,
       precioOferta: p.precioOferta ?? "",
       enOferta: p.enOferta,
+      destacado: p.destacado,
       stock: p.stock,
     });
   }
@@ -73,6 +92,7 @@ function AdminDashboard() {
         precio: Number(draft.precio),
         precioOferta: draft.precioOferta === "" ? null : Number(draft.precioOferta),
         enOferta: Boolean(draft.enOferta),
+        destacado: Boolean(draft.destacado),
         stock: Number(draft.stock),
       });
       cancelEdit();
@@ -89,6 +109,58 @@ function AdminDashboard() {
       cargarDatos();
     } catch (err) {
       alert(err.message);
+    }
+  }
+
+  async function handleImagenesChange(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setSubiendoImagenes(true);
+    try {
+      const urls = await uploadImages(files);
+      setProductForm((prev) => ({ ...prev, imagenes: [...prev.imagenes, ...urls] }));
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSubiendoImagenes(false);
+      e.target.value = "";
+    }
+  }
+
+  function removeImagen(url) {
+    setProductForm((prev) => ({
+      ...prev,
+      imagenes: prev.imagenes.filter((img) => img !== url),
+    }));
+  }
+
+  async function handleCreateProduct(e) {
+    e.preventDefault();
+    if (!productForm.nombre || !productForm.precio || productForm.stock === "") {
+      alert("Completa al menos nombre, precio y stock");
+      return;
+    }
+
+    setCreandoProducto(true);
+    try {
+      await createProduct({
+        nombre: productForm.nombre,
+        descripcion: productForm.descripcion,
+        precio: Number(productForm.precio),
+        precioOferta: productForm.precioOferta === "" ? null : Number(productForm.precioOferta),
+        enOferta: Boolean(productForm.enOferta),
+        destacado: Boolean(productForm.destacado),
+        categoria: productForm.categoria || "General",
+        stock: Number(productForm.stock),
+        imagenes: productForm.imagenes,
+      });
+      setProductForm(PRODUCTO_VACIO);
+      cargarDatos();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setCreandoProducto(false);
     }
   }
 
@@ -154,6 +226,98 @@ function AdminDashboard() {
       </div>
 
       <section className="admin-section">
+        <h2>Crear producto nuevo</h2>
+
+        <form className="product-form" onSubmit={handleCreateProduct}>
+          <input
+            type="text"
+            placeholder="Nombre del producto"
+            value={productForm.nombre}
+            onChange={(e) => setProductForm({ ...productForm, nombre: e.target.value })}
+          />
+
+          <input
+            type="text"
+            placeholder="Categoría"
+            value={productForm.categoria}
+            onChange={(e) => setProductForm({ ...productForm, categoria: e.target.value })}
+          />
+
+          <input
+            type="number"
+            placeholder="Precio"
+            value={productForm.precio}
+            onChange={(e) => setProductForm({ ...productForm, precio: e.target.value })}
+          />
+
+          <input
+            type="number"
+            placeholder="Precio oferta (opcional)"
+            value={productForm.precioOferta}
+            onChange={(e) => setProductForm({ ...productForm, precioOferta: e.target.value })}
+          />
+
+          <input
+            type="number"
+            placeholder="Stock"
+            value={productForm.stock}
+            onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+          />
+
+          <textarea
+            placeholder="Descripción"
+            value={productForm.descripcion}
+            onChange={(e) => setProductForm({ ...productForm, descripcion: e.target.value })}
+          />
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={productForm.enOferta}
+              onChange={(e) => setProductForm({ ...productForm, enOferta: e.target.checked })}
+            />
+            En oferta
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={productForm.destacado}
+              onChange={(e) => setProductForm({ ...productForm, destacado: e.target.checked })}
+            />
+            Destacado
+          </label>
+
+          <div className="product-form-imagenes">
+            <label className="btn-subir-imagen">
+              {subiendoImagenes ? "Subiendo..." : "+ Subir imágenes"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                disabled={subiendoImagenes}
+                onChange={handleImagenesChange}
+              />
+            </label>
+
+            <div className="product-form-preview">
+              {productForm.imagenes.map((url) => (
+                <div className="preview-thumb" key={url}>
+                  <img src={url} alt="preview" />
+                  <button type="button" onClick={() => removeImagen(url)}>×</button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button type="submit" disabled={creandoProducto || subiendoImagenes}>
+            {creandoProducto ? "Creando..." : "+ Crear producto"}
+          </button>
+        </form>
+      </section>
+
+      <section className="admin-section">
         <h2>Productos</h2>
         <div className="admin-table-wrapper">
           <table className="admin-table">
@@ -165,6 +329,7 @@ function AdminDashboard() {
                 <th>Precio</th>
                 <th>Precio oferta</th>
                 <th>¿En oferta?</th>
+                <th>¿Destacado?</th>
                 <th>Stock</th>
                 <th>Acciones</th>
               </tr>
@@ -213,6 +378,19 @@ function AdminDashboard() {
                         />
                       ) : p.enOferta ? (
                         "✅"
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <input
+                          type="checkbox"
+                          checked={draft.destacado}
+                          onChange={(e) => setDraft({ ...draft, destacado: e.target.checked })}
+                        />
+                      ) : p.destacado ? (
+                        "⭐"
                       ) : (
                         "—"
                       )}
