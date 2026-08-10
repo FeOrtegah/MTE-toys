@@ -2,74 +2,71 @@ import "../../css/ProductCard.css";
 import { useCart } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 
-function ProductCard({product}){
+function ProductCard({ product }) {
+  const { addToCart } = useCart();
 
-const {addToCart}=useCart();
+  const price = product.price.toLocaleString("es-CL");
+  const hasStock = product.stock > 0;
 
-const price=product.price.toLocaleString("es-CL");
+  return (
+    <article className="product-card">
+      {product.offer && (
+        <span className="offer">
+          Oferta
+        </span>
+      )}
 
-return(
-<article className="product-card">
+      <button className="favorite">
+        <img 
+          src="/detalles/corazon.png"
+          alt="Favorito"
+        />
+      </button>
 
-{product.offer && (
-<span className="offer">
-Oferta
-</span>
-)}
+      <Link 
+        to={`/producto/${product.id}`}
+        className="product-image"
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+        />
+      </Link>
 
-<button className="favorite">
-<img 
-src="/detalles/corazon.png"
-alt="Favorito"
-/>
-</button>
+      <h3>
+        {product.name}
+      </h3>
 
+      <div className="stars">
+        ⭐⭐⭐⭐⭐
+      </div>
 
-<Link 
-to={`/producto/${product.id}`}
-className="product-image"
->
-<img
-src={product.image}
-alt={product.name}
-/>
-</Link>
+      {
+        product.oldPrice && 
+        <p className="old-price">
+          ${product.oldPrice.toLocaleString("es-CL")}
+        </p>
+      }
 
+      <p className="price">
+        ${price}
+      </p>
 
-<h3>
-{product.name}
-</h3>
+      {!hasStock && (
+        <span className="out-of-stock-label" style={{ color: "red", fontSize: "0.85rem", display: "block", marginBottom: "8px" }}>
+          Sin stock
+        </span>
+      )}
 
-
-<div className="stars">
-⭐⭐⭐⭐⭐
-</div>
-
-
-{
-product.oldPrice && 
-<p className="old-price">
-${product.oldPrice.toLocaleString("es-CL")}
-</p>
-}
-
-
-<p className="price">
-${price}
-</p>
-
-
-<button
-className="add"
-onClick={()=>addToCart(product)}
->
-🛒 Agregar
-</button>
-
-
-</article>
-);
-
+      <button
+        className={`add ${!hasStock ? "disabled" : ""}`}
+        onClick={() => addToCart(product)}
+        disabled={!hasStock}
+      >
+        {hasStock ? "🛒 Agregar" : "No disponible"}
+      </button>
+    </article>
+  );
 }
 
 export default ProductCard;

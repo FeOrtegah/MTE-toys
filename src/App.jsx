@@ -7,6 +7,8 @@ import Contact from "./components/organisms/Contact";
 import Home from "./pages/user/Home";
 import Products from "./pages/user/Products";
 import Brands from "./pages/user/Brands";
+import ShippingPolicy from "./pages/user/ShippingPolicy";
+import ReturnPolicy from "./pages/user/ReturnPolicy";
 import Cart from "./pages/user/Cart";
 import ContactPage from "./pages/user/Contact";
 import ProductDetail from "./pages/user/ProductDetail";
@@ -16,6 +18,7 @@ import Register from "./pages/auth/Register";
 import Checkout from "./pages/user/Checkout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+
 
 
 
@@ -95,6 +98,8 @@ return(
 <Route path="/" element={<Home/>}/>
 <Route path="/productos" element={<Products/>}/>
 <Route path="/marcas" element={<Brands/>}/>
+<Route path="/politicas-envio" element={<ShippingPolicy/>}/>
+<Route path="/politicas-cambio" element={<ReturnPolicy/>}/>
 <Route path="/producto/:id" element={<ProductDetail/>}/>
 <Route path="/carrito" element={<Cart/>}/>
 <Route path="/contacto" element={<ContactPage/>}/>
