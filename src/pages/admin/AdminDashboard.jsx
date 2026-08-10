@@ -50,7 +50,7 @@ function AdminDashboard() {
     precioCombo: "",
   });
 
-  function cargarDatos() {
+  function cargarDatosIniciales() {
     setLoading(true);
     Promise.all([getAllProductsAdmin(), getAllCombosAdmin()])
       .then(([p, c]) => {
@@ -62,7 +62,7 @@ function AdminDashboard() {
   }
 
   useEffect(() => {
-    cargarDatos();
+    cargarDatosIniciales();
   }, []);
 
   const stats = useMemo(() => {
@@ -95,16 +95,23 @@ function AdminDashboard() {
 
   async function saveEdit(id) {
     try {
-      await updateProduct(id, {
+      const updatedData = {
         precio: Number(draft.precio),
         precioOferta: draft.precioOferta === "" ? null : Number(draft.precioOferta),
         enOferta: Boolean(draft.enOferta),
         destacado: Boolean(draft.destacado),
         stock: Number(draft.stock),
         imagenes: draft.imagenes,
-      });
+      };
+
+      const savedProduct = await updateProduct(id, updatedData);
+
+      // Actualizamos el estado local sin recargar la página
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...savedProduct, price: updatedData.precio, stock: updatedData.stock, enOferta: updatedData.enOferta, destacado: updatedData.destacado, precioOferta: updatedData.precioOferta, images: updatedData.imagenes } : p))
+      );
+
       cancelEdit();
-      cargarDatos();
     } catch (err) {
       alert(err.message);
     }
@@ -114,7 +121,10 @@ function AdminDashboard() {
     if (!confirm("¿Desactivar este producto? Ya no se mostrará en la tienda.")) return;
     try {
       await deleteProduct(id);
-      cargarDatos();
+      // Actualizamos el estado local marcándolo como inactivo
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, activo: false } : p))
+      );
     } catch (err) {
       alert(err.message);
     }
@@ -123,7 +133,10 @@ function AdminDashboard() {
   async function handleActivate(id) {
     try {
       await activateProduct(id);
-      cargarDatos();
+      // Actualizamos el estado local marcándolo como activo
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, activo: true } : p))
+      );
     } catch (err) {
       alert(err.message);
     }
@@ -138,7 +151,8 @@ function AdminDashboard() {
       return;
     try {
       await hardDeleteProduct(id);
-      cargarDatos();
+      // Removemos el producto del estado local completamente
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       alert(err.message);
     }
@@ -221,7 +235,7 @@ function AdminDashboard() {
 
     setCreandoProducto(true);
     try {
-      await createProduct({
+      const newProduct = await createProduct({
         nombre: productForm.nombre,
         descripcion: productForm.descripcion,
         precio: Number(productForm.precio),
@@ -232,8 +246,10 @@ function AdminDashboard() {
         stock: Number(productForm.stock),
         imagenes: productForm.imagenes,
       });
+
+      // Añadimos el nuevo producto directamente al estado local
+      setProducts((prev) => [newProduct, ...prev]);
       setProductForm(PRODUCTO_VACIO);
-      cargarDatos();
     } catch (err) {
       alert(err.message);
     } finally {
@@ -248,11 +264,14 @@ function AdminDashboard() {
       return;
     }
     try {
-      await createCombo({
+      const newCombo = await createCombo({
         ...comboForm,
         cantidadAdicional: Number(comboForm.cantidadAdicional),
         precioCombo: Number(comboForm.precioCombo),
       });
+
+      // Añadimos el nuevo combo al estado local
+      setCombos((prev) => [newCombo, ...prev]);
       setComboForm({
         nombre: "",
         productoPrincipal: "",
@@ -260,7 +279,6 @@ function AdminDashboard() {
         cantidadAdicional: 1,
         precioCombo: "",
       });
-      cargarDatos();
     } catch (err) {
       alert(err.message);
     }
@@ -270,7 +288,8 @@ function AdminDashboard() {
     if (!confirm("¿Eliminar este combo?")) return;
     try {
       await deleteCombo(id);
-      cargarDatos();
+      // Removemos el combo del estado local
+      setCombos((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
       alert(err.message);
     }
