@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 function ProductCard({ product }) {
   const { addToCart } = useCart();
 
-  const price = product.price.toLocaleString("es-CL");
-  const hasStock = product.stock > 0;
+  const price = product.price ? product.price.toLocaleString("es-CL") : "0";
+  const hasStock = product.stock !== undefined && product.stock !== null && product.stock > 0;
 
   return (
     <article className="product-card">
@@ -52,18 +52,17 @@ function ProductCard({ product }) {
         ${price}
       </p>
 
-      {!hasStock && (
-        <span className="out-of-stock-label" style={{ color: "red", fontSize: "0.85rem", display: "block", marginBottom: "8px" }}>
-          Sin stock
-        </span>
-      )}
-
       <button
-        className={`add ${!hasStock ? "disabled" : ""}`}
-        onClick={() => addToCart(product)}
+        type="button"
+        className={`add ${!hasStock ? "disabled-btn" : ""}`}
+        onClick={() => {
+          if (hasStock) {
+            addToCart(product);
+          }
+        }}
         disabled={!hasStock}
       >
-        {hasStock ? "🛒 Agregar" : "No disponible"}
+        {hasStock ? "🛒 Agregar" : "Sin stock"}
       </button>
     </article>
   );
