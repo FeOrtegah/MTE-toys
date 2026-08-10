@@ -41,6 +41,12 @@ export const updateProduct = (id, product) =>
 export const deleteProduct = (id) =>
   request(`/products/${id}`, { method: "DELETE", auth: true });
 
+export const hardDeleteProduct = (id) =>
+  request(`/products/${id}/permanent`, { method: "DELETE", auth: true });
+
+export const activateProduct = (id) =>
+  request(`/products/${id}`, { method: "PUT", body: { activo: true }, auth: true });
+
 export const decreaseStock = (id, cantidad) =>
   request(`/products/${id}/decrease-stock`, {
     method: "PATCH",

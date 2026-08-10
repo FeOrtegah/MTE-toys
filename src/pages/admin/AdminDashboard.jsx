@@ -4,6 +4,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  hardDeleteProduct,
+  activateProduct,
 } from "../../services/productService";
 import {
   getAllCombosAdmin,
@@ -37,6 +39,8 @@ function AdminDashboard() {
   const [productForm, setProductForm] = useState(PRODUCTO_VACIO);
   const [subiendoImagenes, setSubiendoImagenes] = useState(false);
   const [creandoProducto, setCreandoProducto] = useState(false);
+  const [urlImagen, setUrlImagen] = useState("");
+  const [urlImagenEdit, setUrlImagenEdit] = useState("");
 
   const [comboForm, setComboForm] = useState({
     nombre: "",
@@ -78,12 +82,15 @@ function AdminDashboard() {
       enOferta: p.enOferta,
       destacado: p.destacado,
       stock: p.stock,
+      imagenes: p.images || [],
     });
+    setUrlImagenEdit("");
   }
 
   function cancelEdit() {
     setEditingId(null);
     setDraft({});
+    setUrlImagenEdit("");
   }
 
   async function saveEdit(id) {
@@ -94,6 +101,7 @@ function AdminDashboard() {
         enOferta: Boolean(draft.enOferta),
         destacado: Boolean(draft.destacado),
         stock: Number(draft.stock),
+        imagenes: draft.imagenes,
       });
       cancelEdit();
       cargarDatos();
@@ -106,6 +114,30 @@ function AdminDashboard() {
     if (!confirm("¿Desactivar este producto? Ya no se mostrará en la tienda.")) return;
     try {
       await deleteProduct(id);
+      cargarDatos();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  async function handleActivate(id) {
+    try {
+      await activateProduct(id);
+      cargarDatos();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  async function handleHardDelete(id, nombre) {
+    if (
+      !confirm(
+        `¿Eliminar "${nombre}" de forma PERMANENTE? Esta acción no se puede deshacer.`
+      )
+    )
+      return;
+    try {
+      await hardDeleteProduct(id);
       cargarDatos();
     } catch (err) {
       alert(err.message);
@@ -133,6 +165,51 @@ function AdminDashboard() {
       ...prev,
       imagenes: prev.imagenes.filter((img) => img !== url),
     }));
+  }
+
+  function addImagenPorUrl() {
+    const url = urlImagen.trim();
+    if (!url) return;
+    if (productForm.imagenes.includes(url)) {
+      setUrlImagen("");
+      return;
+    }
+    setProductForm((prev) => ({ ...prev, imagenes: [...prev.imagenes, url] }));
+    setUrlImagen("");
+  }
+
+  function removeImagenEdit(url) {
+    setDraft((prev) => ({
+      ...prev,
+      imagenes: prev.imagenes.filter((img) => img !== url),
+    }));
+  }
+
+  function addImagenPorUrlEdit() {
+    const url = urlImagenEdit.trim();
+    if (!url) return;
+    if (draft.imagenes.includes(url)) {
+      setUrlImagenEdit("");
+      return;
+    }
+    setDraft((prev) => ({ ...prev, imagenes: [...prev.imagenes, url] }));
+    setUrlImagenEdit("");
+  }
+
+  async function handleImagenesChangeEdit(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setSubiendoImagenes(true);
+    try {
+      const urls = await uploadImages(files);
+      setDraft((prev) => ({ ...prev, imagenes: [...prev.imagenes, ...urls] }));
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSubiendoImagenes(false);
+      e.target.value = "";
+    }
   }
 
   async function handleCreateProduct(e) {
@@ -301,6 +378,22 @@ function AdminDashboard() {
               />
             </label>
 
+            <div className="url-imagen-row">
+              <input
+                type="text"
+                placeholder="O pega el link de una imagen (Cloudinary u otro)"
+                value={urlImagen}
+                onChange={(e) => setUrlImagen(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addImagenPorUrl();
+                  }
+                }}
+              />
+              <button type="button" onClick={addImagenPorUrl}>Agregar</button>
+            </div>
+
             <div className="product-form-preview">
               {productForm.imagenes.map((url) => (
                 <div className="preview-thumb" key={url}>
@@ -330,6 +423,7 @@ function AdminDashboard() {
                 <th>Precio oferta</th>
                 <th>¿En oferta?</th>
                 <th>¿Destacado?</th>
+                <th>Estado</th>
                 <th>Stock</th>
                 <th>Acciones</th>
               </tr>
@@ -338,9 +432,54 @@ function AdminDashboard() {
               {products.map((p) => {
                 const isEditing = editingId === p.id;
                 return (
-                  <tr key={p.id} className={p.stock === 0 ? "row-sin-stock" : ""}>
+                  <tr
+                    key={p.id}
+                    className={[
+                      p.stock === 0 ? "row-sin-stock" : "",
+                      !p.activo ? "row-inactivo" : "",
+                    ].join(" ")}
+                  >
                     <td>
-                      <img className="admin-thumb" src={p.image} alt={p.name} />
+                      {isEditing ? (
+                        <div className="edit-imagenes">
+                          <div className="edit-imagenes-preview">
+                            {draft.imagenes.map((url) => (
+                              <div className="preview-thumb-sm" key={url}>
+                                <img src={url} alt="preview" />
+                                <button type="button" onClick={() => removeImagenEdit(url)}>×</button>
+                              </div>
+                            ))}
+                          </div>
+                          <label className="btn-subir-imagen-sm">
+                            {subiendoImagenes ? "..." : "+ Subir"}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              hidden
+                              disabled={subiendoImagenes}
+                              onChange={handleImagenesChangeEdit}
+                            />
+                          </label>
+                          <div className="url-imagen-row-sm">
+                            <input
+                              type="text"
+                              placeholder="Link Cloudinary"
+                              value={urlImagenEdit}
+                              onChange={(e) => setUrlImagenEdit(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  addImagenPorUrlEdit();
+                                }
+                              }}
+                            />
+                            <button type="button" onClick={addImagenPorUrlEdit}>+</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <img className="admin-thumb" src={p.image} alt={p.name} />
+                      )}
                     </td>
                     <td>{p.name}</td>
                     <td>{p.category}</td>
@@ -396,6 +535,13 @@ function AdminDashboard() {
                       )}
                     </td>
                     <td>
+                      {p.activo ? (
+                        <span className="badge-activo">Activo</span>
+                      ) : (
+                        <span className="badge-inactivo">Inactivo</span>
+                      )}
+                    </td>
+                    <td>
                       {isEditing ? (
                         <input
                           type="number"
@@ -415,7 +561,12 @@ function AdminDashboard() {
                       ) : (
                         <>
                           <button className="btn-editar" onClick={() => startEdit(p)}>Editar</button>
-                          <button className="btn-eliminar" onClick={() => handleDelete(p.id)}>Desactivar</button>
+                          {p.activo ? (
+                            <button className="btn-eliminar" onClick={() => handleDelete(p.id)}>Desactivar</button>
+                          ) : (
+                            <button className="btn-activar" onClick={() => handleActivate(p.id)}>Activar</button>
+                          )}
+                          <button className="btn-borrar" onClick={() => handleHardDelete(p.id, p.name)}>Eliminar</button>
                         </>
                       )}
                     </td>
