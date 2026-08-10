@@ -30,7 +30,7 @@ function Footer() {
         <h3>Contacto</h3>
         <p>📞 +56 979541850</p>
         <p>📞 +56 950550864</p>
-        <p>📧 contacto@mte.cl</p>
+        <p>📧 Ventas@mtetoys.cl</p>
         <p>📍 Santiago, Chile</p>
       </div>
 

@@ -4,7 +4,7 @@ const banners = [
 id:1,
 title:"Juguetes para todos",
 text:"Encuentra los mejores juguetes",
-image:"/banners/banner1.png"
+image:"/banners/banner1.jpg"
 },
 
 {
@@ -25,12 +25,12 @@ image:"/banners/banner3.jpg"
 id:4,
 title:"Regalos especiales",
 text:"Sorprende a quien más quieres",
-image:"/banners/banner4.jpeg"
+image:"/banners/banner4.jpg"
 },
 
 {
 id:5,
-title:"Ofertas increíbles",
+title:"Envios rapidos y confiables",
 text:"Los mejores precios",
 image:"/banners/banner5.jpg"
 }

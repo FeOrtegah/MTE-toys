@@ -1,90 +1,46 @@
 import "../../css/Categories.css";
 import { Link } from "react-router-dom";
 
+function Categories() {
+  const categories = [
+    {
+      image: "/categoria_logo/clogo1.webp",
+      filter: "Mattel"
+    },
+    {
+      image: "/categoria_logo/clogo2.png",
+      filter: "Marvel"
+    },
+    {
+      image: "/categoria_logo/clogo3.png",
+      filter: "Disney"
+    },
+    {
+      image: "/categoria_logo/clogo4.png",
+      filter: "Barbie"
+    }
+  ];
 
-function Categories(){
+  return (
+    <section className="categories-section">
+      <h2>Compra por marca</h2>
 
-const categories = [
-
-{
-name:"Peluches",
-icon:"🧸",
-filter:"Peluches"
-},
-
-{
-name:"Vehículos",
-icon:"🚗",
-filter:"Vehículos"
-},
-
-{
-name:"Dinosaurios",
-icon:"🦖",
-filter:"Figuras"
-},
-
-{
-name:"Construcción",
-icon:"🧱",
-filter:"Construcción"
+      <div className="categories-container">
+        {categories.map((category) => (
+          <Link
+            key={category.name}
+            to={`/productos?brand=${encodeURIComponent(category.filter)}`}
+            className="category-card"
+          >
+            <div className="category-icon">
+              <img src={category.image} alt={category.name} />
+            </div>
+            <h3>{category.name}</h3>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
 }
-
-];
-
-
-return (
-
-<section className="categories-section">
-
-
-<h2>
-Compra por categoría
-</h2>
-
-
-<div className="categories-container">
-
-
-{
-categories.map(category=>(
-
-
-<Link
-key={category.name}
-to="/productos"
-className="category-card"
->
-
-
-<div className="category-icon">
-
-{category.icon}
-
-</div>
-
-
-<h3>
-{category.name}
-</h3>
-
-
-</Link>
-
-
-))
-
-}
-
-
-</div>
-
-
-</section>
-
-);
-
-}
-
 
 export default Categories;
