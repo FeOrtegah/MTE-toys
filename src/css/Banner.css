@@ -3,6 +3,8 @@ height:520px;
 width:100%;
 overflow:hidden;
 position:relative;
+display:block;
+line-height:0;
 }
 
 .banner-track{
@@ -15,13 +17,13 @@ transition:.6s ease;
 min-width:100%;
 height:100%;
 position:relative;
-background-color: #111;
 }
 
 .banner-slide img{
 width:100%;
-height:100%;
-object-fit:contain;
+height:520px;
+object-fit:fill;
+display:block;
 }
 
 
@@ -33,6 +35,7 @@ transform:translateY(-50%);
 color:white;
 z-index:2;
 max-width:450px;
+line-height: normal; /* Restaura el interlineado normal para los textos */
 }
 
 

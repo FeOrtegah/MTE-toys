@@ -148,22 +148,90 @@ header.with-contact.navbar-hide {
   border-bottom: 1px solid #eee;
 }
 
-/* ACCIONES (usuario / carrito) */
+/* ACCIONES (usuario / carrito / admin) */
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 20px;
   font-size: 25px;
 }
 
+/* LINK DE ADMIN */
+.admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.admin-link:hover {
+  background: #ffc400;
+  color: #050505;
+  border-color: #ffc400;
+  transform: translateY(-2px);
+}
+
+/* USUARIO NO LOGUEADO */
 .user {
   text-decoration: none;
-  transition: .3s;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .user:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
+  color: #ffc400;
+}
+
+/* USUARIO LOGUEADO */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 5px 6px 5px 14px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.user-menu span {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* BOTÓN DE SALIR */
+.user-menu button {
+  border: none;
+  background: #ed4b25;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.user-menu button:hover {
+  background: #d63d19;
+  transform: scale(1.03);
 }
 
 /* CARRITO */
@@ -172,7 +240,9 @@ header.with-contact.navbar-hide {
   position: relative;
   text-decoration: none;
   color: white;
-  transition: .3s;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
 }
 
 .cart:hover {
@@ -181,18 +251,19 @@ header.with-contact.navbar-hide {
 
 .cart-count {
   position: absolute;
-  top: -12px;
-  right: -15px;
+  top: -8px;
+  right: -12px;
   background: #ed4b25;
   color: white;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
+  border: 2px solid #050505;
 }
 
 /* MENU */
@@ -218,22 +289,4 @@ header.with-contact.navbar-hide {
 .menu a:hover {
   background: #ffc400;
   color: black;
-}
-
-/* USUARIO LOGUEADO */
-
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-}
-
-.user-menu button {
-  border: none;
-  background: #ed4b25;
-  color: white;
-  padding: 5px 12px;
-  border-radius: 15px;
-  cursor: pointer;
 }
