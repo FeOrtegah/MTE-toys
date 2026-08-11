@@ -77,6 +77,7 @@ function AdminDashboard() {
   function startEdit(p) {
     setEditingId(p.id);
     setDraft({
+      nombre: p.name || "", // <-- Agregado nombre al borrador
       precio: p.price,
       precioOferta: p.precioOferta ?? "",
       enOferta: p.enOferta,
@@ -96,6 +97,7 @@ function AdminDashboard() {
   async function saveEdit(id) {
     try {
       const updatedData = {
+        nombre: draft.nombre.trim(), // <-- Agregado nombre a los datos a enviar
         precio: Number(draft.precio),
         precioOferta: draft.precioOferta === "" ? null : Number(draft.precioOferta),
         enOferta: Boolean(draft.enOferta),
@@ -108,7 +110,21 @@ function AdminDashboard() {
 
       // Actualizamos el estado local sin recargar la página
       setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...savedProduct, price: updatedData.precio, stock: updatedData.stock, enOferta: updatedData.enOferta, destacado: updatedData.destacado, precioOferta: updatedData.precioOferta, images: updatedData.imagenes } : p))
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                ...savedProduct,
+                name: updatedData.nombre, // <-- Actualizado name en el estado local
+                price: updatedData.precio,
+                stock: updatedData.stock,
+                enOferta: updatedData.enOferta,
+                destacado: updatedData.destacado,
+                precioOferta: updatedData.precioOferta,
+                images: updatedData.imagenes,
+              }
+            : p
+        )
       );
 
       cancelEdit();
@@ -121,7 +137,6 @@ function AdminDashboard() {
     if (!confirm("¿Desactivar este producto? Ya no se mostrará en la tienda.")) return;
     try {
       await deleteProduct(id);
-      // Actualizamos el estado local marcándolo como inactivo
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, activo: false } : p))
       );
@@ -133,7 +148,6 @@ function AdminDashboard() {
   async function handleActivate(id) {
     try {
       await activateProduct(id);
-      // Actualizamos el estado local marcándolo como activo
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, activo: true } : p))
       );
@@ -151,7 +165,6 @@ function AdminDashboard() {
       return;
     try {
       await hardDeleteProduct(id);
-      // Removemos el producto del estado local completamente
       setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       alert(err.message);
@@ -247,7 +260,6 @@ function AdminDashboard() {
         imagenes: productForm.imagenes,
       });
 
-      // Añadimos el nuevo producto directamente al estado local
       setProducts((prev) => [newProduct, ...prev]);
       setProductForm(PRODUCTO_VACIO);
     } catch (err) {
@@ -270,7 +282,6 @@ function AdminDashboard() {
         precioCombo: Number(comboForm.precioCombo),
       });
 
-      // Añadimos el nuevo combo al estado local
       setCombos((prev) => [newCombo, ...prev]);
       setComboForm({
         nombre: "",
@@ -288,7 +299,6 @@ function AdminDashboard() {
     if (!confirm("¿Eliminar este combo?")) return;
     try {
       await deleteCombo(id);
-      // Removemos el combo del estado local
       setCombos((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
       alert(err.message);
@@ -500,7 +510,18 @@ function AdminDashboard() {
                         <img className="admin-thumb" src={p.image} alt={p.name} />
                       )}
                     </td>
-                    <td>{p.name}</td>
+                    <td>
+                      {/* --- Edición del Nombre --- */}
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={draft.nombre}
+                          onChange={(e) => setDraft({ ...draft, nombre: e.target.value })}
+                        />
+                      ) : (
+                        p.name
+                      )}
+                    </td>
                     <td>{p.category}</td>
                     <td>
                       {isEditing ? (
