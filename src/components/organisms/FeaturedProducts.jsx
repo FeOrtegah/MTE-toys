@@ -16,12 +16,20 @@ function FeaturedProducts() {
   }, []);
 
   function move(direction) {
-    const amount = 300;
-    slider.current.scrollLeft += direction * amount;
+    const container = slider.current;
+    if (!container) return;
+
+    const firstItem = container.querySelector(".featured-item");
+    if (!firstItem) return;
+
+    const gap = parseFloat(getComputedStyle(container).columnGap || getComputedStyle(container).gap || 0);
+    const step = firstItem.getBoundingClientRect().width + gap;
+
+    container.scrollBy({ left: direction * step, behavior: "smooth" });
   }
 
   if (loading) return <p>Cargando productos...</p>;
-  if (products.length === 0) return null; // no muestra la sección si aún no hay destacados
+  if (products.length === 0) return null;
 
   return (
     <section className="featured">

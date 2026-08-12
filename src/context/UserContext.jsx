@@ -21,6 +21,17 @@ JSON.stringify(data)
 }
 
 
+function updateUser(partial){
+
+setUser(prev=>{
+const actualizado = { ...prev, ...partial };
+localStorage.setItem("user", JSON.stringify(actualizado));
+return actualizado;
+});
+
+}
+
+
 function logout(){
 
 setUser(null);
@@ -36,6 +47,7 @@ return(
 value={{
 user,
 login,
+updateUser,
 logout
 }}
 >

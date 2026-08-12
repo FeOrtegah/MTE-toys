@@ -27,6 +27,7 @@ function Products() {
   const [category, setCategory] = useState(getCatFromUrl());
   const [minPrice, setMinPrice] = useState(getMinFromUrl());
   const [maxPrice, setMaxPrice] = useState(getMaxFromUrl());
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     getProducts()
@@ -105,8 +106,27 @@ function Products() {
     <main className="products-page">
       <h1>Juguetes</h1>
 
+      <button
+        className={`filter-toggle ${filtersOpen ? "open" : ""}`}
+        onClick={() => setFiltersOpen((prev) => !prev)}
+      >
+        {filtersOpen ? "✕ Cerrar filtros" : "☰ Filtros"}
+      </button>
+
+      {filtersOpen && (
+        <div className="filter-backdrop" onClick={() => setFiltersOpen(false)} />
+      )}
+
       <div className="products-layout">
-        <aside className="products-filters">
+        <aside className={`products-filters ${filtersOpen ? "open" : ""}`}>
+          <div className="filter-panel-header">
+            <span className="filter-handle"></span>
+            <div className="filter-panel-title">
+              <h2>Filtros</h2>
+              <button className="filter-close" onClick={() => setFiltersOpen(false)}>✕</button>
+            </div>
+          </div>
+
           <div className="filter-block">
             <h3>Categoría</h3>
             <ul className="filter-category-list">

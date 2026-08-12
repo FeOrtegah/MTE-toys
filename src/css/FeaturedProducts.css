@@ -21,12 +21,14 @@ justify-content:center;
 gap:25px;
 overflow-x:auto;
 scroll-behavior:smooth;
+scroll-snap-type:x mandatory;
 -webkit-overflow-scrolling:touch;
 }
 
 .featured-item{
 min-width:250px;
 flex-shrink:0;
+scroll-snap-align:start;
 }
 
 .arrow{

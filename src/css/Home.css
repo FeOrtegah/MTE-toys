@@ -5,7 +5,7 @@
 .benefits{
   display:flex;
   justify-content:center;
-  align-items:center;
+  align-items:stretch;
   gap:35px;
   padding:30px 40px;
   background:white;
@@ -101,32 +101,26 @@ html {
 
 @media(max-width:700px){
 .benefits{
-gap:15px;
-padding:25px 15px;
+gap:12px;
+padding:20px 15px;
 }
 
 .benefit-card{
-width:45%;
-padding:14px;
+width:calc(50% - 6px);
+padding:14px 8px;
 }
 
 .benefit-card img{
-width:65px;
-height:65px;
+width:60px;
+height:60px;
 margin-bottom:8px;
 }
 
 .benefit-card h3{
-font-size:15px;
+font-size:14px;
 }
 
 .benefit-card p{
-font-size:12px;
-}
-}
-
-@media(max-width:420px){
-.benefit-card{
-width:100%;
+font-size:11px;
 }
 }

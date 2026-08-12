@@ -90,14 +90,9 @@ alt={product.name}
 
 {
 user ?
-<div className="user-menu">
-<span>
-👤 {user.name || user.email}
-</span>
-<button onClick={logout}>
-Salir
-</button>
-</div>
+<Link to="/mi-cuenta" className="user">
+👤
+</Link>
 :
 <Link to="/login" className="user">
 👤
