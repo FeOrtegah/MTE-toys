@@ -6,6 +6,7 @@ import { useSearch } from "../../context/SearchContext";
 import "../../css/Products.css";
 
 function capitalizar(texto) {
+  if (!texto) return "";
   return texto
     .split(" ")
     .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
@@ -19,10 +20,14 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados locales para los filtros
-  const [category, setCategory] = useState(searchParams.get("categoria") || "Todos");
-  const [minPrice, setMinPrice] = useState(searchParams.get("min") || "");
-  const [maxPrice, setMaxPrice] = useState(searchParams.get("max") || "");
+  // Funciones para obtener parámetros soportando ambos nombres (min / minPrice, etc.)
+  const getMinFromUrl = () => searchParams.get("min") || searchParams.get("minPrice") || "";
+  const getMaxFromUrl = () => searchParams.get("max") || searchParams.get("maxPrice") || "";
+  const getCatFromUrl = () => searchParams.get("categoria") || searchParams.get("category") || "Todos";
+
+  const [category, setCategory] = useState(getCatFromUrl());
+  const [minPrice, setMinPrice] = useState(getMinFromUrl());
+  const [maxPrice, setMaxPrice] = useState(getMaxFromUrl());
 
   useEffect(() => {
     getProducts()
@@ -31,11 +36,11 @@ function Products() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Sincronizar estados locales cuando la URL cambia (por ejemplo al hacer clic en un enlace de regalo)
+  // Sincroniza al hacer clic en tarjetas con nueva URL
   useEffect(() => {
-    setCategory(searchParams.get("categoria") || "Todos");
-    setMinPrice(searchParams.get("min") || "");
-    setMaxPrice(searchParams.get("max") || "");
+    setCategory(getCatFromUrl());
+    setMinPrice(getMinFromUrl());
+    setMaxPrice(getMaxFromUrl());
   }, [searchParams]);
 
   const categories = useMemo(() => {
@@ -43,35 +48,31 @@ function Products() {
     return ["Todos", ...unicas];
   }, [products]);
 
-  // Actualiza los parámetros de la URL de forma limpia
-  function aplicarFiltrosDePrecio() {
-    const nuevosParams = new URLSearchParams(searchParams);
+  function actualizarURL(nuevaCat, nuevoMin, nuevoMax) {
+    const params = new URLSearchParams();
 
-    if (minPrice !== "") {
-      nuevosParams.set("min", minPrice);
-    } else {
-      nuevosParams.delete("min");
-    }
+    if (nuevaCat && nuevaCat !== "Todos") params.set("categoria", nuevaCat);
+    if (nuevoMin !== "" && nuevoMin !== null) params.set("min", nuevoMin);
+    if (nuevoMax !== "" && nuevoMax !== null) params.set("max", nuevoMax);
 
-    if (maxPrice !== "") {
-      nuevosParams.set("max", maxPrice);
-    } else {
-      nuevosParams.delete("max");
-    }
-
-    setSearchParams(nuevosParams);
+    setSearchParams(params, { replace: true });
   }
 
   function handleCategoryClick(cat) {
     setCategory(cat);
-    const nuevosParams = new URLSearchParams(searchParams);
-    
-    if (cat === "Todos") {
-      nuevosParams.delete("categoria");
-    } else {
-      nuevosParams.set("categoria", cat);
-    }
-    setSearchParams(nuevosParams);
+    actualizarURL(cat, minPrice, maxPrice);
+  }
+
+  function handleMinChange(e) {
+    const val = e.target.value;
+    setMinPrice(val);
+    actualizarURL(category, val, maxPrice);
+  }
+
+  function handleMaxChange(e) {
+    const val = e.target.value;
+    setMaxPrice(val);
+    actualizarURL(category, minPrice, val);
   }
 
   function limpiarFiltros() {
@@ -81,17 +82,21 @@ function Products() {
     setSearchParams({});
   }
 
-  function handleKeyDown(e) {
-    if (e.key === "Enter") {
-      aplicarFiltrosDePrecio();
-    }
-  }
-
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = product.name
+      ? product.name.toLowerCase().includes((search || "").toLowerCase())
+      : true;
+
     const matchesCategory = category === "Todos" || product.category === category;
-    const matchesMin = minPrice === "" || product.price >= Number(minPrice);
-    const matchesMax = maxPrice === "" || product.price <= Number(maxPrice);
+
+    // Se asegura de convertir el precio a número para hacer la comparación matemática correcta
+    const numPrice = Number(product.price);
+    const numMin = minPrice !== "" ? Number(minPrice) : null;
+    const numMax = maxPrice !== "" ? Number(maxPrice) : null;
+
+    const matchesMin = numMin === null || (!isNaN(numPrice) && numPrice >= numMin);
+    const matchesMax = numMax === null || (!isNaN(numPrice) && numPrice <= numMax);
+
     return matchesSearch && matchesCategory && matchesMin && matchesMax;
   });
 
@@ -128,9 +133,7 @@ function Products() {
                 type="number"
                 placeholder="Mín"
                 value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                onBlur={aplicarFiltrosDePrecio}
-                onKeyDown={handleKeyDown}
+                onChange={handleMinChange}
                 min="0"
               />
               <span>—</span>
@@ -138,9 +141,7 @@ function Products() {
                 type="number"
                 placeholder="Máx"
                 value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                onBlur={aplicarFiltrosDePrecio}
-                onKeyDown={handleKeyDown}
+                onChange={handleMaxChange}
                 min="0"
               />
             </div>
@@ -153,7 +154,9 @@ function Products() {
 
         <section className="products-grid">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
+            filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
           ) : (
             <p className="no-products">No hay productos que coincidan con los filtros.</p>
           )}
