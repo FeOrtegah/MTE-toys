@@ -50,9 +50,11 @@ function Home() {
         </div>
       </section>
 
-      <Categories />
-
+      {/* Productos Destacados arriba */}
       <FeaturedProducts />
+
+      {/* Marcas/Categorías abajo */}
+      <Categories />
 
       <SubBanner />
 

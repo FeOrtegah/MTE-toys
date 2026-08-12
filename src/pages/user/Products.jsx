@@ -20,7 +20,6 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Funciones para obtener parámetros soportando ambos nombres (min / minPrice, etc.)
   const getMinFromUrl = () => searchParams.get("min") || searchParams.get("minPrice") || "";
   const getMaxFromUrl = () => searchParams.get("max") || searchParams.get("maxPrice") || "";
   const getCatFromUrl = () => searchParams.get("categoria") || searchParams.get("category") || "Todos";
@@ -36,7 +35,6 @@ function Products() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Sincroniza al hacer clic en tarjetas con nueva URL
   useEffect(() => {
     setCategory(getCatFromUrl());
     setMinPrice(getMinFromUrl());
@@ -89,7 +87,6 @@ function Products() {
 
     const matchesCategory = category === "Todos" || product.category === category;
 
-    // Se asegura de convertir el precio a número para hacer la comparación matemática correcta
     const numPrice = Number(product.price);
     const numMin = minPrice !== "" ? Number(minPrice) : null;
     const numMax = maxPrice !== "" ? Number(maxPrice) : null;

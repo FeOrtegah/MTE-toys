@@ -1,27 +1,27 @@
 const giftsByPrice = [
   {
     id: 1,
-    title: "Regalos por menos de $10.000",
+    title: "Regalos entre $1 y $10.000",
     image: "/regalos/regalo10.png",
-    link: "/productos?max=10000"
+    link: "/productos?min=1&max=10000"
   },
   {
     id: 2,
-    title: "Regalos por menos de $20.000",
+    title: "Regalos entre $10.000 y $20.000",
     image: "/regalos/regalo20.png",
-    link: "/productos?max=20000"
+    link: "/productos?min=10000&max=20000"
   },
   {
     id: 3,
-    title: "Regalos por menos de $30.000",
+    title: "Regalos entre $20.000 y $30.000",
     image: "/regalos/regalo30.png",
-    link: "/productos?max=30000"
+    link: "/productos?min=20000&max=30000"
   },
   {
     id: 4,
-    title: "Regalos Premium",
+    title: "Regalos Premium (más de $30.000)",
     image: "/regalos/regalo40.png",
-    link: "/productos?min=30000"  // Muestra productos desde $30.000 en adelante
+    link: "/productos?min=30000"
   }
 ];
 
