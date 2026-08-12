@@ -33,22 +33,18 @@ header {
   transition: transform .4s ease;
 }
 
-/* Arriba del todo: contact visible + navbar en su lugar */
 header.with-contact.navbar-show {
   transform: translateY(0);
 }
 
-/* Scrolleado + subiendo: contact oculto, navbar pegado arriba */
 header.without-contact.navbar-show {
-  transform: translateY(-25px); /* sube lo que ocupaba .contact */
+  transform: translateY(-25px);
 }
 
-/* Scrolleado + bajando: todo oculto (contact + navbar + menu) */
 header.without-contact.navbar-hide {
-  transform: translateY(-175px); /* 25px contact + 100px navbar + 50px menu */
+  transform: translateY(-175px);
 }
 
-/* Caso de seguridad (no debería ocurrir con la lógica actual) */
 header.with-contact.navbar-hide {
   transform: translateY(-175px);
 }
@@ -289,4 +285,123 @@ header.with-contact.navbar-hide {
 .menu a:hover {
   background: #ffc400;
   color: black;
+}
+
+/* ====================================================== */
+/* MOBILE — mismo alto de header (25 + 100 + 50 = 175px)   */
+/* para no romper la animación de mostrar/ocultar el header */
+/* ====================================================== */
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 18px;
+    gap: 10px;
+  }
+
+  .logo img {
+    width: 95px;
+  }
+
+  .search {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .search button {
+    width: 45px;
+  }
+
+  .actions {
+    gap: 10px;
+    font-size: 20px;
+  }
+
+  .admin-link {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .user-menu {
+    padding: 4px 4px 4px 10px;
+    gap: 8px;
+  }
+
+  .user-menu span {
+    max-width: 60px;
+    font-size: 12px;
+  }
+
+  .user-menu button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .menu {
+  gap: 8px;
+  padding: 0 10px;
+  overflow-x: auto;
+  justify-content: center;
+  -webkit-overflow-scrolling: touch;
+  }
+
+  .menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .menu a {
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact {
+    gap: 15px;
+    font-size: 11px;
+  }
+
+  .phone img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .logo img {
+    width: 80px;
+  }
+
+  .admin-link span {
+    display: none;
+  }
+
+  .admin-link {
+    padding: 6px 8px;
+  }
+
+  .user-menu span {
+    display: none;
+  }
+
+  .cart-count {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+    top: -6px;
+    right: -8px;
+  }
+
+  .search-item span {
+    font-size: 13px;
+  }
+
+  .search-item img {
+    width: 45px;
+    height: 45px;
+  }
 }

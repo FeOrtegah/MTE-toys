@@ -37,3 +37,9 @@ border:none;
 border-radius:20px;
 
 }
+
+@media(max-width:480px){
+.contact-page{
+padding:25px 18px;
+}
+}

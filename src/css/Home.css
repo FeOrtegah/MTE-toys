@@ -9,6 +9,7 @@
   gap:35px;
   padding:30px 40px;
   background:white;
+  flex-wrap:wrap;
 }
 
 
@@ -96,4 +97,36 @@ html {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+}
+
+@media(max-width:700px){
+.benefits{
+gap:15px;
+padding:25px 15px;
+}
+
+.benefit-card{
+width:45%;
+padding:14px;
+}
+
+.benefit-card img{
+width:65px;
+height:65px;
+margin-bottom:8px;
+}
+
+.benefit-card h3{
+font-size:15px;
+}
+
+.benefit-card p{
+font-size:12px;
+}
+}
+
+@media(max-width:420px){
+.benefit-card{
+width:100%;
+}
 }

@@ -26,6 +26,15 @@ object-fit:fill;
 display:block;
 }
 
+.banner-slide::before{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(90deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,.35) 40%, rgba(0,0,0,0) 75%);
+z-index:1;
+pointer-events:none;
+}
+
 
 .banner-text{
 position:absolute;
@@ -35,36 +44,44 @@ transform:translateY(-50%);
 color:white;
 z-index:2;
 max-width:450px;
-line-height: normal; /* Restaura el interlineado normal para los textos */
+line-height: normal;
 }
 
 
 .banner-text h1{
 font-size:55px;
 margin-bottom:15px;
+text-shadow:0 3px 10px rgba(0,0,0,.5);
 }
 
 
 .banner-text p{
 font-size:22px;
+text-shadow:0 2px 6px rgba(0,0,0,.5);
 }
 
 
-.banner-text button{
+.banner-text a{
+display:inline-block;
 margin-top:25px;
 padding:14px 35px;
-border:none;
+border:2px solid white;
 border-radius:25px;
 background:#ed4b25;
 color:white;
 font-weight:bold;
+text-decoration:none;
 cursor:pointer;
 transition:.3s;
+box-shadow:0 4px 15px rgba(0,0,0,.35);
 }
 
 
-.banner-text button:hover{
+.banner-text a:hover{
 transform:scale(1.08);
+background:#ffc400;
+color:black;
+border-color:#ffc400;
 }
 
 
@@ -80,6 +97,7 @@ border-radius:50%;
 cursor:pointer;
 font-size:25px;
 z-index:3;
+box-shadow:0 3px 10px rgba(0,0,0,.3);
 }
 
 
@@ -100,6 +118,7 @@ left:50%;
 transform:translateX(-50%);
 display:flex;
 gap:10px;
+z-index:3;
 }
 
 
@@ -109,9 +128,68 @@ height:12px;
 border-radius:50%;
 background:white;
 cursor:pointer;
+box-shadow:0 0 4px rgba(0,0,0,.4);
 }
 
 
 .dots .active{
 background:#ed4b25;
+}
+
+@media(max-width:900px){
+.banner-slider,
+.banner-slide,
+.banner-slide img{
+height:400px;
+}
+
+.banner-text{
+left:7%;
+max-width:75%;
+}
+
+.banner-text h1{
+font-size:36px;
+}
+
+.banner-text p{
+font-size:16px;
+}
+
+.banner-btn{
+width:38px;
+height:38px;
+font-size:18px;
+}
+}
+
+@media(max-width:500px){
+.banner-slider,
+.banner-slide,
+.banner-slide img{
+height:256px;
+}
+
+.banner-text{
+left:6%;
+max-width:85%;
+}
+
+.banner-text h1{
+font-size:26px;
+margin-bottom:8px;
+}
+
+.banner-text p{
+font-size:13px;
+}
+
+.banner-text a{
+padding:10px 22px;
+margin-top:14px;
+font-size:14px;
+}
+
+.left{ left:10px; }
+.right{ right:10px; }
 }

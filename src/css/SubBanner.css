@@ -9,8 +9,8 @@
 
 .subbanner-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Siempre 2 columnas */
-  gap: 20px;                             /* Espacio entre banners en PC */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
   width: 100%;
 }
 
@@ -31,24 +31,24 @@
 
 .subbanner-card img {
   width: 100%;
-  height: auto;                          /* Mantiene la proporción exacta de la imagen */
+  height: auto;
   display: block;
 }
 
 
-/* --- AJUSTE PARA MONITOR VERTICAL Y CELULARES --- */
-@media (max-width: 768px), (orientation: portrait) {
+/* --- MOBILE: uno arriba del otro, ocupando todo el ancho --- */
+@media (max-width: 768px) {
   .subbanners-section {
     margin: 20px auto;
-    padding: 0 10px;                     /* Menos margen a los lados para aprovechar la pantalla */
+    padding: 0 15px;
   }
 
   .subbanner-container {
-    grid-template-columns: repeat(2, 1fr); /* Se MANTIENEN las 2 columnas */
-    gap: 10px;                            /* Reducimos el espacio entre ellos a 10px */
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
   .subbanner-card {
-    border-radius: 10px;                  /* Bordes un poco más pequeños para pantallas reducidas */
+    border-radius: 12px;
   }
 }

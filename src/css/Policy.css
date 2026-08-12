@@ -32,3 +32,22 @@
   line-height: 1.6;
   color: #444;
 }
+
+@media(max-width:480px){
+.policy-page{
+margin:25px auto;
+padding:0 15px;
+}
+
+.policy-page h1{
+font-size:1.5rem;
+}
+
+.policy-subtitle{
+font-size:1rem;
+}
+
+.policy-section h2{
+font-size:1.1rem;
+}
+}

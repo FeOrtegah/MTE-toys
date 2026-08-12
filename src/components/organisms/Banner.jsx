@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import banners from "../../data/banners";
 import "../../css/Banner.css";
 
@@ -55,9 +56,9 @@ alt={banner.title}
 
 <p>{banner.text}</p>
 
-<button>
+<Link to={banner.link || "/productos"}>
 Ver productos
-</button>
+</Link>
 
 </div>
 
