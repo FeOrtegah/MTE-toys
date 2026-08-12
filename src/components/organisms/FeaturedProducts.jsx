@@ -7,6 +7,8 @@ function FeaturedProducts() {
   const slider = useRef();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     getProducts()
@@ -14,6 +16,31 @@ function FeaturedProducts() {
       .catch((err) => console.error("Error al cargar productos:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  function updateScrollState() {
+    const container = slider.current;
+    if (!container) return;
+
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    setCanScrollLeft(container.scrollLeft > 2);
+    setCanScrollRight(container.scrollLeft < maxScroll - 2);
+  }
+
+  useEffect(() => {
+    const container = slider.current;
+    if (!container) return;
+
+    updateScrollState();
+
+    container.addEventListener("scroll", updateScrollState);
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      container.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [products]);
 
   function move(direction) {
     const container = slider.current;
@@ -36,7 +63,13 @@ function FeaturedProducts() {
       <h2>Productos destacados</h2>
 
       <div className="featured-wrapper">
-        <button className="arrow" onClick={() => move(-1)}>❮</button>
+        <button
+          className="arrow"
+          onClick={() => move(-1)}
+          disabled={!canScrollLeft}
+        >
+          ❮
+        </button>
 
         <div className="featured-products" ref={slider}>
           {products.map((product) => (
@@ -46,7 +79,13 @@ function FeaturedProducts() {
           ))}
         </div>
 
-        <button className="arrow" onClick={() => move(1)}>❯</button>
+        <button
+          className="arrow"
+          onClick={() => move(1)}
+          disabled={!canScrollRight}
+        >
+          ❯
+        </button>
       </div>
     </section>
   );
