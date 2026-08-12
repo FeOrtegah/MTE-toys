@@ -86,3 +86,14 @@
   font-size:14px;
 
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+.benefit-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}

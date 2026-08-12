@@ -1,0 +1,54 @@
+/* --- ESTILOS BASE (PC y Monitores Horizontales) --- */
+.subbanners-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.subbanner-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Siempre 2 columnas */
+  gap: 20px;                             /* Espacio entre banners en PC */
+  width: 100%;
+}
+
+.subbanner-card {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.subbanner-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.subbanner-card img {
+  width: 100%;
+  height: auto;                          /* Mantiene la proporción exacta de la imagen */
+  display: block;
+}
+
+
+/* --- AJUSTE PARA MONITOR VERTICAL Y CELULARES --- */
+@media (max-width: 768px), (orientation: portrait) {
+  .subbanners-section {
+    margin: 20px auto;
+    padding: 0 10px;                     /* Menos margen a los lados para aprovechar la pantalla */
+  }
+
+  .subbanner-container {
+    grid-template-columns: repeat(2, 1fr); /* Se MANTIENEN las 2 columnas */
+    gap: 10px;                            /* Reducimos el espacio entre ellos a 10px */
+  }
+
+  .subbanner-card {
+    border-radius: 10px;                  /* Bordes un poco más pequeños para pantallas reducidas */
+  }
+}

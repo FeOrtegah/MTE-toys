@@ -18,9 +18,11 @@ function Products() {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Estados locales para los filtros
   const [category, setCategory] = useState(searchParams.get("categoria") || "Todos");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [minPrice, setMinPrice] = useState(searchParams.get("min") || "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("max") || "");
 
   useEffect(() => {
     getProducts()
@@ -29,9 +31,11 @@ function Products() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Sincronizar estados locales cuando la URL cambia (por ejemplo al hacer clic en un enlace de regalo)
   useEffect(() => {
-    const desdeUrl = searchParams.get("categoria");
-    if (desdeUrl) setCategory(desdeUrl);
+    setCategory(searchParams.get("categoria") || "Todos");
+    setMinPrice(searchParams.get("min") || "");
+    setMaxPrice(searchParams.get("max") || "");
   }, [searchParams]);
 
   const categories = useMemo(() => {
@@ -39,20 +43,48 @@ function Products() {
     return ["Todos", ...unicas];
   }, [products]);
 
+  // Actualiza los parámetros de la URL de forma limpia
+  function aplicarFiltrosDePrecio() {
+    const nuevosParams = new URLSearchParams(searchParams);
+
+    if (minPrice !== "") {
+      nuevosParams.set("min", minPrice);
+    } else {
+      nuevosParams.delete("min");
+    }
+
+    if (maxPrice !== "") {
+      nuevosParams.set("max", maxPrice);
+    } else {
+      nuevosParams.delete("max");
+    }
+
+    setSearchParams(nuevosParams);
+  }
+
   function handleCategoryClick(cat) {
     setCategory(cat);
+    const nuevosParams = new URLSearchParams(searchParams);
+    
     if (cat === "Todos") {
-      searchParams.delete("categoria");
+      nuevosParams.delete("categoria");
     } else {
-      searchParams.set("categoria", cat);
+      nuevosParams.set("categoria", cat);
     }
-    setSearchParams(searchParams);
+    setSearchParams(nuevosParams);
   }
 
   function limpiarFiltros() {
-    handleCategoryClick("Todos");
+    setCategory("Todos");
     setMinPrice("");
     setMaxPrice("");
+    setSearchParams({});
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter") {
+      aplicarFiltrosDePrecio();
+    }
   }
 
   const filteredProducts = products.filter((product) => {
@@ -97,6 +129,8 @@ function Products() {
                 placeholder="Mín"
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
+                onBlur={aplicarFiltrosDePrecio}
+                onKeyDown={handleKeyDown}
                 min="0"
               />
               <span>—</span>
@@ -105,6 +139,8 @@ function Products() {
                 placeholder="Máx"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
+                onBlur={aplicarFiltrosDePrecio}
+                onKeyDown={handleKeyDown}
                 min="0"
               />
             </div>
