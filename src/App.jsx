@@ -18,6 +18,7 @@ import Register from "./pages/auth/Register";
 import Checkout from "./pages/user/Checkout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import Account from "./pages/user/Account";
 
 
 
@@ -104,6 +105,8 @@ return(
 <Route path="/carrito" element={<Cart/>}/>
 <Route path="/contacto" element={<ContactPage/>}/>
 <Route path="/checkout" element={<Checkout/>}/>
+<Route path="/mi-cuenta" element={<Account/>}/>
+
 <Route
 path="/admin"
 element={
