@@ -22,7 +22,7 @@ import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import Account from "./pages/user/Account";
 import AccountHome from "./pages/user/AccountHome";
 import MyOrders from "./pages/user/MyOrders";
-
+import AdminOrders from "./pages/admin/AdminOrders";
 
 
 
@@ -112,6 +112,7 @@ return(
 <Route path="/mi-cuenta" element={<AccountHome/>}/>
 <Route path="/mi-cuenta/perfil" element={<Account/>}/>
 <Route path="/mi-cuenta/compras" element={<MyOrders/>}/>
+<Route path="/admin/pedidos" element={<ProtectedAdminRoute><AdminOrders/></ProtectedAdminRoute>}/>
 
 <Route
 path="/admin"

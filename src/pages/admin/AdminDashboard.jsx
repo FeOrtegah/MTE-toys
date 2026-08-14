@@ -12,6 +12,7 @@ import {
   createCombo,
   deleteCombo,
 } from "../../services/comboService";
+import { getOrders, cancelOrder } from "../../services/orderService";
 import { uploadImages } from "../../services/uploadService";
 import "../../css/AdminDashboard.css";
 
@@ -27,9 +28,21 @@ const PRODUCTO_VACIO = {
   imagenes: [],
 };
 
+const ESTADOS_PEDIDO = {
+  pendiente: { label: "Pendiente", className: "badge-pendiente" },
+  pagado: { label: "Pagado", className: "badge-pagado" },
+  enviado: { label: "Enviado", className: "badge-enviado" },
+  cancelado: { label: "Cancelado", className: "badge-cancelado" },
+};
+
+function formatFechaPedido(fecha) {
+  return new Date(fecha).toLocaleString("es-CL");
+}
+
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [combos, setCombos] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -52,13 +65,20 @@ function AdminDashboard() {
 
   function cargarDatosIniciales() {
     setLoading(true);
-    Promise.all([getAllProductsAdmin(), getAllCombosAdmin()])
-      .then(([p, c]) => {
+    Promise.all([getAllProductsAdmin(), getAllCombosAdmin(), getOrders()])
+      .then(([p, c, o]) => {
         setProducts(p);
         setCombos(c);
+        setOrders(o);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  }
+
+  function recargarPedidos() {
+    getOrders()
+      .then(setOrders)
+      .catch((err) => alert(err.message || "No se pudieron recargar los pedidos"));
   }
 
   useEffect(() => {
@@ -74,10 +94,17 @@ function AdminDashboard() {
     };
   }, [products]);
 
+  const pedidosStats = useMemo(() => {
+    return {
+      pendientes: orders.filter((o) => o.estado === "pendiente").length,
+      pagados: orders.filter((o) => o.estado === "pagado").length,
+    };
+  }, [orders]);
+
   function startEdit(p) {
     setEditingId(p.id);
     setDraft({
-      nombre: p.name || "", // <-- Agregado nombre al borrador
+      nombre: p.name || "",
       precio: p.price,
       precioOferta: p.precioOferta ?? "",
       enOferta: p.enOferta,
@@ -97,7 +124,7 @@ function AdminDashboard() {
   async function saveEdit(id) {
     try {
       const updatedData = {
-        nombre: draft.nombre.trim(), // <-- Agregado nombre a los datos a enviar
+        nombre: draft.nombre.trim(),
         precio: Number(draft.precio),
         precioOferta: draft.precioOferta === "" ? null : Number(draft.precioOferta),
         enOferta: Boolean(draft.enOferta),
@@ -108,14 +135,13 @@ function AdminDashboard() {
 
       const savedProduct = await updateProduct(id, updatedData);
 
-      // Actualizamos el estado local sin recargar la página
       setProducts((prev) =>
         prev.map((p) =>
           p.id === id
             ? {
                 ...p,
                 ...savedProduct,
-                name: updatedData.nombre, // <-- Actualizado name en el estado local
+                name: updatedData.nombre,
                 price: updatedData.precio,
                 stock: updatedData.stock,
                 enOferta: updatedData.enOferta,
@@ -305,6 +331,18 @@ function AdminDashboard() {
     }
   }
 
+  async function handleCancelOrder(id) {
+    if (!confirm("¿Cancelar este pedido?")) return;
+    try {
+      await cancelOrder(id);
+      setOrders((prev) =>
+        prev.map((o) => (o._id === id ? { ...o, estado: "cancelado" } : o))
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
   if (loading) return <p className="admin-loading">Cargando panel...</p>;
   if (error) return <p className="admin-error">{error}</p>;
 
@@ -329,7 +367,72 @@ function AdminDashboard() {
           <span className="stat-value">{stats.sinStock}</span>
           <span className="stat-label">Sin stock</span>
         </div>
+        <div className="stat-card">
+          <span className="stat-value">{pedidosStats.pendientes}</span>
+          <span className="stat-label">Pedidos pendientes</span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-value">{pedidosStats.pagados}</span>
+          <span className="stat-label">Pedidos pagados</span>
+        </div>
       </div>
+
+      <section className="admin-section">
+        <h2>Pedidos</h2>
+        <p style={{ color: "#777", fontSize: 13, marginTop: -8 }}>
+          Los pedidos pendientes con más de 30 minutos se cancelan automáticamente.
+        </p>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center", padding: 20, color: "#777" }}>
+                    Todavía no hay pedidos.
+                  </td>
+                </tr>
+              ) : (
+                orders.map((o) => {
+                  const estado = ESTADOS_PEDIDO[o.estado] || ESTADOS_PEDIDO.pendiente;
+                  return (
+                    <tr key={o._id}>
+                      <td>
+                        {o.cliente?.nombre}
+                        <br />
+                        <small style={{ color: "#777" }}>{o.cliente?.email}</small>
+                      </td>
+                      <td>{formatFechaPedido(o.createdAt)}</td>
+                      <td>
+                        <span className={estado.className}>{estado.label}</span>
+                      </td>
+                      <td>${o.total.toLocaleString("es-CL")}</td>
+                      <td className="admin-actions">
+                        {o.estado === "pendiente" && (
+                          <button className="btn-eliminar" onClick={() => handleCancelOrder(o._id)}>
+                            Cancelar
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+        <button type="button" onClick={recargarPedidos} style={{ marginTop: 10 }}>
+          Actualizar pedidos
+        </button>
+      </section>
 
       <section className="admin-section">
         <h2>Crear producto nuevo</h2>
@@ -511,7 +614,6 @@ function AdminDashboard() {
                       )}
                     </td>
                     <td>
-                      {/* --- Edición del Nombre --- */}
                       {isEditing ? (
                         <input
                           type="text"
