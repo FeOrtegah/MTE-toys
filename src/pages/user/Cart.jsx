@@ -14,35 +14,41 @@ total
 }=useCart();
 
 
+const totalUnidades = cart.reduce((sum,item)=>sum+item.quantity,0);
+
+
 return(
 
 <main className="cart-page">
 
+<div className="cart-container">
+
+<section className="cart-list">
+
 <h1>
-Carrito
+Carro ({totalUnidades} producto{totalUnidades===1?"":"s"})
 </h1>
 
 
 {
 cart.length===0 ?
 
-<p>
+<p className="cart-empty">
 Tu carrito está vacío
 </p>
 
 
 :
 
-<>
+<div className="cart-card">
 
 {
 cart.map(item=>(
 
-<div 
+<div
 className="cart-item"
 key={item.id}
 >
-
 
 <img
 src={item.image}
@@ -50,14 +56,14 @@ alt={item.name}
 />
 
 
-<div>
+<div className="cart-item-info">
 
 <h3>
 {item.name}
 </h3>
 
 
-<p>
+<p className="cart-item-price">
 ${item.price.toLocaleString("es-CL")}
 </p>
 
@@ -80,16 +86,16 @@ ${item.price.toLocaleString("es-CL")}
 
 </div>
 
+</div>
+
 
 <button
 className="delete"
 onClick={()=>removeFromCart(item.id)}
+title="Eliminar"
 >
-Eliminar
+✕
 </button>
-
-
-</div>
 
 
 </div>
@@ -98,24 +104,49 @@ Eliminar
 
 }
 
+</div>
+
+}
+
+</section>
+
+
+{
+cart.length>0 &&
+
+<aside className="cart-summary">
 
 <h2>
-Total:
-${total().toLocaleString("es-CL")}
+Resumen de la compra
 </h2>
 
 
-<Link 
+<div className="summary-row">
+<span>Productos ({totalUnidades})</span>
+<span>${total().toLocaleString("es-CL")}</span>
+</div>
+
+
+<div className="summary-row summary-total">
+<span>Total:</span>
+<span>${total().toLocaleString("es-CL")}</span>
+</div>
+
+
+<Link
 to="/checkout"
 className="checkout"
 >
-Finalizar compra
+Continuar compra
 </Link>
 
 
-</>
+</aside>
 
 }
+
+
+</div>
 
 
 </main>

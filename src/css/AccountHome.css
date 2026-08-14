@@ -1,0 +1,247 @@
+.account-home-page{
+padding:50px 20px;
+display:flex;
+justify-content:center;
+background:#f5f5f5;
+min-height:70vh;
+}
+
+.account-home-box{
+width:100%;
+max-width:640px;
+}
+
+.account-home-top h1{
+font-size:26px;
+margin:0 0 20px;
+}
+
+.account-home-actions{
+display:flex;
+gap:16px;
+background:white;
+border-radius:20px;
+box-shadow:0 5px 20px #ddd;
+padding:22px 10px;
+margin-bottom:30px;
+}
+
+.account-home-action{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
+text-decoration:none;
+color:#222;
+font-size:13px;
+font-weight:600;
+padding:10px 4px;
+border-radius:12px;
+transition:.2s;
+}
+
+.account-home-action:hover{
+background:#f5f5f5;
+}
+
+.account-home-icon{
+width:44px;
+height:44px;
+border-radius:50%;
+background:#f0f0f0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+}
+
+.account-home-orders-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:14px;
+}
+
+.account-home-orders-header h2{
+font-size:18px;
+margin:0;
+}
+
+.account-home-link{
+color:#43b96d;
+text-decoration:none;
+font-size:14px;
+font-weight:600;
+}
+
+.account-home-link:hover{
+text-decoration:underline;
+}
+
+.account-home-status{
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+color:#777;
+}
+
+.account-home-orders-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.order-mini-card{
+background:white;
+border-radius:15px;
+box-shadow:0 5px 15px #ddd;
+padding:16px;
+text-decoration:none;
+color:#222;
+display:flex;
+flex-direction:column;
+gap:10px;
+transition:.2s;
+}
+
+.order-mini-card:hover{
+transform:translateY(-2px);
+}
+
+.order-mini-badge{
+align-self:flex-start;
+font-size:12px;
+font-weight:bold;
+padding:4px 10px;
+border-radius:20px;
+}
+
+.estado-pendiente{ background:#fff4cc; color:#a67c00; }
+.estado-pagado{ background:#e3f0ff; color:#1a6dd1; }
+.estado-enviado{ background:#e6f7ec; color:#1f9d55; }
+.estado-cancelado{ background:#fdeaea; color:#ed4b25; }
+
+.order-mini-thumb{
+width:56px;
+height:56px;
+border-radius:10px;
+background:#f5f5f5;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+}
+
+.order-mini-card p{
+margin:0;
+font-size:13px;
+color:#555;
+}
+
+.my-orders-header{
+margin-bottom:20px;
+}
+
+.account-home-back{
+display:inline-block;
+color:#555;
+text-decoration:none;
+font-size:14px;
+margin-bottom:10px;
+}
+
+.account-home-back:hover{
+color:#43b96d;
+}
+
+.my-orders-header h1{
+font-size:24px;
+margin:0;
+}
+
+.orders-list{
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.order-card{
+background:white;
+border-radius:15px;
+box-shadow:0 5px 15px #ddd;
+padding:20px;
+}
+
+.order-card-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:14px;
+}
+
+.order-card-date{
+font-size:13px;
+color:#777;
+text-transform:capitalize;
+}
+
+.order-card-items{
+display:flex;
+flex-direction:column;
+gap:10px;
+border-top:1px solid #eee;
+border-bottom:1px solid #eee;
+padding:14px 0;
+}
+
+.order-card-item{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.order-card-item .order-mini-thumb{
+width:40px;
+height:40px;
+font-size:18px;
+flex-shrink:0;
+}
+
+.order-card-item-name{
+flex:1;
+font-size:14px;
+}
+
+.order-card-item-price{
+font-size:14px;
+font-weight:600;
+}
+
+.order-card-footer{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:14px;
+font-weight:bold;
+}
+
+.order-card-total{
+font-size:16px;
+}
+
+@media(max-width:600px){
+.account-home-page{
+padding:25px 15px;
+}
+
+.account-home-actions{
+gap:6px;
+padding:18px 6px;
+}
+
+.account-home-orders-grid{
+grid-template-columns:1fr;
+}
+}

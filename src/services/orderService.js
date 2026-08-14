@@ -3,6 +3,9 @@ import { request } from "./api.js";
 export const createOrder = (order) =>
   request("/orders", { method: "POST", body: order });
 
+// Protegida (cliente): pedidos del usuario logueado
+export const getMyOrders = () => request("/orders/mine", { auth: true });
+
 // Protegidas (admin)
 export const getOrders = () => request("/orders", { auth: true });
 export const getOrderById = (id) => request(`/orders/${id}`, { auth: true });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { getMe, updateMe } from "../../services/authService";
 import "../../css/Account.css";
@@ -79,6 +79,10 @@ function Account() {
   return (
     <main className="account-page">
       <div className="account-box">
+        <Link to="/mi-cuenta" className="account-back">
+          &lt; Volver a mi cuenta
+        </Link>
+
         <div className="account-header">
           <div className="account-avatar">👤</div>
           <div>
