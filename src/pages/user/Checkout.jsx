@@ -422,7 +422,13 @@ const validarComuna = (comuna, region) => {
 // =====================================================
 
 function Checkout() {
-  const { cart, total } = useCart();
+  const { cart, total: totalFromCart } = useCart();
+
+  // En este proyecto "total" viene del contexto como una función
+  // (total()), no como un número ya calculado. Se soporta también
+  // el caso en que en el futuro pase a ser un valor directo.
+  const total =
+    typeof totalFromCart === "function" ? totalFromCart() : totalFromCart;
   const { user } = useUser();
 
   const [form, setForm] = useState({
