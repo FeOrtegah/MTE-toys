@@ -2,157 +2,180 @@ import { useCart } from "../../context/CartContext";
 import "../../css/Cart.css";
 import { Link } from "react-router-dom";
 
+function Cart() {
+  const {
+    cart,
+    increase,
+    decrease,
+    removeFromCart,
+    total,
+  } = useCart();
 
-function Cart(){
+  const totalUnidades = cart.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
 
-const {
-cart,
-increase,
-decrease,
-removeFromCart,
-total
-}=useCart();
+  return (
+    <main className="cart-page">
+      <div className="cart-container">
 
+        <section className="cart-list">
 
-const totalUnidades = cart.reduce((sum,item)=>sum+item.quantity,0);
+          <h1>
+            Carro ({totalUnidades} producto
+            {totalUnidades === 1 ? "" : "s"})
+          </h1>
 
+          {cart.length === 0 ? (
+            <p className="cart-empty">
+              Tu carrito está vacío
+            </p>
+          ) : (
+            <div className="cart-card">
 
-return(
+              {cart.map((item) => {
 
-<main className="cart-page">
+                const hasStock =
+                  item.stock !== undefined &&
+                  item.stock !== null;
 
-<div className="cart-container">
+                const maxStockReached =
+                  hasStock &&
+                  item.quantity >= item.stock;
 
-<section className="cart-list">
+                return (
+                  <div
+                    className="cart-item"
+                    key={item.id}
+                  >
 
-<h1>
-Carro ({totalUnidades} producto{totalUnidades===1?"":"s"})
-</h1>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                    />
 
+                    <div className="cart-item-info">
 
-{
-cart.length===0 ?
+                      <h3>
+                        {item.name}
+                      </h3>
 
-<p className="cart-empty">
-Tu carrito está vacío
-</p>
+                      <p className="cart-item-price">
+                        ${item.price.toLocaleString("es-CL")}
+                      </p>
 
+                      <div className="quantity">
 
-:
+                        <button
+                          type="button"
+                          onClick={() =>
+                            decrease(item.id)
+                          }
+                          disabled={item.quantity <= 1}
+                        >
+                          -
+                        </button>
 
-<div className="cart-card">
+                        <span>
+                          {item.quantity}
+                        </span>
 
-{
-cart.map(item=>(
+                        <button
+                          type="button"
+                          onClick={() =>
+                            increase(item.id)
+                          }
+                          disabled={maxStockReached}
+                          title={
+                            maxStockReached
+                              ? `Stock máximo disponible: ${item.stock}`
+                              : "Aumentar cantidad"
+                          }
+                        >
+                          +
+                        </button>
 
-<div
-className="cart-item"
-key={item.id}
->
+                      </div>
 
-<img
-src={item.image}
-alt={item.name}
-/>
+                      {hasStock && (
+                        <p
+                          style={{
+                            fontSize: "13px",
+                            marginTop: "6px",
+                            color: maxStockReached
+                              ? "#c62828"
+                              : "#666",
+                          }}
+                        >
+                          {maxStockReached
+                            ? `Stock máximo disponible: ${item.stock}`
+                            : `Stock disponible: ${item.stock}`}
+                        </p>
+                      )}
 
+                    </div>
 
-<div className="cart-item-info">
+                    <button
+                      type="button"
+                      className="delete"
+                      onClick={() =>
+                        removeFromCart(item.id)
+                      }
+                      title="Eliminar"
+                    >
+                      ✕
+                    </button>
 
-<h3>
-{item.name}
-</h3>
+                  </div>
+                );
+              })}
 
+            </div>
+          )}
 
-<p className="cart-item-price">
-${item.price.toLocaleString("es-CL")}
-</p>
+        </section>
 
+        {cart.length > 0 && (
+          <aside className="cart-summary">
 
-<div className="quantity">
+            <h2>
+              Resumen de la compra
+            </h2>
 
-<button onClick={()=>decrease(item.id)}>
--
-</button>
+            <div className="summary-row">
+              <span>
+                Productos ({totalUnidades})
+              </span>
 
+              <span>
+                ${total().toLocaleString("es-CL")}
+              </span>
+            </div>
 
-<span>
-{item.quantity}
-</span>
+            <div className="summary-row summary-total">
+              <span>
+                Total:
+              </span>
 
+              <span>
+                ${total().toLocaleString("es-CL")}
+              </span>
+            </div>
 
-<button onClick={()=>increase(item.id)}>
-+
-</button>
+            <Link
+              to="/checkout"
+              className="checkout"
+            >
+              Continuar compra
+            </Link>
 
-</div>
+          </aside>
+        )}
 
-</div>
-
-
-<button
-className="delete"
-onClick={()=>removeFromCart(item.id)}
-title="Eliminar"
->
-✕
-</button>
-
-
-</div>
-
-))
-
-}
-
-</div>
-
-}
-
-</section>
-
-
-{
-cart.length>0 &&
-
-<aside className="cart-summary">
-
-<h2>
-Resumen de la compra
-</h2>
-
-
-<div className="summary-row">
-<span>Productos ({totalUnidades})</span>
-<span>${total().toLocaleString("es-CL")}</span>
-</div>
-
-
-<div className="summary-row summary-total">
-<span>Total:</span>
-<span>${total().toLocaleString("es-CL")}</span>
-</div>
-
-
-<Link
-to="/checkout"
-className="checkout"
->
-Continuar compra
-</Link>
-
-
-</aside>
-
-}
-
-
-</div>
-
-
-</main>
-
-);
-
+      </div>
+    </main>
+  );
 }
 
 export default Cart;
