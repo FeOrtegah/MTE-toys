@@ -136,36 +136,36 @@ const validarDireccion = (direccion) => {
 
 const validarNumero = (numero) => {
   const texto = limpiarTexto(numero);
-  if (!texto) return "El número de dirección es obligatorio";
-  if (!/^\d{1,6}[A-Za-z]?$/.test(texto)) return "Ingresa un número de dirección válido";
+  if (!texto) return "El número es obligatorio";
+  if (!/^\d{1,6}[A-Za-z]?$/.test(texto)) return "Número no válido";
   return "";
 };
 
 const validarDepartamento = (departamento) => {
   const texto = limpiarTexto(departamento);
   if (!texto) return "";
-  if (texto.length > 20) return "El departamento es demasiado largo";
-  if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .#\/'-]+$/.test(texto)) return "El departamento contiene caracteres no válidos";
+  if (texto.length > 20) return "Demasiado largo";
+  if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .#\/'-]+$/.test(texto)) return "Caracteres no válidos";
   return "";
 };
 
 const validarIndicaciones = (indicaciones) => {
   const texto = limpiarTexto(indicaciones);
-  if (texto.length > 250) return "Las indicaciones no pueden superar los 250 caracteres";
+  if (texto.length > 250) return "Máximo 250 caracteres";
   return "";
 };
 
 const validarRegion = (region) => {
   if (!region) return "Selecciona una región";
-  if (!REGIONES.includes(region)) return "Selecciona una región válida";
+  if (!REGIONES.includes(region)) return "Región no válida";
   return "";
 };
 
 const validarComuna = (region, comuna) => {
   if (!comuna) return "Selecciona una comuna";
-  if (!region || !REGIONES.includes(region)) return "Selecciona una región válida primero";
+  if (!region || !REGIONES.includes(region)) return "Selecciona región primero";
   const comunasValidas = COMUNAS_POR_REGION[region] || [];
-  if (!comunasValidas.includes(comuna)) return "La comuna no pertenece a la región seleccionada";
+  if (!comunasValidas.includes(comuna)) return "Comuna no corresponde a la región";
   return "";
 };
 
@@ -174,7 +174,7 @@ const validarComuna = (region, comuna) => {
 // =====================================================
 
 function Checkout() {
-  const { cart } = useCart();
+  const { cart, total } = useCart();
   const { user } = useUser();
 
   const [form, setForm] = useState({
@@ -262,7 +262,7 @@ function Checkout() {
       const nuevaFacturacion = {
         ...prev.facturacion,
         [name]: nuevoValor,
-        ...(name === "region" ? { comuna: "" } : {}), // Reinicia comuna si cambia la región
+        ...(name === "region" ? { comuna: "" } : {}),
       };
 
       const nuevoForm = {
@@ -310,7 +310,7 @@ function Checkout() {
       envio: {
         ...prev.envio,
         [name]: nuevoValor,
-        ...(name === "region" ? { comuna: "" } : {}), // Reinicia comuna si cambia la región
+        ...(name === "region" ? { comuna: "" } : {}),
       },
     }));
 
@@ -520,7 +520,7 @@ function Checkout() {
           },
         },
         items: cart.map((item) => ({
-          producto: item.id,
+          producto: item.id || item._id,
           cantidad: item.quantity,
         })),
       };
@@ -538,7 +538,7 @@ function Checkout() {
 
   const ErrorCampo = ({ nombre }) => {
     if (!errores[nombre]) return null;
-    return <small className="field-error">{errores[nombre]}</small>;
+    return <span className="field-error">{errores[nombre]}</span>;
   };
 
   return (
@@ -548,12 +548,15 @@ function Checkout() {
       {errorGeneral && <div className="checkout-error">{errorGeneral}</div>}
 
       <div className="checkout-container">
+        {/* =================================================
+            COLUMNA IZQUIERDA: FORMULARIO (billing)
+        ================================================= */}
         <section className="billing">
           {/* CLIENTE */}
           <h2>Datos del cliente</h2>
 
           <div className="row">
-            <div className="field">
+            <div className="field-container">
               <input
                 name="nombre"
                 placeholder="Nombre *"
@@ -566,7 +569,7 @@ function Checkout() {
               <ErrorCampo nombre="nombre" />
             </div>
 
-            <div className="field">
+            <div className="field-container">
               <input
                 name="apellidos"
                 placeholder="Apellidos *"
@@ -581,7 +584,7 @@ function Checkout() {
           </div>
 
           <div className="row">
-            <div className="field">
+            <div className="field-container">
               <input
                 name="rut"
                 placeholder="RUT * Ej: 12.345.678-5"
@@ -594,7 +597,7 @@ function Checkout() {
               <ErrorCampo nombre="rut" />
             </div>
 
-            <div className="field">
+            <div className="field-container">
               <input
                 name="telefono"
                 placeholder="Celular * Ej: +56 9 1234 5678"
@@ -608,7 +611,7 @@ function Checkout() {
             </div>
           </div>
 
-          <div className="field">
+          <div className="field-container">
             <input
               name="email"
               type="email"
@@ -623,9 +626,10 @@ function Checkout() {
           </div>
 
           {/* FACTURACIÓN */}
+          <div className="line"></div>
           <h2>Información de facturación</h2>
 
-          <div className="field">
+          <div className="field-container">
             <input
               name="nombre"
               placeholder="Nombre de facturación *"
@@ -639,7 +643,7 @@ function Checkout() {
           </div>
 
           <div className="row">
-            <div className="field">
+            <div className="field-container">
               <input
                 name="rut"
                 placeholder="RUT de facturación *"
@@ -652,7 +656,7 @@ function Checkout() {
               <ErrorCampo nombre="facturacion.rut" />
             </div>
 
-            <div className="field">
+            <div className="field-container">
               <input
                 name="numero"
                 placeholder="Número *"
@@ -667,7 +671,7 @@ function Checkout() {
           </div>
 
           <div className="row">
-            <div className="field">
+            <div className="field-container">
               <input
                 name="direccion"
                 placeholder="Dirección / calle *"
@@ -680,7 +684,7 @@ function Checkout() {
               <ErrorCampo nombre="facturacion.direccion" />
             </div>
 
-            <div className="field">
+            <div className="field-container">
               <input
                 name="departamento"
                 placeholder="Dpto / Block (opcional)"
@@ -695,7 +699,7 @@ function Checkout() {
           </div>
 
           <div className="row">
-            <div className="field">
+            <div className="field-container">
               <select
                 name="region"
                 value={form.facturacion.region}
@@ -713,7 +717,7 @@ function Checkout() {
               <ErrorCampo nombre="facturacion.region" />
             </div>
 
-            <div className="field">
+            <div className="field-container">
               <select
                 name="comuna"
                 value={form.facturacion.comuna}
@@ -723,7 +727,7 @@ function Checkout() {
                 disabled={!form.facturacion.region}
               >
                 <option value="">
-                  {form.facturacion.region ? "Selecciona una comuna *" : "Selecciona región primero"}
+                  {form.facturacion.region ? "Selecciona comuna *" : "Selecciona región primero"}
                 </option>
                 {(COMUNAS_POR_REGION[form.facturacion.region] || []).map((com) => (
                   <option key={com} value={com}>
@@ -736,24 +740,24 @@ function Checkout() {
           </div>
 
           {/* OPCIÓN MISMOS DATOS */}
-          <div className="checkbox-row">
-            <label>
-              <input
-                type="checkbox"
-                checked={mismosDatos}
-                onChange={handleMismosDatos}
-              />
-              Usar los mismos datos para el envío
-            </label>
+          <div className="account">
+            <input
+              type="checkbox"
+              id="mismosDatos"
+              checked={mismosDatos}
+              onChange={handleMismosDatos}
+            />
+            <label htmlFor="mismosDatos">Usar los mismos datos para el envío</label>
           </div>
 
           {/* ENVÍO */}
           {!mismosDatos && (
             <div className="envio-section">
+              <div className="line"></div>
               <h2>Información de envío</h2>
 
               <div className="row">
-                <div className="field">
+                <div className="field-container">
                   <input
                     name="nombreReceptor"
                     placeholder="Nombre del receptor *"
@@ -766,10 +770,10 @@ function Checkout() {
                   <ErrorCampo nombre="envio.nombreReceptor" />
                 </div>
 
-                <div className="field">
+                <div className="field-container">
                   <input
                     name="telefono"
-                    placeholder="Teléfono del receptor *"
+                    placeholder="Teléfono receptor *"
                     value={form.envio.telefono}
                     onChange={handleEnvioChange}
                     onBlur={() => validarCampo("envio.telefono")}
@@ -781,7 +785,7 @@ function Checkout() {
               </div>
 
               <div className="row">
-                <div className="field">
+                <div className="field-container">
                   <input
                     name="direccion"
                     placeholder="Dirección *"
@@ -794,7 +798,7 @@ function Checkout() {
                   <ErrorCampo nombre="envio.direccion" />
                 </div>
 
-                <div className="field">
+                <div className="field-container">
                   <input
                     name="numero"
                     placeholder="Número *"
@@ -809,7 +813,7 @@ function Checkout() {
               </div>
 
               <div className="row">
-                <div className="field">
+                <div className="field-container">
                   <input
                     name="departamento"
                     placeholder="Dpto / Block (opcional)"
@@ -822,7 +826,7 @@ function Checkout() {
                   <ErrorCampo nombre="envio.departamento" />
                 </div>
 
-                <div className="field">
+                <div className="field-container">
                   <select
                     name="region"
                     value={form.envio.region}
@@ -842,7 +846,7 @@ function Checkout() {
               </div>
 
               <div className="row">
-                <div className="field">
+                <div className="field-container">
                   <select
                     name="comuna"
                     value={form.envio.comuna}
@@ -852,7 +856,7 @@ function Checkout() {
                     disabled={!form.envio.region}
                   >
                     <option value="">
-                      {form.envio.region ? "Selecciona una comuna *" : "Selecciona región primero"}
+                      {form.envio.region ? "Selecciona comuna *" : "Selecciona región primero"}
                     </option>
                     {(COMUNAS_POR_REGION[form.envio.region] || []).map((com) => (
                       <option key={com} value={com}>
@@ -864,7 +868,7 @@ function Checkout() {
                 </div>
               </div>
 
-              <div className="field">
+              <div className="field-container">
                 <textarea
                   name="indicaciones"
                   placeholder="Indicaciones adicionales de entrega (opcional)"
@@ -878,14 +882,48 @@ function Checkout() {
               </div>
             </div>
           )}
+        </section>
+
+        {/* =================================================
+            COLUMNA DERECHA: RESUMEN DE COMPRA (order)
+        ================================================= */}
+        <section className="order">
+          <h2>Tu pedido</h2>
+
+          <div className="order-header">
+            <strong>Producto</strong>
+            <strong>Subtotal</strong>
+          </div>
+
+          <div className="line"></div>
+
+          {cart.map((item) => (
+            <div key={item.id || item._id} className="order-item">
+              <span>
+                {item.name} x {item.quantity}
+              </span>
+              <span>${(item.price * item.quantity).toLocaleString("es-CL")}</span>
+            </div>
+          ))}
+
+          <div className="line"></div>
+
+          <div className="total">
+            <span>Subtotal</span>
+            <span>${total.toLocaleString("es-CL")}</span>
+          </div>
+
+          <div className="total final">
+            <span>Total</span>
+            <span>${total.toLocaleString("es-CL")}</span>
+          </div>
 
           <button
             type="button"
-            className="checkout-submit-btn"
             onClick={finishOrder}
             disabled={enviando}
           >
-            {enviando ? "Procesando pago..." : "Pagar con Webpay"}
+            {enviando ? "Procesando..." : "Realizar el pedido"}
           </button>
         </section>
       </div>
