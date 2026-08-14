@@ -16,6 +16,7 @@ import Footer from "./components/organisms/Footer";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Checkout from "./pages/user/Checkout";
+import PaymentResult from "./pages/user/PaymentResult";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import Account from "./pages/user/Account";
@@ -107,6 +108,7 @@ return(
 <Route path="/carrito" element={<Cart/>}/>
 <Route path="/contacto" element={<ContactPage/>}/>
 <Route path="/checkout" element={<Checkout/>}/>
+<Route path="/pago-resultado" element={<PaymentResult/>}/>
 <Route path="/mi-cuenta" element={<AccountHome/>}/>
 <Route path="/mi-cuenta/perfil" element={<Account/>}/>
 <Route path="/mi-cuenta/compras" element={<MyOrders/>}/>

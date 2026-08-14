@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
-import { useNavigate } from "react-router-dom";
 import { createOrder } from "../../services/api";
+import { initWebpayTransaction, redirectToWebpay } from "../../services/webpayService";
 import "../../css/Checkout.css";
 
 function Checkout(){
 
-const {cart,total,clearCart}=useCart();
+const {cart,total}=useCart();
 const {user}=useUser();
-const navigate=useNavigate();
 
 const [form, setForm] = useState({
   nombre: "",
@@ -55,15 +54,19 @@ async function finishOrder(){
       })),
     };
 
-    await createOrder(orderData);
+    // 1) Creamos el pedido en estado "pendiente"
+    const pedido = await createOrder(orderData);
 
-    clearCart();
-    alert("Pedido realizado correctamente. Nos contactaremos contigo para coordinar el pago.");
-    navigate("/");
+    // 2) Iniciamos la transacción en Webpay para ese pedido
+    const { url, token } = await initWebpayTransaction(pedido._id);
+
+    // 3) Redirigimos al formulario de pago de Transbank.
+    // El carrito se limpia recién cuando Webpay confirme el pago (ver PaymentResult.jsx),
+    // así si el cliente cancela el pago no pierde su carrito.
+    redirectToWebpay(url, token);
 
   } catch (err) {
     setError(err.message || "Ocurrió un error al procesar tu pedido");
-  } finally {
     setEnviando(false);
   }
 }
