@@ -66,9 +66,14 @@ async function finishOrder(){
     redirectToWebpay(url, token);
 
   } catch (err) {
-    setError(err.message || "Ocurrió un error al procesar tu pedido");
-    setEnviando(false);
-  }
+  console.error("Error en checkout:", err);
+
+  setError(
+    err.message || "Ocurrió un error al procesar tu pedido"
+  );
+
+  setEnviando(false);
+}
 }
 
 return(
