@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/api";
@@ -11,133 +11,450 @@ import "../../css/Checkout.css";
 // =====================================================
 // REGIONES Y COMUNAS DE CHILE
 // =====================================================
-// Fuente: división político-administrativa vigente (16 regiones).
-// Se usa para poblar el <select> de Comuna dependiendo de la Región
-// elegida, evitando que se pueda enviar una comuna inventada.
 
 const COMUNAS_POR_REGION = {
   "Arica y Parinacota": [
-    "Arica", "Camarones", "Putre", "General Lagos",
+    "Arica",
+    "Camarones",
+    "Putre",
+    "General Lagos",
   ],
-  "Tarapacá": [
-    "Iquique", "Alto Hospicio", "Pozo Almonte", "Camiña",
-    "Colchane", "Huara", "Pica",
+
+  Tarapacá: [
+    "Iquique",
+    "Alto Hospicio",
+    "Pozo Almonte",
+    "Camiña",
+    "Colchane",
+    "Huara",
+    "Pica",
   ],
-  "Antofagasta": [
-    "Antofagasta", "Mejillones", "Sierra Gorda", "Taltal",
-    "Calama", "Ollagüe", "San Pedro de Atacama", "Tocopilla",
+
+  Antofagasta: [
+    "Antofagasta",
+    "Mejillones",
+    "Sierra Gorda",
+    "Taltal",
+    "Calama",
+    "Ollagüe",
+    "San Pedro de Atacama",
+    "Tocopilla",
     "María Elena",
   ],
-  "Atacama": [
-    "Copiapó", "Caldera", "Tierra Amarilla", "Chañaral",
-    "Diego de Almagro", "Vallenar", "Alto del Carmen",
-    "Freirina", "Huasco",
+
+  Atacama: [
+    "Copiapó",
+    "Caldera",
+    "Tierra Amarilla",
+    "Chañaral",
+    "Diego de Almagro",
+    "Vallenar",
+    "Alto del Carmen",
+    "Freirina",
+    "Huasco",
   ],
-  "Coquimbo": [
-    "La Serena", "Coquimbo", "Andacollo", "La Higuera",
-    "Paiguano", "Vicuña", "Illapel", "Canela", "Los Vilos",
-    "Salamanca", "Ovalle", "Combarbalá", "Monte Patria",
-    "Punitaqui", "Río Hurtado",
+
+  Coquimbo: [
+    "La Serena",
+    "Coquimbo",
+    "Andacollo",
+    "La Higuera",
+    "Paiguano",
+    "Vicuña",
+    "Illapel",
+    "Canela",
+    "Los Vilos",
+    "Salamanca",
+    "Ovalle",
+    "Combarbalá",
+    "Monte Patria",
+    "Punitaqui",
+    "Río Hurtado",
   ],
-  "Valparaíso": [
-    "Valparaíso", "Casablanca", "Concón", "Juan Fernández",
-    "Puchuncaví", "Quintero", "Viña del Mar", "Isla de Pascua",
-    "Los Andes", "Calle Larga", "Rinconada", "San Esteban",
-    "La Ligua", "Cabildo", "Papudo", "Petorca", "Zapallar",
-    "Quillota", "Calera", "Hijuelas", "La Cruz", "Nogales",
-    "San Antonio", "Algarrobo", "Cartagena", "El Quisco",
-    "El Tabo", "Santo Domingo", "San Felipe", "Catemu",
-    "Llaillay", "Panquehue", "Putaendo", "Santa María",
-    "Quilpué", "Limache", "Olmué", "Villa Alemana",
+
+  Valparaíso: [
+    "Valparaíso",
+    "Casablanca",
+    "Concón",
+    "Juan Fernández",
+    "Puchuncaví",
+    "Quintero",
+    "Viña del Mar",
+    "Isla de Pascua",
+    "Los Andes",
+    "Calle Larga",
+    "Rinconada",
+    "San Esteban",
+    "La Ligua",
+    "Cabildo",
+    "Papudo",
+    "Petorca",
+    "Zapallar",
+    "Quillota",
+    "Calera",
+    "Hijuelas",
+    "La Cruz",
+    "Nogales",
+    "San Antonio",
+    "Algarrobo",
+    "Cartagena",
+    "El Quisco",
+    "El Tabo",
+    "Santo Domingo",
+    "San Felipe",
+    "Catemu",
+    "Llaillay",
+    "Panquehue",
+    "Putaendo",
+    "Santa María",
+    "Quilpué",
+    "Limache",
+    "Olmué",
+    "Villa Alemana",
   ],
+
   "Metropolitana de Santiago": [
-    "Santiago", "Cerrillos", "Cerro Navia", "Conchalí",
-    "El Bosque", "Estación Central", "Huechuraba",
-    "Independencia", "La Cisterna", "La Florida", "La Granja",
-    "La Pintana", "La Reina", "Las Condes", "Lo Barnechea",
-    "Lo Espejo", "Lo Prado", "Macul", "Maipú", "Ñuñoa",
-    "Pedro Aguirre Cerda", "Peñalolén", "Providencia",
-    "Pudahuel", "Quilicura", "Quinta Normal", "Recoleta",
-    "Renca", "San Joaquín", "San Miguel", "San Ramón",
-    "Vitacura", "Puente Alto", "Pirque", "San José de Maipo",
-    "Colina", "Lampa", "Til Til", "San Bernardo", "Buin",
-    "Calera de Tango", "Paine", "Melipilla", "Alhué",
-    "Curacaví", "María Pinto", "San Pedro", "Talagante",
-    "El Monte", "Isla de Maipo", "Padre Hurtado", "Peñaflor",
+    "Santiago",
+    "Cerrillos",
+    "Cerro Navia",
+    "Conchalí",
+    "El Bosque",
+    "Estación Central",
+    "Huechuraba",
+    "Independencia",
+    "La Cisterna",
+    "La Florida",
+    "La Granja",
+    "La Pintana",
+    "La Reina",
+    "Las Condes",
+    "Lo Barnechea",
+    "Lo Espejo",
+    "Lo Prado",
+    "Macul",
+    "Maipú",
+    "Ñuñoa",
+    "Pedro Aguirre Cerda",
+    "Peñalolén",
+    "Providencia",
+    "Pudahuel",
+    "Quilicura",
+    "Quinta Normal",
+    "Recoleta",
+    "Renca",
+    "San Joaquín",
+    "San Miguel",
+    "San Ramón",
+    "Vitacura",
+    "Puente Alto",
+    "Pirque",
+    "San José de Maipo",
+    "Colina",
+    "Lampa",
+    "Til Til",
+    "San Bernardo",
+    "Buin",
+    "Calera de Tango",
+    "Paine",
+    "Melipilla",
+    "Alhué",
+    "Curacaví",
+    "María Pinto",
+    "San Pedro",
+    "Talagante",
+    "El Monte",
+    "Isla de Maipo",
+    "Padre Hurtado",
+    "Peñaflor",
   ],
+
   "O'Higgins": [
-    "Rancagua", "Codegua", "Coinco", "Coltauco", "Doñihue",
-    "Graneros", "Las Cabras", "Machalí", "Malloa", "Mostazal",
-    "Olivar", "Peumo", "Pichidegua", "Quinta de Tilcoco",
-    "Rengo", "Requínoa", "San Vicente", "Pichilemu",
-    "La Estrella", "Litueche", "Marchihue", "Navidad",
-    "Paredones", "San Fernando", "Chépica", "Chimbarongo",
-    "Lolol", "Nancagua", "Palmilla", "Peralillo", "Placilla",
-    "Pumanque", "Santa Cruz",
+    "Rancagua",
+    "Codegua",
+    "Coinco",
+    "Coltauco",
+    "Doñihue",
+    "Graneros",
+    "Las Cabras",
+    "Machalí",
+    "Malloa",
+    "Mostazal",
+    "Olivar",
+    "Peumo",
+    "Pichidegua",
+    "Quinta de Tilcoco",
+    "Rengo",
+    "Requínoa",
+    "San Vicente",
+    "Pichilemu",
+    "La Estrella",
+    "Litueche",
+    "Marchihue",
+    "Navidad",
+    "Paredones",
+    "San Fernando",
+    "Chépica",
+    "Chimbarongo",
+    "Lolol",
+    "Nancagua",
+    "Palmilla",
+    "Peralillo",
+    "Placilla",
+    "Pumanque",
+    "Santa Cruz",
   ],
-  "Maule": [
-    "Talca", "Constitución", "Curepto", "Empedrado", "Maule",
-    "Pelarco", "Pencahue", "Río Claro", "San Clemente",
-    "San Rafael", "Cauquenes", "Chanco", "Pelluhue", "Curicó",
-    "Hualañé", "Licantén", "Molina", "Rauco", "Romeral",
-    "Sagrada Familia", "Teno", "Vichuquén", "Linares", "Colbún",
-    "Longaví", "Parral", "Retiro", "San Javier", "Villa Alegre",
+
+  Maule: [
+    "Talca",
+    "Constitución",
+    "Curepto",
+    "Empedrado",
+    "Maule",
+    "Pelarco",
+    "Pencahue",
+    "Río Claro",
+    "San Clemente",
+    "San Rafael",
+    "Cauquenes",
+    "Chanco",
+    "Pelluhue",
+    "Curicó",
+    "Hualañé",
+    "Licantén",
+    "Molina",
+    "Rauco",
+    "Romeral",
+    "Sagrada Familia",
+    "Teno",
+    "Vichuquén",
+    "Linares",
+    "Colbún",
+    "Longaví",
+    "Parral",
+    "Retiro",
+    "San Javier",
+    "Villa Alegre",
     "Yerbas Buenas",
   ],
-  "Ñuble": [
-    "Chillán", "Bulnes", "Chillán Viejo", "El Carmen",
-    "Pemuco", "Pinto", "Quillón", "San Ignacio", "Yungay",
-    "Quirihue", "Cobquecura", "Coelemu", "Ninhue", "Portezuelo",
-    "Ránquil", "Treguaco", "San Carlos", "Coihueco", "Ñiquén",
-    "San Fabián", "San Nicolás",
+
+  Ñuble: [
+    "Chillán",
+    "Bulnes",
+    "Chillán Viejo",
+    "El Carmen",
+    "Pemuco",
+    "Pinto",
+    "Quillón",
+    "San Ignacio",
+    "Yungay",
+    "Quirihue",
+    "Cobquecura",
+    "Coelemu",
+    "Ninhue",
+    "Portezuelo",
+    "Ránquil",
+    "Treguaco",
+    "San Carlos",
+    "Coihueco",
+    "Ñiquén",
+    "San Fabián",
+    "San Nicolás",
   ],
-  "Biobío": [
-    "Concepción", "Coronel", "Chiguayante", "Florida",
-    "Hualqui", "Lota", "Penco", "San Pedro de la Paz",
-    "Santa Juana", "Talcahuano", "Tomé", "Hualpén", "Lebu",
-    "Arauco", "Cañete", "Contulmo", "Curanilahue", "Los Álamos",
-    "Tirúa", "Los Ángeles", "Antuco", "Cabrero", "Laja",
-    "Mulchén", "Nacimiento", "Negrete", "Quilaco", "Quilleco",
-    "San Rosendo", "Santa Bárbara", "Tucapel", "Yumbel",
+
+  Biobío: [
+    "Concepción",
+    "Coronel",
+    "Chiguayante",
+    "Florida",
+    "Hualqui",
+    "Lota",
+    "Penco",
+    "San Pedro de la Paz",
+    "Santa Juana",
+    "Talcahuano",
+    "Tomé",
+    "Hualpén",
+    "Lebu",
+    "Arauco",
+    "Cañete",
+    "Contulmo",
+    "Curanilahue",
+    "Los Álamos",
+    "Tirúa",
+    "Los Ángeles",
+    "Antuco",
+    "Cabrero",
+    "Laja",
+    "Mulchén",
+    "Nacimiento",
+    "Negrete",
+    "Quilaco",
+    "Quilleco",
+    "San Rosendo",
+    "Santa Bárbara",
+    "Tucapel",
+    "Yumbel",
     "Alto Biobío",
   ],
+
   "La Araucanía": [
-    "Temuco", "Carahue", "Cunco", "Curarrehue", "Freire",
-    "Galvarino", "Gorbea", "Lautaro", "Loncoche", "Melipeuco",
-    "Nueva Imperial", "Padre las Casas", "Perquenco",
-    "Pitrufquén", "Pucón", "Saavedra", "Teodoro Schmidt",
-    "Toltén", "Vilcún", "Villarrica", "Cholchol", "Angol",
-    "Collipulli", "Curacautín", "Ercilla", "Lonquimay",
-    "Los Sauces", "Lumaco", "Purén", "Renaico", "Traiguén",
+    "Temuco",
+    "Carahue",
+    "Cunco",
+    "Curarrehue",
+    "Freire",
+    "Galvarino",
+    "Gorbea",
+    "Lautaro",
+    "Loncoche",
+    "Melipeuco",
+    "Nueva Imperial",
+    "Padre las Casas",
+    "Perquenco",
+    "Pitrufquén",
+    "Pucón",
+    "Saavedra",
+    "Teodoro Schmidt",
+    "Toltén",
+    "Vilcún",
+    "Villarrica",
+    "Cholchol",
+    "Angol",
+    "Collipulli",
+    "Curacautín",
+    "Ercilla",
+    "Lonquimay",
+    "Los Sauces",
+    "Lumaco",
+    "Purén",
+    "Renaico",
+    "Traiguén",
     "Victoria",
   ],
+
   "Los Ríos": [
-    "Valdivia", "Corral", "Lanco", "Los Lagos", "Máfil",
-    "Mariquina", "Paillaco", "Panguipulli", "La Unión",
-    "Futrono", "Lago Ranco", "Río Bueno",
+    "Valdivia",
+    "Corral",
+    "Lanco",
+    "Los Lagos",
+    "Máfil",
+    "Mariquina",
+    "Paillaco",
+    "Panguipulli",
+    "La Unión",
+    "Futrono",
+    "Lago Ranco",
+    "Río Bueno",
   ],
+
   "Los Lagos": [
-    "Puerto Montt", "Calbuco", "Cochamó", "Fresia", "Frutillar",
-    "Los Muermos", "Llanquihue", "Maullín", "Puerto Varas",
-    "Castro", "Ancud", "Chonchi", "Curaco de Vélez", "Dalcahue",
-    "Puqueldón", "Queilén", "Quellón", "Quemchi", "Quinchao",
-    "Osorno", "Puerto Octay", "Purranque", "Puyehue",
-    "Río Negro", "San Juan de la Costa", "San Pablo", "Chaitén",
-    "Futaleufú", "Hualaihué", "Palena",
+    "Puerto Montt",
+    "Calbuco",
+    "Cochamó",
+    "Fresia",
+    "Frutillar",
+    "Los Muermos",
+    "Llanquihue",
+    "Maullín",
+    "Puerto Varas",
+    "Castro",
+    "Ancud",
+    "Chonchi",
+    "Curaco de Vélez",
+    "Dalcahue",
+    "Puqueldón",
+    "Queilén",
+    "Quellón",
+    "Quemchi",
+    "Quinchao",
+    "Osorno",
+    "Puerto Octay",
+    "Purranque",
+    "Puyehue",
+    "Río Negro",
+    "San Juan de la Costa",
+    "San Pablo",
+    "Chaitén",
+    "Futaleufú",
+    "Hualaihué",
+    "Palena",
   ],
-  "Aysén": [
-    "Coyhaique", "Lago Verde", "Aysén", "Cisnes", "Guaitecas",
-    "Cochrane", "O'Higgins", "Tortel", "Chile Chico",
+
+  Aysén: [
+    "Coyhaique",
+    "Lago Verde",
+    "Aysén",
+    "Cisnes",
+    "Guaitecas",
+    "Cochrane",
+    "O'Higgins",
+    "Tortel",
+    "Chile Chico",
     "Río Ibáñez",
   ],
+
   "Magallanes y de la Antártica Chilena": [
-    "Punta Arenas", "Laguna Blanca", "Río Verde",
-    "San Gregorio", "Cabo de Hornos", "Antártica", "Porvenir",
-    "Primavera", "Timaukel", "Natales", "Torres del Paine",
+    "Punta Arenas",
+    "Laguna Blanca",
+    "Río Verde",
+    "San Gregorio",
+    "Cabo de Hornos",
+    "Antártica",
+    "Porvenir",
+    "Primavera",
+    "Timaukel",
+    "Natales",
+    "Torres del Paine",
   ],
 };
 
 const REGIONES = Object.keys(COMUNAS_POR_REGION);
+
+// =====================================================
+// COMUNAS DE ENVÍO
+// =====================================================
+
+const COMUNAS_VERDES = [
+  "Quilicura",
+  "Huechuraba",
+  "Conchalí",
+  "Independencia",
+  "Renca",
+  "Cerro Navia",
+  "Quinta Normal",
+  "Pudahuel",
+  "Lo Prado",
+  "Santiago",
+  "Estación Central",
+  "Cerrillos",
+  "Maipú",
+  "Pedro Aguirre Cerda",
+  "San Miguel",
+  "Lo Espejo",
+  "La Cisterna",
+];
+
+const COMUNAS_AZULES = [
+  "Lo Barnechea",
+  "Vitacura",
+  "Las Condes",
+  "Recoleta",
+  "Providencia",
+  "La Reina",
+  "Ñuñoa",
+  "Macul",
+  "Peñalolén",
+  "San Joaquín",
+  "La Granja",
+  "San Ramón",
+  "El Bosque",
+  "La Pintana",
+  "La Florida",
+  "San Bernardo",
+  "Puente Alto",
+];
+
+const COSTO_LOGISTICA_360 = 3490;
 
 // =====================================================
 // FUNCIONES DE NORMALIZACIÓN
@@ -179,6 +496,7 @@ const validarRut = (rut) => {
   for (let i = cuerpo.length - 1; i >= 0; i--) {
     suma += Number(cuerpo[i]) * multiplicador;
     multiplicador++;
+
     if (multiplicador > 7) {
       multiplicador = 2;
     }
@@ -214,6 +532,7 @@ const formatearRut = (rut) => {
 
   for (let i = cuerpo.length - 1, contador = 0; i >= 0; i--, contador++) {
     cuerpoFormateado = cuerpo[i] + cuerpoFormateado;
+
     if (contador % 3 === 2 && i !== 0) {
       cuerpoFormateado = "." + cuerpoFormateado;
     }
@@ -253,22 +572,8 @@ const normalizarTelefono = (telefono) => {
   return limpio;
 };
 
-const formatearTelefono = (telefono) => {
-  const limpio = limpiarTelefono(telefono);
-
-  if (/^9\d{8}$/.test(limpio)) {
-    return `+56 ${limpio.slice(0, 1)} ${limpio.slice(1, 5)} ${limpio.slice(5)}`;
-  }
-
-  if (/^\+569\d{8}$/.test(limpio)) {
-    return `+56 ${limpio.slice(3, 4)} ${limpio.slice(4, 8)} ${limpio.slice(8)}`;
-  }
-
-  return telefono;
-};
-
 // =====================================================
-// VALIDACIONES DE TEXTO
+// VALIDACIONES
 // =====================================================
 
 const validarNombre = (valor, campo) => {
@@ -395,8 +700,6 @@ const validarRegion = (region) => {
   return "";
 };
 
-// validarComuna ahora exige la región para poder comprobar que la
-// comuna realmente pertenece a esa región (evita comunas inventadas).
 const validarComuna = (comuna, region) => {
   const texto = normalizarEspacios(comuna);
 
@@ -424,26 +727,24 @@ const validarComuna = (comuna, region) => {
 function Checkout() {
   const { cart, total: totalFromCart } = useCart();
 
-  // En este proyecto "total" viene del contexto como una función
-  // (total()), no como un número ya calculado. Se soporta también
-  // el caso en que en el futuro pase a ser un valor directo.
-  const total =
-    typeof totalFromCart === "function" ? totalFromCart() : totalFromCart;
+  const totalProductos =
+    typeof totalFromCart === "function"
+      ? totalFromCart()
+      : Number(totalFromCart) || 0;
+
   const { user } = useUser();
 
+  // ===================================================
+  // FORMULARIO
+  // ===================================================
+
   const [form, setForm] = useState({
-    // -----------------------------------------------
-    // CLIENTE
-    // -----------------------------------------------
     nombre: "",
     apellidos: "",
     rut: "",
     email: user?.email || "",
     telefono: "",
 
-    // -----------------------------------------------
-    // FACTURACIÓN
-    // -----------------------------------------------
     facturacion: {
       nombre: "",
       rut: "",
@@ -454,9 +755,6 @@ function Checkout() {
       comuna: "",
     },
 
-    // -----------------------------------------------
-    // ENVÍO
-    // -----------------------------------------------
     envio: {
       nombreReceptor: "",
       telefono: "",
@@ -470,12 +768,55 @@ function Checkout() {
   });
 
   const [mismosDatos, setMismosDatos] = useState(true);
+
+  // ===================================================
+  // ENVÍO
+  // ===================================================
+
+  const [metodoEnvio, setMetodoEnvio] = useState("");
+
+  const comunaEnvio = normalizarEspacios(
+    mismosDatos
+      ? form.facturacion.comuna
+      : form.envio.comuna
+  );
+
+  const zonaEnvio = useMemo(() => {
+    if (!comunaEnvio) {
+      return null;
+    }
+
+    if (COMUNAS_VERDES.includes(comunaEnvio)) {
+      return "verde";
+    }
+
+    if (COMUNAS_AZULES.includes(comunaEnvio)) {
+      return "azul";
+    }
+
+    return "fuera";
+  }, [comunaEnvio]);
+
+  const costoEnvio = useMemo(() => {
+    if (metodoEnvio === "logistica360") {
+      return COSTO_LOGISTICA_360;
+    }
+
+    return 0;
+  }, [metodoEnvio]);
+
+  const totalFinal = totalProductos + costoEnvio;
+
+  // ===================================================
+  // ESTADOS
+  // ===================================================
+
   const [errores, setErrores] = useState({});
   const [enviando, setEnviando] = useState(false);
   const [errorGeneral, setErrorGeneral] = useState("");
 
   // ===================================================
-  // SINCRONIZAR EMAIL DEL USUARIO
+  // EMAIL
   // ===================================================
 
   useEffect(() => {
@@ -488,7 +829,44 @@ function Checkout() {
   }, [user, form.email]);
 
   // ===================================================
-  // CAMBIO DE CAMPO PRINCIPAL
+  // REINICIAR MÉTODO DE ENVÍO
+  // ===================================================
+
+  useEffect(() => {
+    if (zonaEnvio === "verde") {
+      if (
+        metodoEnvio !== "logistica360" &&
+        metodoEnvio !== "bluexpress"
+      ) {
+        setMetodoEnvio("");
+      }
+    } else if (zonaEnvio === "azul") {
+      if (metodoEnvio !== "bluexpress") {
+        setMetodoEnvio("bluexpress");
+      }
+    } else {
+      setMetodoEnvio("");
+    }
+  }, [zonaEnvio, metodoEnvio]);
+
+  // ===================================================
+  // CAMBIO DE MÉTODO DE ENVÍO
+  // ===================================================
+
+  const handleMetodoEnvio = (metodo) => {
+    if (metodo === "logistica360" && zonaEnvio !== "verde") {
+      return;
+    }
+
+    if (metodo === "bluexpress" && !["verde", "azul"].includes(zonaEnvio)) {
+      return;
+    }
+
+    setMetodoEnvio(metodo);
+  };
+
+  // ===================================================
+  // CAMBIO CLIENTE
   // ===================================================
 
   const handleChange = (e) => {
@@ -497,7 +875,10 @@ function Checkout() {
     let nuevoValor = value;
 
     if (name === "nombre" || name === "apellidos") {
-      nuevoValor = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]/g, "");
+      nuevoValor = value.replace(
+        /[^A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]/g,
+        ""
+      );
     }
 
     if (name === "rut") {
@@ -529,7 +910,10 @@ function Checkout() {
     let nuevoValor = value;
 
     if (name === "nombre") {
-      nuevoValor = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]/g, "");
+      nuevoValor = value.replace(
+        /[^A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]/g,
+        ""
+      );
     }
 
     if (name === "rut") {
@@ -541,8 +925,6 @@ function Checkout() {
     }
 
     setForm((prev) => {
-      // Si cambia la región, la comuna anterior deja de ser válida
-      // y se resetea para forzar a elegir una comuna real de esa región.
       const nuevaFacturacion = {
         ...prev.facturacion,
         [name]: nuevoValor,
@@ -561,8 +943,20 @@ function Checkout() {
     setErrores((prev) => ({
       ...prev,
       [`facturacion.${name}`]: "",
-      ...(name === "region" ? { "facturacion.comuna": "" } : {}),
+      ...(name === "region"
+        ? { "facturacion.comuna": "" }
+        : {}),
     }));
+
+    // Si cambia la comuna de facturación y usa los mismos datos
+    // también cambia la zona de envío.
+    if (name === "comuna" && mismosDatos) {
+      setMetodoEnvio("");
+    }
+
+    if (name === "region" && mismosDatos) {
+      setMetodoEnvio("");
+    }
   };
 
   // ===================================================
@@ -575,7 +969,10 @@ function Checkout() {
     let nuevoValor = value;
 
     if (name === "nombreReceptor") {
-      nuevoValor = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]/g, "");
+      nuevoValor = value.replace(
+        /[^A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]/g,
+        ""
+      );
     }
 
     if (name === "telefono") {
@@ -605,8 +1002,14 @@ function Checkout() {
     setErrores((prev) => ({
       ...prev,
       [`envio.${name}`]: "",
-      ...(name === "region" ? { "envio.comuna": "" } : {}),
+      ...(name === "region"
+        ? { "envio.comuna": "" }
+        : {}),
     }));
+
+    if (name === "comuna" || name === "region") {
+      setMetodoEnvio("");
+    }
   };
 
   // ===================================================
@@ -616,62 +1019,111 @@ function Checkout() {
   const validarFormulario = () => {
     const nuevosErrores = {};
 
-    // =================================================
     // CLIENTE
-    // =================================================
 
-    const errorNombre = validarNombre(form.nombre, "El nombre");
-    if (errorNombre) nuevosErrores.nombre = errorNombre;
+    const errorNombre = validarNombre(
+      form.nombre,
+      "El nombre"
+    );
 
-    const errorApellidos = validarNombre(form.apellidos, "Los apellidos");
-    if (errorApellidos) nuevosErrores.apellidos = errorApellidos;
+    if (errorNombre) {
+      nuevosErrores.nombre = errorNombre;
+    }
+
+    const errorApellidos = validarNombre(
+      form.apellidos,
+      "Los apellidos"
+    );
+
+    if (errorApellidos) {
+      nuevosErrores.apellidos = errorApellidos;
+    }
 
     if (!validarRut(form.rut)) {
       nuevosErrores.rut = "El RUT no es válido";
     }
 
     const errorEmail = validarEmail(form.email);
-    if (errorEmail) nuevosErrores.email = errorEmail;
 
-    if (!validarTelefono(form.telefono)) {
-      nuevosErrores.telefono = "Ingresa un celular chileno válido";
+    if (errorEmail) {
+      nuevosErrores.email = errorEmail;
     }
 
-    // =================================================
+    if (!validarTelefono(form.telefono)) {
+      nuevosErrores.telefono =
+        "Ingresa un celular chileno válido";
+    }
+
     // FACTURACIÓN
-    // =================================================
 
     const f = form.facturacion;
 
-    const errorNombreFacturacion = validarNombre(f.nombre, "El nombre de facturación");
-    if (errorNombreFacturacion) nuevosErrores["facturacion.nombre"] = errorNombreFacturacion;
+    const errorNombreFacturacion = validarNombre(
+      f.nombre,
+      "El nombre de facturación"
+    );
 
-    if (!validarRut(f.rut)) {
-      nuevosErrores["facturacion.rut"] = "El RUT de facturación no es válido";
+    if (errorNombreFacturacion) {
+      nuevosErrores["facturacion.nombre"] =
+        errorNombreFacturacion;
     }
 
-    const errorDireccionFacturacion = validarDireccion(f.direccion);
-    if (errorDireccionFacturacion) nuevosErrores["facturacion.direccion"] = errorDireccionFacturacion;
+    if (!validarRut(f.rut)) {
+      nuevosErrores["facturacion.rut"] =
+        "El RUT de facturación no es válido";
+    }
 
-    const errorNumeroFacturacion = validarNumero(f.numero);
-    if (errorNumeroFacturacion) nuevosErrores["facturacion.numero"] = errorNumeroFacturacion;
+    const errorDireccionFacturacion = validarDireccion(
+      f.direccion
+    );
 
-    const errorDepartamentoFacturacion = validarDepartamento(f.departamento);
-    if (errorDepartamentoFacturacion) nuevosErrores["facturacion.departamento"] = errorDepartamentoFacturacion;
+    if (errorDireccionFacturacion) {
+      nuevosErrores["facturacion.direccion"] =
+        errorDireccionFacturacion;
+    }
 
-    const errorRegionFacturacion = validarRegion(f.region);
-    if (errorRegionFacturacion) nuevosErrores["facturacion.region"] = errorRegionFacturacion;
+    const errorNumeroFacturacion = validarNumero(
+      f.numero
+    );
 
-    const errorComunaFacturacion = validarComuna(f.comuna, f.region);
-    if (errorComunaFacturacion) nuevosErrores["facturacion.comuna"] = errorComunaFacturacion;
+    if (errorNumeroFacturacion) {
+      nuevosErrores["facturacion.numero"] =
+        errorNumeroFacturacion;
+    }
 
-    // =================================================
+    const errorDepartamentoFacturacion =
+      validarDepartamento(f.departamento);
+
+    if (errorDepartamentoFacturacion) {
+      nuevosErrores["facturacion.departamento"] =
+        errorDepartamentoFacturacion;
+    }
+
+    const errorRegionFacturacion = validarRegion(
+      f.region
+    );
+
+    if (errorRegionFacturacion) {
+      nuevosErrores["facturacion.region"] =
+        errorRegionFacturacion;
+    }
+
+    const errorComunaFacturacion = validarComuna(
+      f.comuna,
+      f.region
+    );
+
+    if (errorComunaFacturacion) {
+      nuevosErrores["facturacion.comuna"] =
+        errorComunaFacturacion;
+    }
+
     // ENVÍO
-    // =================================================
 
     const e = mismosDatos
       ? {
-          nombreReceptor: `${form.nombre} ${form.apellidos}`.trim(),
+          nombreReceptor:
+            `${form.nombre} ${form.apellidos}`.trim(),
           telefono: form.telefono,
           direccion: f.direccion,
           numero: f.numero,
@@ -682,30 +1134,96 @@ function Checkout() {
         }
       : form.envio;
 
-    const errorNombreReceptor = validarNombre(e.nombreReceptor, "El nombre del receptor");
-    if (errorNombreReceptor) nuevosErrores["envio.nombreReceptor"] = errorNombreReceptor;
+    const errorNombreReceptor = validarNombre(
+      e.nombreReceptor,
+      "El nombre del receptor"
+    );
 
-    if (!validarTelefono(e.telefono)) {
-      nuevosErrores["envio.telefono"] = "Ingresa un celular chileno válido";
+    if (errorNombreReceptor) {
+      nuevosErrores["envio.nombreReceptor"] =
+        errorNombreReceptor;
     }
 
-    const errorDireccionEnvio = validarDireccion(e.direccion);
-    if (errorDireccionEnvio) nuevosErrores["envio.direccion"] = errorDireccionEnvio;
+    if (!validarTelefono(e.telefono)) {
+      nuevosErrores["envio.telefono"] =
+        "Ingresa un celular chileno válido";
+    }
+
+    const errorDireccionEnvio = validarDireccion(
+      e.direccion
+    );
+
+    if (errorDireccionEnvio) {
+      nuevosErrores["envio.direccion"] =
+        errorDireccionEnvio;
+    }
 
     const errorNumeroEnvio = validarNumero(e.numero);
-    if (errorNumeroEnvio) nuevosErrores["envio.numero"] = errorNumeroEnvio;
 
-    const errorDepartamentoEnvio = validarDepartamento(e.departamento);
-    if (errorDepartamentoEnvio) nuevosErrores["envio.departamento"] = errorDepartamentoEnvio;
+    if (errorNumeroEnvio) {
+      nuevosErrores["envio.numero"] =
+        errorNumeroEnvio;
+    }
+
+    const errorDepartamentoEnvio =
+      validarDepartamento(e.departamento);
+
+    if (errorDepartamentoEnvio) {
+      nuevosErrores["envio.departamento"] =
+        errorDepartamentoEnvio;
+    }
 
     const errorRegionEnvio = validarRegion(e.region);
-    if (errorRegionEnvio) nuevosErrores["envio.region"] = errorRegionEnvio;
 
-    const errorComunaEnvio = validarComuna(e.comuna, e.region);
-    if (errorComunaEnvio) nuevosErrores["envio.comuna"] = errorComunaEnvio;
+    if (errorRegionEnvio) {
+      nuevosErrores["envio.region"] =
+        errorRegionEnvio;
+    }
 
-    const errorIndicaciones = validarIndicaciones(e.indicaciones);
-    if (errorIndicaciones) nuevosErrores["envio.indicaciones"] = errorIndicaciones;
+    const errorComunaEnvio = validarComuna(
+      e.comuna,
+      e.region
+    );
+
+    if (errorComunaEnvio) {
+      nuevosErrores["envio.comuna"] =
+        errorComunaEnvio;
+    }
+
+    const errorIndicaciones = validarIndicaciones(
+      e.indicaciones
+    );
+
+    if (errorIndicaciones) {
+      nuevosErrores["envio.indicaciones"] =
+        errorIndicaciones;
+    }
+
+    // VALIDACIÓN DEL MÉTODO DE ENVÍO
+
+    if (["verde", "azul"].includes(zonaEnvio)) {
+      if (!metodoEnvio) {
+        nuevosErrores.metodoEnvio =
+          "Selecciona un método de envío";
+      }
+    }
+
+    if (zonaEnvio === "verde") {
+      if (
+        metodoEnvio !== "logistica360" &&
+        metodoEnvio !== "bluexpress"
+      ) {
+        nuevosErrores.metodoEnvio =
+          "Selecciona un método de envío válido";
+      }
+    }
+
+    if (zonaEnvio === "azul") {
+      if (metodoEnvio !== "bluexpress") {
+        nuevosErrores.metodoEnvio =
+          "Para esta comuna el envío disponible es Bluexpress";
+      }
+    }
 
     setErrores(nuevosErrores);
 
@@ -724,20 +1242,21 @@ function Checkout() {
 
     let error = "";
 
-    // -----------------------------------------------
-    // CLIENTE
-    // -----------------------------------------------
-
     if (campo === "nombre") {
       error = validarNombre(form.nombre, "El nombre");
     }
 
     if (campo === "apellidos") {
-      error = validarNombre(form.apellidos, "Los apellidos");
+      error = validarNombre(
+        form.apellidos,
+        "Los apellidos"
+      );
     }
 
     if (campo === "rut") {
-      error = validarRut(form.rut) ? "" : "El RUT no es válido";
+      error = validarRut(form.rut)
+        ? ""
+        : "El RUT no es válido";
     }
 
     if (campo === "email") {
@@ -745,23 +1264,26 @@ function Checkout() {
     }
 
     if (campo === "telefono") {
-      error = validarTelefono(form.telefono) ? "" : "Ingresa un celular chileno válido";
+      error = validarTelefono(form.telefono)
+        ? ""
+        : "Ingresa un celular chileno válido";
     }
-
-    // -----------------------------------------------
-    // FACTURACIÓN
-    // -----------------------------------------------
 
     if (campo.startsWith("facturacion.")) {
       const nombreCampo = campo.split(".")[1];
       const valor = form.facturacion[nombreCampo];
 
       if (nombreCampo === "nombre") {
-        error = validarNombre(valor, "El nombre de facturación");
+        error = validarNombre(
+          valor,
+          "El nombre de facturación"
+        );
       }
 
       if (nombreCampo === "rut") {
-        error = validarRut(valor) ? "" : "El RUT de facturación no es válido";
+        error = validarRut(valor)
+          ? ""
+          : "El RUT de facturación no es válido";
       }
 
       if (nombreCampo === "direccion") {
@@ -781,24 +1303,28 @@ function Checkout() {
       }
 
       if (nombreCampo === "comuna") {
-        error = validarComuna(valor, form.facturacion.region);
+        error = validarComuna(
+          valor,
+          form.facturacion.region
+        );
       }
     }
-
-    // -----------------------------------------------
-    // ENVÍO
-    // -----------------------------------------------
 
     if (campo.startsWith("envio.")) {
       const nombreCampo = campo.split(".")[1];
       const valor = form.envio[nombreCampo];
 
       if (nombreCampo === "nombreReceptor") {
-        error = validarNombre(valor, "El nombre del receptor");
+        error = validarNombre(
+          valor,
+          "El nombre del receptor"
+        );
       }
 
       if (nombreCampo === "telefono") {
-        error = validarTelefono(valor) ? "" : "Ingresa un celular chileno válido";
+        error = validarTelefono(valor)
+          ? ""
+          : "Ingresa un celular chileno válido";
       }
 
       if (nombreCampo === "direccion") {
@@ -818,7 +1344,10 @@ function Checkout() {
       }
 
       if (nombreCampo === "comuna") {
-        error = validarComuna(valor, form.envio.region);
+        error = validarComuna(
+          valor,
+          form.envio.region
+        );
       }
 
       if (nombreCampo === "indicaciones") {
@@ -832,33 +1361,53 @@ function Checkout() {
   };
 
   // ===================================================
-  // USAR MISMOS DATOS PARA ENVÍO
+  // MISMO DATOS
   // ===================================================
 
   const handleMismosDatos = (e) => {
     const checked = e.target.checked;
+
     setMismosDatos(checked);
+
+    setMetodoEnvio("");
 
     if (checked) {
       setForm((prev) => ({
         ...prev,
+
         envio: {
-          nombreReceptor: `${prev.nombre} ${prev.apellidos}`.trim(),
+          nombreReceptor:
+            `${prev.nombre} ${prev.apellidos}`.trim(),
+
           telefono: prev.telefono,
-          direccion: prev.facturacion.direccion,
-          numero: prev.facturacion.numero,
-          departamento: prev.facturacion.departamento,
-          region: prev.facturacion.region,
-          comuna: prev.facturacion.comuna,
-          indicaciones: prev.envio.indicaciones,
+
+          direccion:
+            prev.facturacion.direccion,
+
+          numero:
+            prev.facturacion.numero,
+
+          departamento:
+            prev.facturacion.departamento,
+
+          region:
+            prev.facturacion.region,
+
+          comuna:
+            prev.facturacion.comuna,
+
+          indicaciones:
+            prev.envio.indicaciones,
         },
       }));
 
       setErrores((prev) => {
         const limpio = { ...prev };
+
         Object.keys(limpio)
           .filter((k) => k.startsWith("envio."))
           .forEach((k) => delete limpio[k]);
+
         return limpio;
       });
     }
@@ -879,10 +1428,14 @@ function Checkout() {
     const resultado = validarFormulario();
 
     if (!resultado.valido) {
-      setErrorGeneral("Revisa los campos marcados en rojo antes de continuar.");
+      setErrorGeneral(
+        "Revisa los campos marcados en rojo antes de continuar."
+      );
 
       setTimeout(() => {
-        const primerError = document.querySelector(".field-error");
+        const primerError =
+          document.querySelector(".field-error");
+
         if (primerError) {
           primerError.scrollIntoView({
             behavior: "smooth",
@@ -899,36 +1452,99 @@ function Checkout() {
     try {
       const datosEnvio = resultado.datosEnvio;
 
-      // =================================================
-      // DATOS QUE RECIBE EXACTAMENTE EL BACKEND
-      // =================================================
-
       const orderData = {
         cliente: {
-          nombre: `${normalizarEspacios(form.nombre)} ${normalizarEspacios(form.apellidos)}`.trim(),
-          email: limpiarTexto(form.email).toLowerCase(),
-          rut: limpiarRut(form.rut),
-          telefono: normalizarTelefono(form.telefono),
+          nombre:
+            `${normalizarEspacios(form.nombre)} ${normalizarEspacios(
+              form.apellidos
+            )}`.trim(),
+
+          email:
+            limpiarTexto(form.email).toLowerCase(),
+
+          rut:
+            limpiarRut(form.rut),
+
+          telefono:
+            normalizarTelefono(form.telefono),
 
           facturacion: {
-            nombre: normalizarEspacios(form.facturacion.nombre),
-            rut: limpiarRut(form.facturacion.rut),
-            direccion: normalizarEspacios(form.facturacion.direccion),
-            numero: limpiarTexto(form.facturacion.numero),
-            departamento: limpiarTexto(form.facturacion.departamento),
-            region: limpiarTexto(form.facturacion.region),
-            comuna: normalizarEspacios(form.facturacion.comuna),
+            nombre:
+              normalizarEspacios(
+                form.facturacion.nombre
+              ),
+
+            rut:
+              limpiarRut(
+                form.facturacion.rut
+              ),
+
+            direccion:
+              normalizarEspacios(
+                form.facturacion.direccion
+              ),
+
+            numero:
+              limpiarTexto(
+                form.facturacion.numero
+              ),
+
+            departamento:
+              limpiarTexto(
+                form.facturacion.departamento
+              ),
+
+            region:
+              limpiarTexto(
+                form.facturacion.region
+              ),
+
+            comuna:
+              normalizarEspacios(
+                form.facturacion.comuna
+              ),
           },
 
           envio: {
-            nombreReceptor: normalizarEspacios(datosEnvio.nombreReceptor),
-            telefono: normalizarTelefono(datosEnvio.telefono),
-            direccion: normalizarEspacios(datosEnvio.direccion),
-            numero: limpiarTexto(datosEnvio.numero),
-            departamento: limpiarTexto(datosEnvio.departamento),
-            region: limpiarTexto(datosEnvio.region),
-            comuna: normalizarEspacios(datosEnvio.comuna),
-            indicaciones: normalizarEspacios(datosEnvio.indicaciones),
+            nombreReceptor:
+              normalizarEspacios(
+                datosEnvio.nombreReceptor
+              ),
+
+            telefono:
+              normalizarTelefono(
+                datosEnvio.telefono
+              ),
+
+            direccion:
+              normalizarEspacios(
+                datosEnvio.direccion
+              ),
+
+            numero:
+              limpiarTexto(
+                datosEnvio.numero
+              ),
+
+            departamento:
+              limpiarTexto(
+                datosEnvio.departamento
+              ),
+
+            region:
+              limpiarTexto(
+                datosEnvio.region
+              ),
+
+            comuna:
+              normalizarEspacios(
+                datosEnvio.comuna
+              ),
+
+            indicaciones:
+              normalizarEspacios(
+                datosEnvio.indicaciones
+              ),
           },
         },
 
@@ -936,7 +1552,26 @@ function Checkout() {
           producto: item.id,
           cantidad: item.quantity,
         })),
+
+        // =================================================
+        // INFORMACIÓN DEL ENVÍO
+        // =================================================
+
+        metodoEnvio:
+          metodoEnvio === "logistica360"
+            ? "Logística 360"
+            : metodoEnvio === "bluexpress"
+            ? "Bluexpress"
+            : null,
+
+        costoEnvio,
+
+        totalProductos,
+
+        total: totalFinal,
       };
+
+      console.log("Pedido enviado:", orderData);
 
       // =================================================
       // CREAR PEDIDO
@@ -948,18 +1583,29 @@ function Checkout() {
       // WEBPAY
       // =================================================
 
-      const { url, token } = await initWebpayTransaction(pedido._id);
+      const { url, token } =
+        await initWebpayTransaction(
+          pedido._id
+        );
 
       redirectToWebpay(url, token);
     } catch (err) {
-      console.error("Error en checkout:", err);
-      setErrorGeneral(err.message || "Ocurrió un error al procesar tu pedido");
+      console.error(
+        "Error en checkout:",
+        err
+      );
+
+      setErrorGeneral(
+        err.message ||
+          "Ocurrió un error al procesar tu pedido"
+      );
+
       setEnviando(false);
     }
   };
 
   // ===================================================
-  // COMPONENTE ERROR
+  // ERROR CAMPO
   // ===================================================
 
   const ErrorCampo = ({ nombre }) => {
@@ -967,20 +1613,30 @@ function Checkout() {
       return null;
     }
 
-    return <small className="field-error">{errores[nombre]}</small>;
+    return (
+      <small className="field-error">
+        {errores[nombre]}
+      </small>
+    );
   };
 
   // ===================================================
-  // COMUNAS DISPONIBLES SEGÚN REGIÓN ELEGIDA
+  // COMUNAS
   // ===================================================
 
-  const comunasFacturacion = form.facturacion.region
-    ? COMUNAS_POR_REGION[form.facturacion.region] || []
-    : [];
+  const comunasFacturacion =
+    form.facturacion.region
+      ? COMUNAS_POR_REGION[
+          form.facturacion.region
+        ] || []
+      : [];
 
-  const comunasEnvio = form.envio.region
-    ? COMUNAS_POR_REGION[form.envio.region] || []
-    : [];
+  const comunasEnvio =
+    form.envio.region
+      ? COMUNAS_POR_REGION[
+          form.envio.region
+        ] || []
+      : [];
 
   // ===================================================
   // RENDER
@@ -988,86 +1644,149 @@ function Checkout() {
 
   return (
     <main className="checkout-page">
+
       <h1>Finalizar compra</h1>
 
-      {errorGeneral && <div className="checkout-error">{errorGeneral}</div>}
+      {errorGeneral && (
+        <div className="checkout-error">
+          {errorGeneral}
+        </div>
+      )}
 
       <div className="checkout-container">
+
         {/* =================================================
             FORMULARIO
         ================================================= */}
+
         <section className="billing">
-          {/* =================================================
-              CLIENTE
-          ================================================= */}
+
+          {/* CLIENTE */}
+
           <h2>Datos del cliente</h2>
 
           <div className="row">
+
             <div className="field-container">
-              <label htmlFor="nombre">Nombre *</label>
+
+              <label htmlFor="nombre">
+                Nombre *
+              </label>
+
               <input
                 id="nombre"
                 name="nombre"
                 placeholder="Nombre *"
                 value={form.nombre}
                 onChange={handleChange}
-                onBlur={() => validarCampo("nombre")}
-                className={errores.nombre ? "input-error" : ""}
+                onBlur={() =>
+                  validarCampo("nombre")
+                }
+                className={
+                  errores.nombre
+                    ? "input-error"
+                    : ""
+                }
                 maxLength={100}
               />
+
               <ErrorCampo nombre="nombre" />
+
             </div>
 
             <div className="field-container">
-              <label htmlFor="apellidos">Apellidos *</label>
+
+              <label htmlFor="apellidos">
+                Apellidos *
+              </label>
+
               <input
                 id="apellidos"
                 name="apellidos"
                 placeholder="Apellidos *"
                 value={form.apellidos}
                 onChange={handleChange}
-                onBlur={() => validarCampo("apellidos")}
-                className={errores.apellidos ? "input-error" : ""}
+                onBlur={() =>
+                  validarCampo("apellidos")
+                }
+                className={
+                  errores.apellidos
+                    ? "input-error"
+                    : ""
+                }
                 maxLength={100}
               />
+
               <ErrorCampo nombre="apellidos" />
+
             </div>
+
           </div>
 
           <div className="row">
+
             <div className="field-container">
-              <label htmlFor="rut">RUT *</label>
+
+              <label htmlFor="rut">
+                RUT *
+              </label>
+
               <input
                 id="rut"
                 name="rut"
                 placeholder="Ej: 12.345.678-5"
                 value={form.rut}
                 onChange={handleChange}
-                onBlur={() => validarCampo("rut")}
-                className={errores.rut ? "input-error" : ""}
+                onBlur={() =>
+                  validarCampo("rut")
+                }
+                className={
+                  errores.rut
+                    ? "input-error"
+                    : ""
+                }
                 maxLength={12}
               />
+
               <ErrorCampo nombre="rut" />
+
             </div>
 
             <div className="field-container">
-              <label htmlFor="telefono">Celular *</label>
+
+              <label htmlFor="telefono">
+                Celular *
+              </label>
+
               <input
                 id="telefono"
                 name="telefono"
                 placeholder="Ej: +56 9 1234 5678"
                 value={form.telefono}
                 onChange={handleChange}
-                onBlur={() => validarCampo("telefono")}
-                className={errores.telefono ? "input-error" : ""}
+                onBlur={() =>
+                  validarCampo("telefono")
+                }
+                className={
+                  errores.telefono
+                    ? "input-error"
+                    : ""
+                }
                 maxLength={16}
               />
+
               <ErrorCampo nombre="telefono" />
+
             </div>
+
           </div>
 
           <div className="field-container">
-            <label htmlFor="email">Correo electrónico *</label>
+
+            <label htmlFor="email">
+              Correo electrónico *
+            </label>
+
             <input
               id="email"
               name="email"
@@ -1075,343 +1794,929 @@ function Checkout() {
               placeholder="Correo electrónico *"
               value={form.email}
               onChange={handleChange}
-              onBlur={() => validarCampo("email")}
-              className={errores.email ? "input-error" : ""}
+              onBlur={() =>
+                validarCampo("email")
+              }
+              className={
+                errores.email
+                  ? "input-error"
+                  : ""
+              }
               maxLength={150}
             />
+
             <ErrorCampo nombre="email" />
+
           </div>
 
           {/* =================================================
               FACTURACIÓN
           ================================================= */}
-          <h2>Información de facturación</h2>
+
+          <h2>
+            Información de facturación
+          </h2>
 
           <div className="field-container">
-            <label htmlFor="fact-nombre">Nombre de facturación *</label>
+
+            <label htmlFor="fact-nombre">
+              Nombre de facturación *
+            </label>
+
             <input
               id="fact-nombre"
               name="nombre"
               placeholder="Nombre de facturación *"
-              value={form.facturacion.nombre}
-              onChange={handleFacturacionChange}
-              onBlur={() => validarCampo("facturacion.nombre")}
-              className={errores["facturacion.nombre"] ? "input-error" : ""}
+              value={
+                form.facturacion.nombre
+              }
+              onChange={
+                handleFacturacionChange
+              }
+              onBlur={() =>
+                validarCampo(
+                  "facturacion.nombre"
+                )
+              }
+              className={
+                errores[
+                  "facturacion.nombre"
+                ]
+                  ? "input-error"
+                  : ""
+              }
               maxLength={100}
             />
+
             <ErrorCampo nombre="facturacion.nombre" />
+
           </div>
 
           <div className="row">
+
             <div className="field-container">
-              <label htmlFor="fact-rut">RUT de facturación *</label>
+
+              <label htmlFor="fact-rut">
+                RUT de facturación *
+              </label>
+
               <input
                 id="fact-rut"
                 name="rut"
                 placeholder="RUT de facturación *"
-                value={form.facturacion.rut}
-                onChange={handleFacturacionChange}
-                onBlur={() => validarCampo("facturacion.rut")}
-                className={errores["facturacion.rut"] ? "input-error" : ""}
+                value={
+                  form.facturacion.rut
+                }
+                onChange={
+                  handleFacturacionChange
+                }
+                onBlur={() =>
+                  validarCampo(
+                    "facturacion.rut"
+                  )
+                }
+                className={
+                  errores[
+                    "facturacion.rut"
+                  ]
+                    ? "input-error"
+                    : ""
+                }
                 maxLength={12}
               />
+
               <ErrorCampo nombre="facturacion.rut" />
+
             </div>
 
             <div className="field-container">
-              <label htmlFor="fact-numero">Número *</label>
+
+              <label htmlFor="fact-numero">
+                Número *
+              </label>
+
               <input
                 id="fact-numero"
                 name="numero"
                 placeholder="Número *"
-                value={form.facturacion.numero}
-                onChange={handleFacturacionChange}
-                onBlur={() => validarCampo("facturacion.numero")}
-                className={errores["facturacion.numero"] ? "input-error" : ""}
+                value={
+                  form.facturacion.numero
+                }
+                onChange={
+                  handleFacturacionChange
+                }
+                onBlur={() =>
+                  validarCampo(
+                    "facturacion.numero"
+                  )
+                }
+                className={
+                  errores[
+                    "facturacion.numero"
+                  ]
+                    ? "input-error"
+                    : ""
+                }
                 maxLength={7}
               />
+
               <ErrorCampo nombre="facturacion.numero" />
+
             </div>
+
           </div>
 
           <div className="field-container">
-            <label htmlFor="fact-direccion">Dirección / calle *</label>
+
+            <label htmlFor="fact-direccion">
+              Dirección / calle *
+            </label>
+
             <input
               id="fact-direccion"
               name="direccion"
               placeholder="Dirección / calle *"
-              value={form.facturacion.direccion}
-              onChange={handleFacturacionChange}
-              onBlur={() => validarCampo("facturacion.direccion")}
-              className={errores["facturacion.direccion"] ? "input-error" : ""}
+              value={
+                form.facturacion.direccion
+              }
+              onChange={
+                handleFacturacionChange
+              }
+              onBlur={() =>
+                validarCampo(
+                  "facturacion.direccion"
+                )
+              }
+              className={
+                errores[
+                  "facturacion.direccion"
+                ]
+                  ? "input-error"
+                  : ""
+              }
               maxLength={150}
             />
+
             <ErrorCampo nombre="facturacion.direccion" />
+
           </div>
 
           <div className="field-container">
-            <label htmlFor="fact-depto">Departamento / oficina (opcional)</label>
+
+            <label htmlFor="fact-depto">
+              Departamento / oficina (opcional)
+            </label>
+
             <input
               id="fact-depto"
               name="departamento"
               placeholder="Depto / oficina (opcional)"
-              value={form.facturacion.departamento}
-              onChange={handleFacturacionChange}
-              onBlur={() => validarCampo("facturacion.departamento")}
-              className={errores["facturacion.departamento"] ? "input-error" : ""}
+              value={
+                form.facturacion
+                  .departamento
+              }
+              onChange={
+                handleFacturacionChange
+              }
+              onBlur={() =>
+                validarCampo(
+                  "facturacion.departamento"
+                )
+              }
+              className={
+                errores[
+                  "facturacion.departamento"
+                ]
+                  ? "input-error"
+                  : ""
+              }
               maxLength={20}
             />
+
             <ErrorCampo nombre="facturacion.departamento" />
+
           </div>
 
           <div className="row">
+
             <div className="field-container">
-              <label htmlFor="fact-region">Región *</label>
+
+              <label htmlFor="fact-region">
+                Región *
+              </label>
+
               <select
                 id="fact-region"
                 name="region"
-                value={form.facturacion.region}
-                onChange={handleFacturacionChange}
-                onBlur={() => validarCampo("facturacion.region")}
-                className={errores["facturacion.region"] ? "input-error" : ""}
+                value={
+                  form.facturacion.region
+                }
+                onChange={
+                  handleFacturacionChange
+                }
+                onBlur={() =>
+                  validarCampo(
+                    "facturacion.region"
+                  )
+                }
+                className={
+                  errores[
+                    "facturacion.region"
+                  ]
+                    ? "input-error"
+                    : ""
+                }
               >
-                <option value="">Selecciona una región</option>
-                {REGIONES.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
+
+                <option value="">
+                  Selecciona una región
+                </option>
+
+                {REGIONES.map(
+                  (region) => (
+                    <option
+                      key={region}
+                      value={region}
+                    >
+                      {region}
+                    </option>
+                  )
+                )}
+
               </select>
+
               <ErrorCampo nombre="facturacion.region" />
+
             </div>
 
             <div className="field-container">
-              <label htmlFor="fact-comuna">Comuna *</label>
+
+              <label htmlFor="fact-comuna">
+                Comuna *
+              </label>
+
               <select
                 id="fact-comuna"
                 name="comuna"
-                value={form.facturacion.comuna}
-                onChange={handleFacturacionChange}
-                onBlur={() => validarCampo("facturacion.comuna")}
-                disabled={!form.facturacion.region}
-                className={errores["facturacion.comuna"] ? "input-error" : ""}
+                value={
+                  form.facturacion.comuna
+                }
+                onChange={
+                  handleFacturacionChange
+                }
+                onBlur={() =>
+                  validarCampo(
+                    "facturacion.comuna"
+                  )
+                }
+                disabled={
+                  !form.facturacion.region
+                }
+                className={
+                  errores[
+                    "facturacion.comuna"
+                  ]
+                    ? "input-error"
+                    : ""
+                }
               >
+
                 <option value="">
                   {form.facturacion.region
                     ? "Selecciona una comuna"
                     : "Primero elige una región"}
                 </option>
-                {comunasFacturacion.map((comuna) => (
-                  <option key={comuna} value={comuna}>
-                    {comuna}
-                  </option>
-                ))}
+
+                {comunasFacturacion.map(
+                  (comuna) => (
+                    <option
+                      key={comuna}
+                      value={comuna}
+                    >
+                      {comuna}
+                    </option>
+                  )
+                )}
+
               </select>
+
               <ErrorCampo nombre="facturacion.comuna" />
+
             </div>
+
           </div>
 
           {/* =================================================
               ENVÍO
           ================================================= */}
+
           <h2>Datos de envío</h2>
 
           <label className="account">
+
             <input
               type="checkbox"
               checked={mismosDatos}
-              onChange={handleMismosDatos}
+              onChange={
+                handleMismosDatos
+              }
             />
+
             Enviar a la misma dirección de facturación
+
           </label>
 
           {!mismosDatos && (
             <>
+
               <div className="field-container">
-                <label htmlFor="env-nombreReceptor">Nombre de quien recibe *</label>
+
+                <label htmlFor="env-nombreReceptor">
+                  Nombre de quien recibe *
+                </label>
+
                 <input
                   id="env-nombreReceptor"
                   name="nombreReceptor"
                   placeholder="Nombre de quien recibe *"
-                  value={form.envio.nombreReceptor}
-                  onChange={handleEnvioChange}
-                  onBlur={() => validarCampo("envio.nombreReceptor")}
-                  className={errores["envio.nombreReceptor"] ? "input-error" : ""}
+                  value={
+                    form.envio
+                      .nombreReceptor
+                  }
+                  onChange={
+                    handleEnvioChange
+                  }
+                  onBlur={() =>
+                    validarCampo(
+                      "envio.nombreReceptor"
+                    )
+                  }
+                  className={
+                    errores[
+                      "envio.nombreReceptor"
+                    ]
+                      ? "input-error"
+                      : ""
+                  }
                   maxLength={100}
                 />
+
                 <ErrorCampo nombre="envio.nombreReceptor" />
+
               </div>
 
               <div className="field-container">
-                <label htmlFor="env-telefono">Celular de contacto *</label>
+
+                <label htmlFor="env-telefono">
+                  Celular de contacto *
+                </label>
+
                 <input
                   id="env-telefono"
                   name="telefono"
                   placeholder="Ej: +56 9 1234 5678"
-                  value={form.envio.telefono}
-                  onChange={handleEnvioChange}
-                  onBlur={() => validarCampo("envio.telefono")}
-                  className={errores["envio.telefono"] ? "input-error" : ""}
+                  value={
+                    form.envio.telefono
+                  }
+                  onChange={
+                    handleEnvioChange
+                  }
+                  onBlur={() =>
+                    validarCampo(
+                      "envio.telefono"
+                    )
+                  }
+                  className={
+                    errores[
+                      "envio.telefono"
+                    ]
+                      ? "input-error"
+                      : ""
+                  }
                   maxLength={16}
                 />
+
                 <ErrorCampo nombre="envio.telefono" />
+
               </div>
 
               <div className="field-container">
-                <label htmlFor="env-direccion">Dirección / calle *</label>
+
+                <label htmlFor="env-direccion">
+                  Dirección / calle *
+                </label>
+
                 <input
                   id="env-direccion"
                   name="direccion"
                   placeholder="Dirección / calle *"
-                  value={form.envio.direccion}
-                  onChange={handleEnvioChange}
-                  onBlur={() => validarCampo("envio.direccion")}
-                  className={errores["envio.direccion"] ? "input-error" : ""}
+                  value={
+                    form.envio.direccion
+                  }
+                  onChange={
+                    handleEnvioChange
+                  }
+                  onBlur={() =>
+                    validarCampo(
+                      "envio.direccion"
+                    )
+                  }
+                  className={
+                    errores[
+                      "envio.direccion"
+                    ]
+                      ? "input-error"
+                      : ""
+                  }
                   maxLength={150}
                 />
+
                 <ErrorCampo nombre="envio.direccion" />
+
               </div>
 
               <div className="row">
+
                 <div className="field-container">
-                  <label htmlFor="env-numero">Número *</label>
+
+                  <label htmlFor="env-numero">
+                    Número *
+                  </label>
+
                   <input
                     id="env-numero"
                     name="numero"
                     placeholder="Número *"
-                    value={form.envio.numero}
-                    onChange={handleEnvioChange}
-                    onBlur={() => validarCampo("envio.numero")}
-                    className={errores["envio.numero"] ? "input-error" : ""}
+                    value={
+                      form.envio.numero
+                    }
+                    onChange={
+                      handleEnvioChange
+                    }
+                    onBlur={() =>
+                      validarCampo(
+                        "envio.numero"
+                      )
+                    }
+                    className={
+                      errores[
+                        "envio.numero"
+                      ]
+                        ? "input-error"
+                        : ""
+                    }
                     maxLength={7}
                   />
+
                   <ErrorCampo nombre="envio.numero" />
+
                 </div>
 
                 <div className="field-container">
-                  <label htmlFor="env-depto">Departamento (opcional)</label>
+
+                  <label htmlFor="env-depto">
+                    Departamento (opcional)
+                  </label>
+
                   <input
                     id="env-depto"
                     name="departamento"
                     placeholder="Depto / oficina (opcional)"
-                    value={form.envio.departamento}
-                    onChange={handleEnvioChange}
-                    onBlur={() => validarCampo("envio.departamento")}
-                    className={errores["envio.departamento"] ? "input-error" : ""}
+                    value={
+                      form.envio
+                        .departamento
+                    }
+                    onChange={
+                      handleEnvioChange
+                    }
+                    onBlur={() =>
+                      validarCampo(
+                        "envio.departamento"
+                      )
+                    }
+                    className={
+                      errores[
+                        "envio.departamento"
+                      ]
+                        ? "input-error"
+                        : ""
+                    }
                     maxLength={20}
                   />
+
                   <ErrorCampo nombre="envio.departamento" />
+
                 </div>
+
               </div>
 
               <div className="row">
+
                 <div className="field-container">
-                  <label htmlFor="env-region">Región *</label>
+
+                  <label htmlFor="env-region">
+                    Región *
+                  </label>
+
                   <select
                     id="env-region"
                     name="region"
-                    value={form.envio.region}
-                    onChange={handleEnvioChange}
-                    onBlur={() => validarCampo("envio.region")}
-                    className={errores["envio.region"] ? "input-error" : ""}
+                    value={
+                      form.envio.region
+                    }
+                    onChange={
+                      handleEnvioChange
+                    }
+                    onBlur={() =>
+                      validarCampo(
+                        "envio.region"
+                      )
+                    }
+                    className={
+                      errores[
+                        "envio.region"
+                      ]
+                        ? "input-error"
+                        : ""
+                    }
                   >
-                    <option value="">Selecciona una región</option>
-                    {REGIONES.map((region) => (
-                      <option key={region} value={region}>
-                        {region}
-                      </option>
-                    ))}
+
+                    <option value="">
+                      Selecciona una región
+                    </option>
+
+                    {REGIONES.map(
+                      (region) => (
+                        <option
+                          key={region}
+                          value={region}
+                        >
+                          {region}
+                        </option>
+                      )
+                    )}
+
                   </select>
+
                   <ErrorCampo nombre="envio.region" />
+
                 </div>
 
                 <div className="field-container">
-                  <label htmlFor="env-comuna">Comuna *</label>
+
+                  <label htmlFor="env-comuna">
+                    Comuna *
+                  </label>
+
                   <select
                     id="env-comuna"
                     name="comuna"
-                    value={form.envio.comuna}
-                    onChange={handleEnvioChange}
-                    onBlur={() => validarCampo("envio.comuna")}
-                    disabled={!form.envio.region}
-                    className={errores["envio.comuna"] ? "input-error" : ""}
+                    value={
+                      form.envio.comuna
+                    }
+                    onChange={
+                      handleEnvioChange
+                    }
+                    onBlur={() =>
+                      validarCampo(
+                        "envio.comuna"
+                      )
+                    }
+                    disabled={
+                      !form.envio.region
+                    }
+                    className={
+                      errores[
+                        "envio.comuna"
+                      ]
+                        ? "input-error"
+                        : ""
+                    }
                   >
+
                     <option value="">
                       {form.envio.region
                         ? "Selecciona una comuna"
                         : "Primero elige una región"}
                     </option>
-                    {comunasEnvio.map((comuna) => (
-                      <option key={comuna} value={comuna}>
-                        {comuna}
-                      </option>
-                    ))}
+
+                    {comunasEnvio.map(
+                      (comuna) => (
+                        <option
+                          key={comuna}
+                          value={comuna}
+                        >
+                          {comuna}
+                        </option>
+                      )
+                    )}
+
                   </select>
+
                   <ErrorCampo nombre="envio.comuna" />
+
                 </div>
+
               </div>
+
             </>
           )}
 
           <div className="field-container">
-            <label htmlFor="env-indicaciones">Indicaciones para la entrega (opcional)</label>
+
+            <label htmlFor="env-indicaciones">
+              Indicaciones para la entrega (opcional)
+            </label>
+
             <textarea
               id="env-indicaciones"
               name="indicaciones"
               placeholder="Ej: Dejar en conserjería, tocar timbre 2 veces..."
-              value={form.envio.indicaciones}
-              onChange={handleEnvioChange}
-              onBlur={() => validarCampo("envio.indicaciones")}
-              className={errores["envio.indicaciones"] ? "input-error" : ""}
+              value={
+                form.envio.indicaciones
+              }
+              onChange={
+                handleEnvioChange
+              }
+              onBlur={() =>
+                validarCampo(
+                  "envio.indicaciones"
+                )
+              }
+              className={
+                errores[
+                  "envio.indicaciones"
+                ]
+                  ? "input-error"
+                  : ""
+              }
               maxLength={250}
               rows={3}
             />
+
             <ErrorCampo nombre="envio.indicaciones" />
+
           </div>
+
+          {/* =================================================
+              OPCIONES DE ENVÍO
+          ================================================= */}
+
+          {zonaEnvio && (
+            <div className="shipping-options">
+
+              <h2>Opciones de envío</h2>
+
+              {zonaEnvio === "verde" && (
+                <p>
+                  Tu comuna pertenece a las
+                  <strong> comunas verdes</strong>.
+                  Puedes elegir entre Logística 360
+                  o Bluexpress.
+                </p>
+              )}
+
+              {zonaEnvio === "azul" && (
+                <p>
+                  Tu comuna pertenece a las
+                  <strong> comunas azules</strong>.
+                  El envío disponible es Bluexpress
+                  por pagar.
+                </p>
+              )}
+
+              <div className="shipping-methods">
+
+                {/* LOGÍSTICA 360 */}
+
+                {zonaEnvio === "verde" && (
+                  <label
+                    className={`shipping-method ${
+                      metodoEnvio ===
+                      "logistica360"
+                        ? "selected"
+                        : ""
+                    }`}
+                  >
+
+                    <input
+                      type="radio"
+                      name="metodoEnvio"
+                      value="logistica360"
+                      checked={
+                        metodoEnvio ===
+                        "logistica360"
+                      }
+                      onChange={() =>
+                        handleMetodoEnvio(
+                          "logistica360"
+                        )
+                      }
+                    />
+
+                    <span>
+                      <strong>
+                        Logística 360
+                      </strong>
+
+                      <small>
+                        $3.490
+                      </small>
+                    </span>
+
+                  </label>
+                )}
+
+                {/* BLUEXPRESS */}
+
+                {(zonaEnvio === "verde" ||
+                  zonaEnvio === "azul") && (
+                  <label
+                    className={`shipping-method ${
+                      metodoEnvio ===
+                      "bluexpress"
+                        ? "selected"
+                        : ""
+                    }`}
+                  >
+
+                    <input
+                      type="radio"
+                      name="metodoEnvio"
+                      value="bluexpress"
+                      checked={
+                        metodoEnvio ===
+                        "bluexpress"
+                      }
+                      onChange={() =>
+                        handleMetodoEnvio(
+                          "bluexpress"
+                        )
+                      }
+                    />
+
+                    <span>
+
+                      <strong>
+                        Bluexpress
+                      </strong>
+
+                      <small>
+                        Por pagar
+                      </small>
+
+                    </span>
+
+                  </label>
+                )}
+
+              </div>
+
+              {errores.metodoEnvio && (
+                <small className="field-error">
+                  {errores.metodoEnvio}
+                </small>
+              )}
+
+            </div>
+          )}
+
         </section>
 
         {/* =================================================
-            RESUMEN DEL PEDIDO
+            RESUMEN
         ================================================= */}
+
         <aside className="order">
-          <h2>Resumen del pedido</h2>
+
+          <h2>
+            Resumen del pedido
+          </h2>
 
           <div className="order-header">
-            <span>Productos</span>
-            <span>{cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
+
+            <span>
+              Productos
+            </span>
+
+            <span>
+              {cart.reduce(
+                (acc, item) =>
+                  acc + item.quantity,
+                0
+              )}
+            </span>
+
           </div>
 
           {cart.length === 0 ? (
-            <p>Tu carrito está vacío</p>
+            <p>
+              Tu carrito está vacío
+            </p>
           ) : (
             cart.map((item) => (
-              <div key={item.id} className="order-item">
+              <div
+                key={item.id}
+                className="order-item"
+              >
+
                 <span>
-                  {item.name} x{item.quantity}
+                  {item.name} x
+                  {item.quantity}
                 </span>
+
                 <span>
-                  ${(item.price * item.quantity).toLocaleString("es-CL")}
+                  $
+                  {(
+                    item.price *
+                    item.quantity
+                  ).toLocaleString(
+                    "es-CL"
+                  )}
                 </span>
+
               </div>
             ))
           )}
 
           <div className="line"></div>
 
+          {/* SUBTOTAL */}
+
+          <div className="total">
+
+            <span>
+              Subtotal
+            </span>
+
+            <span>
+              $
+              {totalProductos.toLocaleString(
+                "es-CL"
+              )}
+            </span>
+
+          </div>
+
+          {/* ENVÍO */}
+
+          {metodoEnvio && (
+            <div className="total">
+
+              <span>
+                Envío
+              </span>
+
+              <span>
+
+                {metodoEnvio ===
+                "logistica360"
+                  ? `$${COSTO_LOGISTICA_360.toLocaleString(
+                      "es-CL"
+                    )}`
+                  : "Bluexpress por pagar"}
+
+              </span>
+
+            </div>
+          )}
+
+          <div className="line"></div>
+
+          {/* TOTAL FINAL */}
+
           <div className="total final">
-            <span>Total</span>
-            <span>${total.toLocaleString("es-CL")}</span>
+
+            <span>
+              Total
+            </span>
+
+            <span>
+              $
+              {totalFinal.toLocaleString(
+                "es-CL"
+              )}
+            </span>
+
           </div>
 
           <button
             type="button"
             onClick={finishOrder}
-            disabled={enviando || cart.length === 0}
+            disabled={
+              enviando ||
+              cart.length === 0
+            }
           >
-            {enviando ? "Procesando..." : "Pagar con Webpay"}
+            {enviando
+              ? "Procesando..."
+              : "Pagar con Webpay"}
           </button>
+
         </aside>
+
       </div>
+
     </main>
   );
 }
