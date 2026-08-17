@@ -195,22 +195,22 @@ function AdminDashboard() {
   // =========================
 
   function startEdit(p) {
-    setEditingId(p.id);
+  setEditingId(p.id);
 
-    setDraft({
-      nombre: p.name || "",
-      descripcion: p.description || "",
-      precio: p.price ?? "",
-      precioOferta: p.precioOferta ?? "",
-      enOferta: Boolean(p.enOferta),
-      destacado: Boolean(p.destacado),
-      categoria: p.category || "",
-      stock: p.stock ?? "",
-      imagenes: p.images || [],
-    });
+  setDraft({
+    nombre: p.name || "",
+    descripcion: p.description || p.descripcion || "",
+    precio: p.price ?? "",
+    precioOferta: p.precioOferta ?? "",
+    enOferta: Boolean(p.enOferta),
+    destacado: Boolean(p.destacado),
+    categoria: p.category || p.categoria || "",
+    stock: p.stock ?? "",
+    imagenes: p.images || p.imagenes || [],
+  });
 
-    setUrlImagenEdit("");
-  }
+  setUrlImagenEdit("");
+}
 
   function cancelEdit() {
     setEditingId(null);
