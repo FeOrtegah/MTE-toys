@@ -5,26 +5,49 @@ import { Link } from "react-router-dom";
 function ProductCard({ product }) {
   const { addToCart, cart } = useCart();
 
-  const price = product.price
-    ? product.price.toLocaleString("es-CL")
-    : "0";
+  const price =
+    product.price !== undefined &&
+    product.price !== null
+      ? Number(product.price).toLocaleString("es-CL")
+      : "0";
 
   const hasStock =
     product.stock !== undefined &&
     product.stock !== null &&
-    product.stock > 0;
+    Number(product.stock) > 0;
 
+  /*
+   * Buscamos solamente este producto.
+   *
+   * Los productos normales utilizan:
+   * type: "producto"
+   *
+   * Esto evita confundirlo con un combo que eventualmente
+   * pueda tener el mismo ID.
+   */
   const itemInCart = cart.find(
-    (item) => item.id === product.id
+    (item) =>
+      item.id === product.id &&
+      (item.type === "producto" ||
+        !item.type)
   );
 
   const quantityInCart = itemInCart
-    ? itemInCart.quantity
+    ? Number(itemInCart.quantity) || 0
     : 0;
+
+  const stock = Number(product.stock) || 0;
+
+  /*
+   * Cuánto stock queda realmente disponible
+   * considerando lo que ya está en el carrito.
+   */
+  const remainingStock =
+    Math.max(0, stock - quantityInCart);
 
   const maxStockReached =
     hasStock &&
-    quantityInCart >= product.stock;
+    remainingStock <= 0;
 
   const canAdd =
     hasStock &&
@@ -42,10 +65,11 @@ function ProductCard({ product }) {
       <button
         type="button"
         className="favorite"
+        aria-label={`Agregar ${product.name} a favoritos`}
       >
         <img
           src="/detalles/corazon.png"
-          alt="Favorito"
+          alt=""
         />
       </button>
 
@@ -56,7 +80,7 @@ function ProductCard({ product }) {
         <img
           src={product.image}
           alt={product.name}
-        />
+      />
       </Link>
 
       <h3>
@@ -67,11 +91,16 @@ function ProductCard({ product }) {
         ⭐⭐⭐⭐⭐
       </div>
 
-      {product.oldPrice && (
-        <p className="old-price">
-          ${product.oldPrice.toLocaleString("es-CL")}
-        </p>
-      )}
+      {product.oldPrice !== undefined &&
+        product.oldPrice !== null &&
+        Number(product.oldPrice) > 0 && (
+          <p className="old-price">
+            $
+            {Number(product.oldPrice).toLocaleString(
+              "es-CL"
+            )}
+          </p>
+        )}
 
       <p className="price">
         ${price}
@@ -86,14 +115,28 @@ function ProductCard({ product }) {
           }}
         >
           {maxStockReached
-            ? `Máximo disponible: ${product.stock}`
-            : `Stock: ${product.stock}`}
+            ? `Máximo disponible: ${stock}`
+            : `Stock disponible: ${remainingStock}`}
+        </p>
+      )}
+
+      {!hasStock && (
+        <p
+          style={{
+            fontSize: "13px",
+            color: "#666",
+            margin: "5px 0",
+          }}
+        >
+          Sin unidades disponibles
         </p>
       )}
 
       <button
         type="button"
-        className={`add ${!canAdd ? "disabled-btn" : ""}`}
+        className={`add ${
+          !canAdd ? "disabled-btn" : ""
+        }`}
         onClick={() => {
           if (canAdd) {
             addToCart(product);

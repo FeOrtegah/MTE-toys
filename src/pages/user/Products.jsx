@@ -7,10 +7,20 @@ import "../../css/Products.css";
 
 function capitalizar(texto) {
   if (!texto) return "";
+
   return texto
     .split(" ")
-    .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+    .map(
+      (palabra) =>
+        palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase()
+    )
     .join(" ");
+}
+
+function normalizarTexto(texto) {
+  return String(texto || "")
+    .trim()
+    .toLowerCase();
 }
 
 function Products() {
@@ -19,61 +29,126 @@ function Products() {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const getMinFromUrl = () => searchParams.get("min") || searchParams.get("minPrice") || "";
-  const getMaxFromUrl = () => searchParams.get("max") || searchParams.get("maxPrice") || "";
-  const getCatFromUrl = () => searchParams.get("categoria") || searchParams.get("category") || "Todos";
+  const getMinFromUrl = () =>
+    searchParams.get("min") ||
+    searchParams.get("minPrice") ||
+    "";
+
+  const getMaxFromUrl = () =>
+    searchParams.get("max") ||
+    searchParams.get("maxPrice") ||
+    "";
+
+  const getCatFromUrl = () =>
+    searchParams.get("categoria") ||
+    searchParams.get("category") ||
+    "Todos";
 
   const [category, setCategory] = useState(getCatFromUrl());
   const [minPrice, setMinPrice] = useState(getMinFromUrl());
   const [maxPrice, setMaxPrice] = useState(getMaxFromUrl());
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
+  /*
+   * Cargar productos
+   */
   useEffect(() => {
+    setLoading(true);
+
     getProducts()
-      .then(setProducts)
-      .catch((err) => console.error("Error al cargar productos:", err))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        console.error("Error al cargar productos:", err);
+        setProducts([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
+  /*
+   * Mantener los filtros sincronizados con la URL
+   */
   useEffect(() => {
     setCategory(getCatFromUrl());
     setMinPrice(getMinFromUrl());
     setMaxPrice(getMaxFromUrl());
   }, [searchParams]);
 
+  /*
+   * Obtener categorías únicas desde los productos
+   */
   const categories = useMemo(() => {
-    const unicas = [...new Set(products.map((p) => p.category).filter(Boolean))];
+    const unicas = [
+      ...new Set(
+        products
+          .map((product) => product.category)
+          .filter(Boolean)
+          .map((cat) => String(cat).trim())
+      ),
+    ];
+
     return ["Todos", ...unicas];
   }, [products]);
 
+  /*
+   * Actualizar parámetros de la URL
+   */
   function actualizarURL(nuevaCat, nuevoMin, nuevoMax) {
     const params = new URLSearchParams();
 
-    if (nuevaCat && nuevaCat !== "Todos") params.set("categoria", nuevaCat);
-    if (nuevoMin !== "" && nuevoMin !== null) params.set("min", nuevoMin);
-    if (nuevoMax !== "" && nuevoMax !== null) params.set("max", nuevoMax);
+    if (nuevaCat && normalizarTexto(nuevaCat) !== "todos") {
+      params.set("categoria", normalizarTexto(nuevaCat));
+    }
+
+    if (nuevoMin !== "" && nuevoMin !== null) {
+      params.set("min", nuevoMin);
+    }
+
+    if (nuevoMax !== "" && nuevoMax !== null) {
+      params.set("max", nuevoMax);
+    }
 
     setSearchParams(params, { replace: true });
   }
 
+  /*
+   * Seleccionar categoría
+   */
   function handleCategoryClick(cat) {
     setCategory(cat);
     actualizarURL(cat, minPrice, maxPrice);
+
+    // En móvil, cerrar el panel después de seleccionar
+    setFiltersOpen(false);
   }
 
+  /*
+   * Precio mínimo
+   */
   function handleMinChange(e) {
     const val = e.target.value;
+
     setMinPrice(val);
     actualizarURL(category, val, maxPrice);
   }
 
+  /*
+   * Precio máximo
+   */
   function handleMaxChange(e) {
     const val = e.target.value;
+
     setMaxPrice(val);
     actualizarURL(category, minPrice, val);
   }
 
+  /*
+   * Limpiar todos los filtros
+   */
   function limpiarFiltros() {
     setCategory("Todos");
     setMinPrice("");
@@ -81,25 +156,75 @@ function Products() {
     setSearchParams({});
   }
 
+  /*
+   * Filtrar productos
+   */
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name
-      ? product.name.toLowerCase().includes((search || "").toLowerCase())
-      : true;
+    /*
+     * Búsqueda por nombre
+     */
+    const productName = normalizarTexto(product.name);
+    const searchText = normalizarTexto(search);
 
-    const matchesCategory = category === "Todos" || product.category === category;
+    const matchesSearch =
+      !searchText || productName.includes(searchText);
 
+    /*
+     * Categoría
+     *
+     * Se normalizan ambos valores para que:
+     *
+     * Marvel
+     * marvel
+     * MARVEL
+     *
+     * sean considerados iguales.
+     */
+    const productCategory = normalizarTexto(product.category);
+    const selectedCategory = normalizarTexto(category);
+
+    const matchesCategory =
+      !selectedCategory ||
+      selectedCategory === "todos" ||
+      productCategory === selectedCategory;
+
+    /*
+     * Precio
+     */
     const numPrice = Number(product.price);
-    const numMin = minPrice !== "" ? Number(minPrice) : null;
-    const numMax = maxPrice !== "" ? Number(maxPrice) : null;
 
-    const matchesMin = numMin === null || (!isNaN(numPrice) && numPrice >= numMin);
-    const matchesMax = numMax === null || (!isNaN(numPrice) && numPrice <= numMax);
+    const numMin =
+      minPrice !== ""
+        ? Number(minPrice)
+        : null;
 
-    return matchesSearch && matchesCategory && matchesMin && matchesMax;
+    const numMax =
+      maxPrice !== ""
+        ? Number(maxPrice)
+        : null;
+
+    const matchesMin =
+      numMin === null ||
+      (!Number.isNaN(numPrice) && numPrice >= numMin);
+
+    const matchesMax =
+      numMax === null ||
+      (!Number.isNaN(numPrice) && numPrice <= numMax);
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesMin &&
+      matchesMax
+    );
   });
 
   if (loading) {
-    return <p>Cargando productos...</p>;
+    return (
+      <p className="detail-status">
+        Cargando productos...
+      </p>
+    );
   }
 
   return (
@@ -107,36 +232,70 @@ function Products() {
       <h1>Juguetes</h1>
 
       <button
-        className={`filter-toggle ${filtersOpen ? "open" : ""}`}
-        onClick={() => setFiltersOpen((prev) => !prev)}
+        className={`filter-toggle ${
+          filtersOpen ? "open" : ""
+        }`}
+        onClick={() =>
+          setFiltersOpen((prev) => !prev)
+        }
       >
-        {filtersOpen ? "✕ Cerrar filtros" : "☰ Filtros"}
+        {filtersOpen
+          ? "✕ Cerrar filtros"
+          : "☰ Filtros"}
       </button>
 
       {filtersOpen && (
-        <div className="filter-backdrop" onClick={() => setFiltersOpen(false)} />
+        <div
+          className="filter-backdrop"
+          onClick={() => setFiltersOpen(false)}
+        />
       )}
 
       <div className="products-layout">
-        <aside className={`products-filters ${filtersOpen ? "open" : ""}`}>
+        <aside
+          className={`products-filters ${
+            filtersOpen ? "open" : ""
+          }`}
+        >
           <div className="filter-panel-header">
             <span className="filter-handle"></span>
+
             <div className="filter-panel-title">
               <h2>Filtros</h2>
-              <button className="filter-close" onClick={() => setFiltersOpen(false)}>✕</button>
+
+              <button
+                type="button"
+                className="filter-close"
+                onClick={() =>
+                  setFiltersOpen(false)
+                }
+              >
+                ✕
+              </button>
             </div>
           </div>
 
           <div className="filter-block">
             <h3>Categoría</h3>
+
             <ul className="filter-category-list">
               {categories.map((cat) => (
                 <li key={cat}>
                   <button
-                    className={category === cat ? "active" : ""}
-                    onClick={() => handleCategoryClick(cat)}
+                    type="button"
+                    className={
+                      normalizarTexto(category) ===
+                        normalizarTexto(cat)
+                        ? "active"
+                        : ""
+                    }
+                    onClick={() =>
+                      handleCategoryClick(cat)
+                    }
                   >
-                    {cat === "Todos" ? "Todos" : capitalizar(cat)}
+                    {cat === "Todos"
+                      ? "Todos"
+                      : capitalizar(cat)}
                   </button>
                 </li>
               ))}
@@ -145,6 +304,7 @@ function Products() {
 
           <div className="filter-block">
             <h3>Precio</h3>
+
             <div className="filter-price-inputs">
               <input
                 type="number"
@@ -153,7 +313,9 @@ function Products() {
                 onChange={handleMinChange}
                 min="0"
               />
+
               <span>—</span>
+
               <input
                 type="number"
                 placeholder="Máx"
@@ -164,7 +326,11 @@ function Products() {
             </div>
           </div>
 
-          <button className="filter-clear" onClick={limpiarFiltros}>
+          <button
+            type="button"
+            className="filter-clear"
+            onClick={limpiarFiltros}
+          >
             Limpiar filtros
           </button>
         </aside>
@@ -172,10 +338,16 @@ function Products() {
         <section className="products-grid">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
             ))
           ) : (
-            <p className="no-products">No hay productos que coincidan con los filtros.</p>
+            <p className="no-products">
+              No hay productos que coincidan con
+              los filtros.
+            </p>
           )}
         </section>
       </div>

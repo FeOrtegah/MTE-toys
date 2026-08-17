@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 function Cart() {
   const {
     cart,
-    increase,
-    decrease,
+    increaseQuantity,
+    decreaseQuantity,
     removeFromCart,
     total,
   } = useCart();
@@ -70,7 +70,7 @@ function Cart() {
                         <button
                           type="button"
                           onClick={() =>
-                            decrease(item.id)
+                            decreaseQuantity(item.id)
                           }
                           disabled={item.quantity <= 1}
                         >
@@ -84,7 +84,7 @@ function Cart() {
                         <button
                           type="button"
                           onClick={() =>
-                            increase(item.id)
+                            increaseQuantity(item.id)
                           }
                           disabled={maxStockReached}
                           title={
