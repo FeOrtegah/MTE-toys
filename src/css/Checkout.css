@@ -1,49 +1,200 @@
-.checkout-page{
-padding:40px;
+/* =====================================================
+   BASE
+===================================================== */
+
+:root {
+  --brand: #43b96d;
+  --brand-dark: #2f9c56;
+  --brand-soft: #f3fff7;
+  --brand-border: #cdeedb;
+  --accent: #ffc400;
+  --ink: #1f2430;
+  --ink-soft: #555b66;
+  --ink-faint: #9aa0ab;
+  --line: #eef0f3;
+  --danger: #e74c3c;
 }
 
-.checkout-container{
-display:grid;
-grid-template-columns:2fr 1fr;
-gap:30px;
-max-width:1200px;
-margin:auto;
+.checkout-page {
+  padding: 40px 24px 90px;
+  background: linear-gradient(180deg, #f3f6f4 0%, #f6f7f9 220px);
+  min-height: 100vh;
 }
+
+.checkout-page h1 {
+  max-width: 1200px;
+  margin: 0 auto 6px;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.checkout-page h1::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+}
+
+.checkout-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+  max-width: 1200px;
+  margin: 32px auto 0;
+  align-items: start;
+}
+
+/* =====================================================
+   TARJETAS
+===================================================== */
 
 .billing,
-.order{
-background:white;
-padding:30px;
-border-radius:15px;
-box-shadow:0 5px 15px #ddd;
+.order {
+  background: #ffffff;
+  padding: 32px 32px 36px;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(20, 20, 40, 0.07);
+  border: 1px solid var(--line);
+}
+
+.order {
+  position: sticky;
+  top: 24px;
+  border-top: 4px solid var(--brand);
+  border-radius: 20px;
+}
+
+.billing {
+  counter-reset: checkout-step;
+}
+
+.billing h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 22px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.billing > h2 {
+  counter-increment: checkout-step;
+}
+
+.billing > h2::before {
+  content: counter(checkout-step);
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  border: 1.5px solid var(--brand-border);
+  font-size: 13px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.billing > h2:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.order h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 18px;
+}
+
+/* =====================================================
+   CAMPOS
+===================================================== */
+
+.billing label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  display: inline-block;
 }
 
 .billing input,
-.billing textarea{
-width:100%;
-padding:12px;
-margin-bottom:15px;
-border:1px solid #ddd;
-border-radius:8px;
+.billing select,
+.billing textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 4px;
+  border: 1.5px solid #e3e5ea;
+  border-radius: 10px;
+  background: #fbfbfc;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
-.billing textarea{
-height:120px;
-resize:none;
+.billing input::placeholder,
+.billing textarea::placeholder {
+  color: var(--ink-faint);
 }
 
-.row{
-display:flex;
-gap:15px;
+.billing input:hover,
+.billing select:hover,
+.billing textarea:hover {
+  border-color: #cfd3da;
 }
 
-/* Ajustes para selects y estructura de errores
-   (sacado del media query donde estaba antes: debe aplicar siempre) */
+.billing input:focus,
+.billing select:focus,
+.billing textarea:focus {
+  border-color: var(--brand);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(67, 185, 109, 0.12);
+}
+
+.billing textarea {
+  height: 110px;
+  resize: none;
+  line-height: 1.5;
+}
+
+.billing select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555b66' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.billing select:disabled {
+  background-color: #f1f2f4;
+  color: #a5aab3;
+  cursor: not-allowed;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
 .field-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .field-container input,
@@ -53,29 +204,19 @@ gap:15px;
   margin-bottom: 4px;
 }
 
-.billing select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: white;
-  font-size: 14px;
-  outline: none;
-}
-
-.billing select:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-
 .input-error {
-  border-color: #e74c3c !important;
-  background-color: #fff6f6;
+  border-color: var(--danger) !important;
+  background-color: #fff6f6 !important;
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.12) !important;
 }
 
 .field-error {
-  color: #e74c3c;
+  color: var(--danger);
   font-size: 12px;
+  font-weight: 500;
   margin-top: 2px;
   margin-bottom: 8px;
   display: block;
@@ -84,170 +225,246 @@ gap:15px;
 .checkout-error {
   max-width: 1200px;
   margin: 0 auto 20px auto;
-  padding: 15px;
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-.account{
-display:flex;
-align-items:center;
-gap:8px;
-margin:15px 0;
-}
-
-
-.order-header,
-.order-item,
-.total{
-display:flex;
-justify-content:space-between;
-gap:15px;
-margin-bottom:15px;
-}
-
-
-.line{
-height:1px;
-background:#ddd;
-margin:20px 0;
-}
-
-
-.final{
-font-size:22px;
-font-weight:bold;
-}
-
-
-.order button{
-width:100%;
-padding:15px;
-margin-top:25px;
-border:none;
-border-radius:25px;
-background:#43b96d;
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:.3s;
-}
-
-.order button:disabled{
-background:#c7c7c7;
-cursor:not-allowed;
-transform:none;
-}
-/* =====================================================
-   ENVÍOS
-===================================================== */
-
-.shipping-summary {
-  margin-top: 10px;
-}
-
-.shipping-summary-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-.shipping-location {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
+  padding: 16px 18px;
+  background-color: #fdecea;
+  color: #a12b20;
+  border: 1px solid #f6c6bf;
+  border-radius: 12px;
+  font-weight: 600;
   font-size: 14px;
 }
 
-.shipping-location strong {
-  font-weight: 600;
+/* =====================================================
+   "MISMOS DATOS" CHECKBOX
+===================================================== */
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 22px;
+  padding: 13px 16px;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: #2c3138;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
 }
 
+.account:hover {
+  box-shadow: 0 0 0 3px rgba(67, 185, 109, 0.08);
+}
+
+.account input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+/* =====================================================
+   OPCIONES DE ENVÍO
+===================================================== */
+
 .shipping-options {
+  margin-top: 4px;
+}
+
+.shipping-options h2 {
+  padding-top: 0;
+  border-top: none;
+}
+
+.shipping-options > p {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: -6px 0 14px;
+  line-height: 1.5;
+}
+
+.shipping-methods {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
 }
 
-.shipping-option {
+.shipping-method {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1.5px solid #e3e5ea;
+  border-radius: 14px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
-.shipping-option:hover {
-  border-color: #43b96d;
+.shipping-method:hover {
+  border-color: var(--brand);
+  transform: translateY(-1px);
 }
 
-.shipping-option.selected {
-  border-color: #43b96d;
-  background: #f3fff7;
+.shipping-method.selected {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  box-shadow: 0 0 0 3px rgba(67, 185, 109, 0.12);
 }
 
-.shipping-option input {
-  width: auto;
+.shipping-method.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shipping-method input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
   margin: 0;
+  flex-shrink: 0;
 }
 
-.shipping-option-content {
+.shipping-method span {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
-.shipping-option-content strong {
-  font-size: 15px;
+.shipping-method strong {
+  font-size: 14.5px;
+  color: var(--ink);
 }
 
-.shipping-option-content span {
+.shipping-method small {
   font-size: 13px;
-  color: #666;
+  color: #6b7280;
 }
 
-.shipping-message {
-  color: #777;
-  font-size: 14px;
-  margin: 10px 0;
+/* =====================================================
+   RESUMEN DEL PEDIDO
+===================================================== */
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.total-row {
+.order-item {
   display: flex;
   justify-content: space-between;
   gap: 15px;
   margin-bottom: 12px;
+  font-size: 14px;
+  color: #2c3138;
+}
+
+.order-item span:first-child {
+  color: var(--ink-soft);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 12px;
+  font-size: 14.5px;
+  color: #2c3138;
+}
+
+.line {
+  height: 1px;
+  background: var(--line);
+  margin: 18px 0;
+}
+
+.final {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.order button {
+  width: 100%;
+  padding: 17px;
+  margin-top: 22px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  color: white;
+  font-weight: 700;
   font-size: 15px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(67, 185, 109, 0.28);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-.total-row:last-of-type {
-  margin-bottom: 0;
+.order button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--accent) 0%, #ffb300 100%);
+  color: var(--ink);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(255, 196, 0, 0.32);
 }
 
-
-.order button:hover:not(:disabled){
-background:#ffc400;
-color:black;
-transform:scale(1.03);
+.order button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-
-@media(max-width:900px){
-
-.checkout-container{
-grid-template-columns:1fr;
+.order button:disabled {
+  background: #d3d6db;
+  color: #8b909a;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
-.row{
-flex-direction:column;
-}
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 
+@media (max-width: 900px) {
+  .checkout-page {
+    padding: 24px 16px 60px;
+  }
+
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+
+  .order {
+    position: static;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .billing,
+  .order {
+    padding: 22px;
+  }
 }

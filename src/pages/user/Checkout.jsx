@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/api";
+import { getMe } from "../../services/authService";
 import {
   initWebpayTransaction,
   redirectToWebpay,
@@ -802,6 +803,7 @@ function Checkout() {
       return COSTO_LOGISTICA_360;
     }
 
+    // Chilexpress y Bluexpress ahora son por pagar ($0 en línea)
     return 0;
   }, [metodoEnvio]);
 
@@ -829,6 +831,79 @@ function Checkout() {
   }, [user, form.email]);
 
   // ===================================================
+  // AUTOCOMPLETAR FACTURACIÓN CON DATOS DEL PERFIL
+  // ===================================================
+
+  const facturacionAutocompletada = useRef(false);
+
+  useEffect(() => {
+    if (!user || facturacionAutocompletada.current) {
+      return;
+    }
+
+    let cancelado = false;
+
+    (async () => {
+      try {
+        const perfil = await getMe();
+
+        if (cancelado) {
+          return;
+        }
+
+        const direcciones = perfil?.direcciones || [];
+
+        const direccion =
+          direcciones.find((dir) => dir.predeterminada) ||
+          direcciones[0];
+
+        if (!direccion) {
+          return;
+        }
+
+        facturacionAutocompletada.current = true;
+
+        setForm((prev) => {
+          const facturacionVacia =
+            !prev.facturacion.nombre &&
+            !prev.facturacion.rut &&
+            !prev.facturacion.direccion &&
+            !prev.facturacion.comuna;
+
+          if (!facturacionVacia) {
+            return prev;
+          }
+
+          return {
+            ...prev,
+            facturacion: {
+              nombre:
+                direccion.nombreReceptor ||
+                perfil?.nombre ||
+                "",
+              rut: formatearRut(direccion.rut || ""),
+              direccion: direccion.calle || "",
+              numero: direccion.numero || "",
+              departamento: direccion.departamento || "",
+              region: direccion.region || "",
+              comuna: direccion.comuna || "",
+            },
+          };
+        });
+      } catch (err) {
+        console.error(
+          "No se pudo autocompletar la facturación:",
+          err
+        );
+      }
+    })();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [user]);
+
+  // ===================================================
   // REINICIAR MÉTODO DE ENVÍO
   // ===================================================
 
@@ -843,6 +918,10 @@ function Checkout() {
     } else if (zonaEnvio === "azul") {
       if (metodoEnvio !== "bluexpress") {
         setMetodoEnvio("bluexpress");
+      }
+    } else if (zonaEnvio === "fuera") {
+      if (metodoEnvio !== "chilexpress") {
+        setMetodoEnvio("chilexpress");
       }
     } else {
       setMetodoEnvio("");
@@ -859,6 +938,10 @@ function Checkout() {
     }
 
     if (metodo === "bluexpress" && !["verde", "azul"].includes(zonaEnvio)) {
+      return;
+    }
+
+    if (metodo === "chilexpress" && zonaEnvio !== "fuera") {
       return;
     }
 
@@ -948,8 +1031,6 @@ function Checkout() {
         : {}),
     }));
 
-    // Si cambia la comuna de facturación y usa los mismos datos
-    // también cambia la zona de envío.
     if (name === "comuna" && mismosDatos) {
       setMetodoEnvio("");
     }
@@ -1201,11 +1282,16 @@ function Checkout() {
 
     // VALIDACIÓN DEL MÉTODO DE ENVÍO
 
-    if (["verde", "azul"].includes(zonaEnvio)) {
+    if (["verde", "azul", "fuera"].includes(zonaEnvio)) {
       if (!metodoEnvio) {
         nuevosErrores.metodoEnvio =
           "Selecciona un método de envío";
       }
+    }
+
+    if (!zonaEnvio) {
+      nuevosErrores.metodoEnvio =
+        "Ingresa una comuna válida para calcular el envío";
     }
 
     if (zonaEnvio === "verde") {
@@ -1222,6 +1308,13 @@ function Checkout() {
       if (metodoEnvio !== "bluexpress") {
         nuevosErrores.metodoEnvio =
           "Para esta comuna el envío disponible es Bluexpress";
+      }
+    }
+
+    if (zonaEnvio === "fuera") {
+      if (metodoEnvio !== "chilexpress") {
+        nuevosErrores.metodoEnvio =
+          "Para esta comuna el envío disponible es Chilexpress";
       }
     }
 
@@ -1562,6 +1655,8 @@ function Checkout() {
             ? "Logística 360"
             : metodoEnvio === "bluexpress"
             ? "Bluexpress"
+            : metodoEnvio === "chilexpress"
+            ? "Chilexpress"
             : null,
 
         costoEnvio,
@@ -2485,6 +2580,14 @@ function Checkout() {
                 </p>
               )}
 
+              {zonaEnvio === "fuera" && (
+                <p>
+                  Hacemos despacho a
+                  <strong> todo Chile</strong> a
+                  través de Chilexpress por pagar.
+                </p>
+              )}
+
               <div className="shipping-methods">
 
                 {/* LOGÍSTICA 360 */}
@@ -2559,6 +2662,48 @@ function Checkout() {
 
                       <strong>
                         Bluexpress
+                      </strong>
+
+                      <small>
+                        Por pagar
+                      </small>
+
+                    </span>
+
+                  </label>
+                )}
+
+                {/* CHILEXPRESS (COMUNAS FUERA DE SANTIAGO) - POR PAGAR */}
+
+                {zonaEnvio === "fuera" && (
+                  <label
+                    className={`shipping-method ${
+                      metodoEnvio ===
+                      "chilexpress"
+                        ? "selected"
+                        : ""
+                    }`}
+                  >
+
+                    <input
+                      type="radio"
+                      name="metodoEnvio"
+                      value="chilexpress"
+                      checked={
+                        metodoEnvio ===
+                        "chilexpress"
+                      }
+                      onChange={() =>
+                        handleMetodoEnvio(
+                          "chilexpress"
+                        )
+                      }
+                    />
+
+                    <span>
+
+                      <strong>
+                        Chilexpress
                       </strong>
 
                       <small>
@@ -2674,6 +2819,9 @@ function Checkout() {
                   ? `$${COSTO_LOGISTICA_360.toLocaleString(
                       "es-CL"
                     )}`
+                  : metodoEnvio ===
+                    "chilexpress"
+                  ? "Chilexpress por pagar"
                   : "Bluexpress por pagar"}
 
               </span>

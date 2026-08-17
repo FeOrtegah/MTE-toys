@@ -43,10 +43,12 @@ export const COMUNAS_AZULES = [
 ];
 
 export const COSTO_LOGISTICA_360 = 3490;
+export const COSTO_CHILEXPRESS_REGIONES = 5990;
 
 export const METODOS_ENVIO = {
   LOGISTICA_360: "logistica360",
   BLUEXPRESS: "bluexpress",
+  CHILEXPRESS: "chilexpress",
 };
 
 // =====================================================
@@ -54,6 +56,10 @@ export const METODOS_ENVIO = {
 // =====================================================
 
 export const obtenerZonaComuna = (comuna) => {
+  if (!comuna) {
+    return null;
+  }
+
   if (COMUNAS_VERDES.includes(comuna)) {
     return "verde";
   }
@@ -62,7 +68,7 @@ export const obtenerZonaComuna = (comuna) => {
     return "azul";
   }
 
-  return null;
+  return "fuera";
 };
 
 // =====================================================
@@ -98,6 +104,20 @@ export const obtenerMetodosEnvio = (comuna) => {
         nombre: "Bluexpress",
         precio: 0,
         descripcion: "Por pagar",
+      },
+    ];
+  }
+
+  // Resto de Chile (fuera de Santiago)
+  if (zona === "fuera") {
+    return [
+      {
+        id: METODOS_ENVIO.CHILEXPRESS,
+        nombre: "Chilexpress",
+        precio: COSTO_CHILEXPRESS_REGIONES,
+        descripcion: `$${COSTO_CHILEXPRESS_REGIONES.toLocaleString(
+          "es-CL"
+        )}`,
       },
     ];
   }
