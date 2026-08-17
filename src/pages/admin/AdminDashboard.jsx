@@ -14,6 +14,7 @@ import {
   createCombo,
   updateCombo,
   deleteCombo,
+  hardDeleteCombo,
   activateCombo,
 } from "../../services/comboService";
 
@@ -1038,6 +1039,36 @@ function AdminDashboard() {
   }
 
   // =========================
+  // ELIMINAR COMBO PERMANENTEMENTE
+  // =========================
+
+  async function handleHardDeleteCombo(
+    id,
+    nombre
+  ) {
+    if (
+      !confirm(
+        `¿Eliminar "${nombre}" de forma PERMANENTE? Esta acción no se puede deshacer.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await hardDeleteCombo(id);
+
+      setCombos((prev) =>
+        prev.filter(
+          (combo) =>
+            combo._id !== id
+        )
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  // =========================
   // PEDIDOS
   // =========================
 
@@ -1185,25 +1216,11 @@ function AdminDashboard() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>
-                  Cliente
-                </th>
-
-                <th>
-                  Fecha
-                </th>
-
-                <th>
-                  Estado
-                </th>
-
-                <th>
-                  Total
-                </th>
-
-                <th>
-                  Acciones
-                </th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Acciones</th>
               </tr>
             </thead>
 
@@ -1550,49 +1567,17 @@ function AdminDashboard() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>
-                  Imagen
-                </th>
-
-                <th>
-                  Nombre
-                </th>
-
-                <th>
-                  Descripción
-                </th>
-
-                <th>
-                  Categoría
-                </th>
-
-                <th>
-                  Precio
-                </th>
-
-                <th>
-                  Precio oferta
-                </th>
-
-                <th>
-                  Oferta
-                </th>
-
-                <th>
-                  Destacado
-                </th>
-
-                <th>
-                  Estado
-                </th>
-
-                <th>
-                  Stock
-                </th>
-
-                <th>
-                  Acciones
-                </th>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Precio oferta</th>
+                <th>Oferta</th>
+                <th>Destacado</th>
+                <th>Estado</th>
+                <th>Stock</th>
+                <th>Acciones</th>
               </tr>
             </thead>
 
@@ -2291,49 +2276,17 @@ function AdminDashboard() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>
-                  Imagen
-                </th>
-
-                <th>
-                  Nombre
-                </th>
-
-                <th>
-                  Descripción
-                </th>
-
-                <th>
-                  Principal
-                </th>
-
-                <th>
-                  Adicional
-                </th>
-
-                <th>
-                  Cantidad
-                </th>
-
-                <th>
-                  Precio
-                </th>
-
-                <th>
-                  Oferta
-                </th>
-
-                <th>
-                  Destacado
-                </th>
-
-                <th>
-                  Estado
-                </th>
-
-                <th>
-                  Acciones
-                </th>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Principal</th>
+                <th>Adicional</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Oferta</th>
+                <th>Destacado</th>
+                <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
 
@@ -2348,6 +2301,11 @@ function AdminDashboard() {
                     <tr
                       key={
                         combo._id
+                      }
+                      className={
+                        !combo.activo
+                          ? "row-inactivo"
+                          : ""
                       }
                     >
                       <td>
@@ -2651,7 +2609,9 @@ function AdminDashboard() {
                             }
                           />
                         ) : (
-                          `$${combo.precioCombo.toLocaleString(
+                          `$${Number(
+                            combo.precioCombo
+                          ).toLocaleString(
                             "es-CL"
                           )}`
                         )}
@@ -2679,7 +2639,9 @@ function AdminDashboard() {
                           />
                         ) : combo.enOferta &&
                           combo.precioOferta ? (
-                          `$${combo.precioOferta.toLocaleString(
+                          `$${Number(
+                            combo.precioOferta
+                          ).toLocaleString(
                             "es-CL"
                           )}`
                         ) : (
@@ -2810,6 +2772,19 @@ function AdminDashboard() {
                                 Activar
                               </button>
                             )}
+
+                            {/* ELIMINACIÓN PERMANENTE */}
+                            <button
+                              className="btn-borrar"
+                              onClick={() =>
+                                handleHardDeleteCombo(
+                                  combo._id,
+                                  combo.nombre
+                                )
+                              }
+                            >
+                              Eliminar
+                            </button>
                           </>
                         )}
                       </td>

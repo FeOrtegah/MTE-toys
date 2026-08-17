@@ -1,6 +1,12 @@
-import { useCart } from "../../context/CartContext";
+import {
+  useCart,
+} from "../../context/CartContext";
+
 import "../../css/Cart.css";
-import { Link } from "react-router-dom";
+
+import {
+  Link,
+} from "react-router-dom";
 
 function Cart() {
   const {
@@ -11,20 +17,30 @@ function Cart() {
     total,
   } = useCart();
 
-  const totalUnidades = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const totalUnidades =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        Number(
+          item.quantity || 0
+        ),
+      0
+    );
 
   return (
     <main className="cart-page">
+
       <div className="cart-container">
 
         <section className="cart-list">
 
           <h1>
-            Carro ({totalUnidades} producto
-            {totalUnidades === 1 ? "" : "s"})
+            Carro ({totalUnidades}{" "}
+            producto
+            {totalUnidades === 1
+              ? ""
+              : "s"}
+            )
           </h1>
 
           {cart.length === 0 ? (
@@ -34,102 +50,157 @@ function Cart() {
           ) : (
             <div className="cart-card">
 
-              {cart.map((item) => {
+              {cart.map(
+                (item) => {
+                  const itemType =
+                    item.type ===
+                    "combo"
+                      ? "combo"
+                      : "producto";
 
-                const hasStock =
-                  item.stock !== undefined &&
-                  item.stock !== null;
+                  const hasStock =
+                    item.stock !==
+                      undefined &&
+                    item.stock !==
+                      null;
 
-                const maxStockReached =
-                  hasStock &&
-                  item.quantity >= item.stock;
+                  const maxStockReached =
+                    hasStock &&
+                    item.quantity >=
+                      item.stock;
 
-                return (
-                  <div
-                    className="cart-item"
-                    key={item.id}
-                  >
+                  return (
+                    <div
+                      className="cart-item"
+                      key={`${itemType}-${item.id}`}
+                    >
 
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                    />
+                      <img
+                        src={
+                          item.image
+                        }
+                        alt={
+                          item.name
+                        }
+                      />
 
-                    <div className="cart-item-info">
+                      <div className="cart-item-info">
 
-                      <h3>
-                        {item.name}
-                      </h3>
+                        <h3>
+                          {item.name}
 
-                      <p className="cart-item-price">
-                        ${item.price.toLocaleString("es-CL")}
-                      </p>
+                          {itemType ===
+                            "combo" && (
+                            <span
+                              style={{
+                                fontSize:
+                                  "12px",
+                                marginLeft:
+                                  "8px",
+                                color:
+                                  "#777",
+                              }}
+                            >
+                              Combo
+                            </span>
+                          )}
+                        </h3>
 
-                      <div className="quantity">
+                        <p className="cart-item-price">
+                          $
+                          {Number(
+                            item.price ||
+                              0
+                          ).toLocaleString(
+                            "es-CL"
+                          )}
+                        </p>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            decreaseQuantity(item.id)
-                          }
-                          disabled={item.quantity <= 1}
-                        >
-                          -
-                        </button>
+                        <div className="quantity">
 
-                        <span>
-                          {item.quantity}
-                        </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              decreaseQuantity(
+                                item.id,
+                                itemType
+                              )
+                            }
+                            disabled={
+                              item.quantity <=
+                              1
+                            }
+                          >
+                            -
+                          </button>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            increaseQuantity(item.id)
-                          }
-                          disabled={maxStockReached}
-                          title={
-                            maxStockReached
+                          <span>
+                            {
+                              item.quantity
+                            }
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              increaseQuantity(
+                                item.id,
+                                itemType
+                              )
+                            }
+                            disabled={
+                              maxStockReached
+                            }
+                            title={
+                              maxStockReached
+                                ? `Stock máximo disponible: ${item.stock}`
+                                : "Aumentar cantidad"
+                            }
+                          >
+                            +
+                          </button>
+
+                        </div>
+
+                        {hasStock && (
+                          <p
+                            style={{
+                              fontSize:
+                                "13px",
+                              marginTop:
+                                "6px",
+                              color:
+                                maxStockReached
+                                  ? "#c62828"
+                                  : "#666",
+                            }}
+                          >
+                            {maxStockReached
                               ? `Stock máximo disponible: ${item.stock}`
-                              : "Aumentar cantidad"
-                          }
-                        >
-                          +
-                        </button>
+                              : `Stock disponible: ${item.stock}`}
+                          </p>
+                        )}
 
                       </div>
 
-                      {hasStock && (
-                        <p
-                          style={{
-                            fontSize: "13px",
-                            marginTop: "6px",
-                            color: maxStockReached
-                              ? "#c62828"
-                              : "#666",
-                          }}
-                        >
-                          {maxStockReached
-                            ? `Stock máximo disponible: ${item.stock}`
-                            : `Stock disponible: ${item.stock}`}
-                        </p>
-                      )}
+                      <button
+                        type="button"
+                        className="delete"
+                        onClick={() =>
+                          removeFromCart(
+                            item.id,
+                            itemType
+                          )
+                        }
+                        title="Eliminar"
+                      >
+                        ✕
+                      </button>
 
                     </div>
-
-                    <button
-                      type="button"
-                      className="delete"
-                      onClick={() =>
-                        removeFromCart(item.id)
-                      }
-                      title="Eliminar"
-                    >
-                      ✕
-                    </button>
-
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
 
             </div>
           )}
@@ -144,23 +215,34 @@ function Cart() {
             </h2>
 
             <div className="summary-row">
+
               <span>
-                Productos ({totalUnidades})
+                Productos (
+                {totalUnidades})
               </span>
 
               <span>
-                ${total().toLocaleString("es-CL")}
+                $
+                {total().toLocaleString(
+                  "es-CL"
+                )}
               </span>
+
             </div>
 
             <div className="summary-row summary-total">
+
               <span>
                 Total:
               </span>
 
               <span>
-                ${total().toLocaleString("es-CL")}
+                $
+                {total().toLocaleString(
+                  "es-CL"
+                )}
               </span>
+
             </div>
 
             <Link
@@ -174,6 +256,7 @@ function Cart() {
         )}
 
       </div>
+
     </main>
   );
 }

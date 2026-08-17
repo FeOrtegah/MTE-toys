@@ -1,60 +1,84 @@
 import "../../css/ProductCard.css";
-import { useCart } from "../../context/CartContext";
-import { Link } from "react-router-dom";
 
-function ProductCard({ product }) {
-  const { addToCart, cart } = useCart();
+import {
+  useCart,
+} from "../../context/CartContext";
+
+import {
+  Link,
+} from "react-router-dom";
+
+function ProductCard({
+  product,
+}) {
+  const {
+    addToCart,
+    addComboToCart,
+    cart,
+  } = useCart();
+
+  const isCombo =
+    product.type ===
+    "combo";
 
   const price =
-    product.price !== undefined &&
-    product.price !== null
-      ? Number(product.price).toLocaleString("es-CL")
-      : "0";
+    Number(product.price || 0)
+      .toLocaleString(
+        "es-CL"
+      );
 
   const hasStock =
-    product.stock !== undefined &&
+    product.stock !==
+      undefined &&
     product.stock !== null &&
-    Number(product.stock) > 0;
+    Number(product.stock) >
+      0;
 
-  /*
-   * Buscamos solamente este producto.
-   *
-   * Los productos normales utilizan:
-   * type: "producto"
-   *
-   * Esto evita confundirlo con un combo que eventualmente
-   * pueda tener el mismo ID.
-   */
-  const itemInCart = cart.find(
-    (item) =>
-      item.id === product.id &&
-      (item.type === "producto" ||
-        !item.type)
-  );
+  const itemInCart =
+    cart.find(
+      (item) =>
+        item.id ===
+          product.id &&
+        item.type ===
+          (isCombo
+            ? "combo"
+            : "producto")
+    );
 
-  const quantityInCart = itemInCart
-    ? Number(itemInCart.quantity) || 0
-    : 0;
-
-  const stock = Number(product.stock) || 0;
-
-  /*
-   * Cuánto stock queda realmente disponible
-   * considerando lo que ya está en el carrito.
-   */
-  const remainingStock =
-    Math.max(0, stock - quantityInCart);
+  const quantityInCart =
+    itemInCart
+      ? itemInCart.quantity
+      : 0;
 
   const maxStockReached =
     hasStock &&
-    remainingStock <= 0;
+    quantityInCart >=
+      product.stock;
 
   const canAdd =
     hasStock &&
     !maxStockReached;
 
+  function handleAdd() {
+    if (!canAdd) return;
+
+    if (isCombo) {
+      addComboToCart(
+        product
+      );
+    } else {
+      addToCart(product);
+    }
+  }
+
   return (
-    <article className="product-card">
+    <article
+      className={`product-card ${
+        isCombo
+          ? "combo-card"
+          : ""
+      }`}
+    >
 
       {product.offer && (
         <span className="offer">
@@ -62,25 +86,34 @@ function ProductCard({ product }) {
         </span>
       )}
 
+      {isCombo && (
+        <span className="offer combo-badge">
+          Combo
+        </span>
+      )}
+
       <button
         type="button"
         className="favorite"
-        aria-label={`Agregar ${product.name} a favoritos`}
       >
         <img
           src="/detalles/corazon.png"
-          alt=""
+          alt="Favorito"
         />
       </button>
 
       <Link
-        to={`/producto/${product.id}`}
+        to={`/producto/${product.id}?tipo=${
+          isCombo
+            ? "combo"
+            : "producto"
+        }`}
         className="product-image"
       >
         <img
           src={product.image}
           alt={product.name}
-      />
+        />
       </Link>
 
       <h3>
@@ -91,63 +124,81 @@ function ProductCard({ product }) {
         ⭐⭐⭐⭐⭐
       </div>
 
-      {product.oldPrice !== undefined &&
-        product.oldPrice !== null &&
-        Number(product.oldPrice) > 0 && (
-          <p className="old-price">
-            $
-            {Number(product.oldPrice).toLocaleString(
-              "es-CL"
-            )}
-          </p>
-        )}
+      {product.oldPrice && (
+        <p className="old-price">
+          $
+          {Number(
+            product.oldPrice
+          ).toLocaleString(
+            "es-CL"
+          )}
+        </p>
+      )}
 
       <p className="price">
         ${price}
       </p>
 
+      {isCombo &&
+        product.cantidadAdicional && (
+          <p
+            style={{
+              fontSize: "13px",
+              color: "#666",
+              margin:
+                "5px 0",
+            }}
+          >
+            Incluye{" "}
+            {product.cantidadAdicional}{" "}
+            unidad
+            {product.cantidadAdicional >
+            1
+              ? "es"
+              : ""}
+            {" "}adicional
+            {product.cantidadAdicional >
+            1
+              ? "es"
+              : ""}
+          </p>
+        )}
+
       {hasStock && (
         <p
           style={{
-            fontSize: "13px",
-            color: "#666",
-            margin: "5px 0",
+            fontSize:
+              "13px",
+            color:
+              "#666",
+            margin:
+              "5px 0",
           }}
         >
           {maxStockReached
-            ? `Máximo disponible: ${stock}`
-            : `Stock disponible: ${remainingStock}`}
-        </p>
-      )}
-
-      {!hasStock && (
-        <p
-          style={{
-            fontSize: "13px",
-            color: "#666",
-            margin: "5px 0",
-          }}
-        >
-          Sin unidades disponibles
+            ? `Máximo disponible: ${product.stock}`
+            : `Stock: ${product.stock}`}
         </p>
       )}
 
       <button
         type="button"
         className={`add ${
-          !canAdd ? "disabled-btn" : ""
+          !canAdd
+            ? "disabled-btn"
+            : ""
         }`}
-        onClick={() => {
-          if (canAdd) {
-            addToCart(product);
-          }
-        }}
+        onClick={
+          handleAdd
+        }
         disabled={!canAdd}
       >
         {!hasStock
           ? "Sin stock"
           : maxStockReached
           ? "Stock máximo"
+          : isCombo
+          ? "🛒 Agregar combo"
           : "🛒 Agregar"}
       </button>
 

@@ -1,8 +1,23 @@
-import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
-import { getProducts } from "../../services/api";
+import {
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
+
+import {
+  useSearchParams,
+} from "react-router-dom";
+
+import {
+  getCatalogItems,
+} from "../../services/api";
+
 import ProductCard from "../../components/organisms/ProductCard";
-import { useSearch } from "../../context/SearchContext";
+
+import {
+  useSearch,
+} from "../../context/SearchContext";
+
 import "../../css/Products.css";
 
 function capitalizar(texto) {
@@ -12,24 +27,26 @@ function capitalizar(texto) {
     .split(" ")
     .map(
       (palabra) =>
-        palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase()
+        palabra.charAt(0).toUpperCase() +
+        palabra.slice(1)
     )
     .join(" ");
 }
 
-function normalizarTexto(texto) {
-  return String(texto || "")
-    .trim()
-    .toLowerCase();
-}
-
 function Products() {
-  const { search } = useSearch();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { search } =
+    useSearch();
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
+
+  const [products, setProducts] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
 
   const getMinFromUrl = () =>
     searchParams.get("min") ||
@@ -46,182 +63,279 @@ function Products() {
     searchParams.get("category") ||
     "Todos";
 
-  const [category, setCategory] = useState(getCatFromUrl());
-  const [minPrice, setMinPrice] = useState(getMinFromUrl());
-  const [maxPrice, setMaxPrice] = useState(getMaxFromUrl());
+  const [
+    category,
+    setCategory,
+  ] = useState(
+    getCatFromUrl()
+  );
 
-  /*
-   * Cargar productos
-   */
+  const [
+    minPrice,
+    setMinPrice,
+  ] = useState(
+    getMinFromUrl()
+  );
+
+  const [
+    maxPrice,
+    setMaxPrice,
+  ] = useState(
+    getMaxFromUrl()
+  );
+
+  const [
+    filtersOpen,
+    setFiltersOpen,
+  ] = useState(false);
+
+  // =====================================================
+  // CARGAR CATÁLOGO
+  // =====================================================
+
   useEffect(() => {
     setLoading(true);
 
-    getProducts()
-      .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
-      })
+    getCatalogItems()
+      .then(setProducts)
       .catch((err) => {
-        console.error("Error al cargar productos:", err);
+        console.error(
+          "Error al cargar catálogo:",
+          err
+        );
+
         setProducts([]);
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() =>
+        setLoading(false)
+      );
   }, []);
 
-  /*
-   * Mantener los filtros sincronizados con la URL
-   */
+  // =====================================================
+  // SINCRONIZAR URL
+  // =====================================================
+
   useEffect(() => {
-    setCategory(getCatFromUrl());
-    setMinPrice(getMinFromUrl());
-    setMaxPrice(getMaxFromUrl());
+    setCategory(
+      getCatFromUrl()
+    );
+
+    setMinPrice(
+      getMinFromUrl()
+    );
+
+    setMaxPrice(
+      getMaxFromUrl()
+    );
   }, [searchParams]);
 
-  /*
-   * Obtener categorías únicas desde los productos
-   */
-  const categories = useMemo(() => {
-    const unicas = [
-      ...new Set(
-        products
-          .map((product) => product.category)
-          .filter(Boolean)
-          .map((cat) => String(cat).trim())
-      ),
-    ];
+  // =====================================================
+  // CATEGORÍAS
+  // =====================================================
 
-    return ["Todos", ...unicas];
-  }, [products]);
+  const categories =
+    useMemo(() => {
+      const unicas = [
+        ...new Set(
+          products
+            .map(
+              (p) => p.category
+            )
+            .filter(Boolean)
+        ),
+      ];
 
-  /*
-   * Actualizar parámetros de la URL
-   */
-  function actualizarURL(nuevaCat, nuevoMin, nuevoMax) {
-    const params = new URLSearchParams();
+      return [
+        "Todos",
+        ...unicas,
+      ];
+    }, [products]);
 
-    if (nuevaCat && normalizarTexto(nuevaCat) !== "todos") {
-      params.set("categoria", normalizarTexto(nuevaCat));
+  // =====================================================
+  // URL
+  // =====================================================
+
+  function actualizarURL(
+    nuevaCat,
+    nuevoMin,
+    nuevoMax
+  ) {
+    const params =
+      new URLSearchParams();
+
+    if (
+      nuevaCat &&
+      nuevaCat !== "Todos"
+    ) {
+      params.set(
+        "categoria",
+        nuevaCat
+      );
     }
 
-    if (nuevoMin !== "" && nuevoMin !== null) {
-      params.set("min", nuevoMin);
+    if (
+      nuevoMin !== "" &&
+      nuevoMin !== null
+    ) {
+      params.set(
+        "min",
+        nuevoMin
+      );
     }
 
-    if (nuevoMax !== "" && nuevoMax !== null) {
-      params.set("max", nuevoMax);
+    if (
+      nuevoMax !== "" &&
+      nuevoMax !== null
+    ) {
+      params.set(
+        "max",
+        nuevoMax
+      );
     }
 
-    setSearchParams(params, { replace: true });
+    setSearchParams(
+      params,
+      {
+        replace: true,
+      }
+    );
   }
 
-  /*
-   * Seleccionar categoría
-   */
-  function handleCategoryClick(cat) {
+  // =====================================================
+  // FILTROS
+  // =====================================================
+
+  function handleCategoryClick(
+    cat
+  ) {
     setCategory(cat);
-    actualizarURL(cat, minPrice, maxPrice);
 
-    // En móvil, cerrar el panel después de seleccionar
-    setFiltersOpen(false);
+    actualizarURL(
+      cat,
+      minPrice,
+      maxPrice
+    );
   }
 
-  /*
-   * Precio mínimo
-   */
   function handleMinChange(e) {
-    const val = e.target.value;
+    const val =
+      e.target.value;
 
     setMinPrice(val);
-    actualizarURL(category, val, maxPrice);
+
+    actualizarURL(
+      category,
+      val,
+      maxPrice
+    );
   }
 
-  /*
-   * Precio máximo
-   */
   function handleMaxChange(e) {
-    const val = e.target.value;
+    const val =
+      e.target.value;
 
     setMaxPrice(val);
-    actualizarURL(category, minPrice, val);
+
+    actualizarURL(
+      category,
+      minPrice,
+      val
+    );
   }
 
-  /*
-   * Limpiar todos los filtros
-   */
   function limpiarFiltros() {
     setCategory("Todos");
     setMinPrice("");
     setMaxPrice("");
+
     setSearchParams({});
   }
 
-  /*
-   * Filtrar productos
-   */
-  const filteredProducts = products.filter((product) => {
-    /*
-     * Búsqueda por nombre
-     */
-    const productName = normalizarTexto(product.name);
-    const searchText = normalizarTexto(search);
+  // =====================================================
+  // FILTRAR
+  // =====================================================
 
-    const matchesSearch =
-      !searchText || productName.includes(searchText);
+  const filteredProducts =
+    products.filter(
+      (product) => {
+        const textoBusqueda =
+          (
+            search || ""
+          ).toLowerCase();
 
-    /*
-     * Categoría
-     *
-     * Se normalizan ambos valores para que:
-     *
-     * Marvel
-     * marvel
-     * MARVEL
-     *
-     * sean considerados iguales.
-     */
-    const productCategory = normalizarTexto(product.category);
-    const selectedCategory = normalizarTexto(category);
+        const nombre =
+          (
+            product.name ||
+            ""
+          ).toLowerCase();
 
-    const matchesCategory =
-      !selectedCategory ||
-      selectedCategory === "todos" ||
-      productCategory === selectedCategory;
+        const descripcion =
+          (
+            product.description ||
+            ""
+          ).toLowerCase();
 
-    /*
-     * Precio
-     */
-    const numPrice = Number(product.price);
+        const matchesSearch =
+          !textoBusqueda ||
+          nombre.includes(
+            textoBusqueda
+          ) ||
+          descripcion.includes(
+            textoBusqueda
+          );
 
-    const numMin =
-      minPrice !== ""
-        ? Number(minPrice)
-        : null;
+        const matchesCategory =
+          category === "Todos" ||
+          product.category ===
+            category;
 
-    const numMax =
-      maxPrice !== ""
-        ? Number(maxPrice)
-        : null;
+        const numPrice =
+          Number(
+            product.price
+          );
 
-    const matchesMin =
-      numMin === null ||
-      (!Number.isNaN(numPrice) && numPrice >= numMin);
+        const numMin =
+          minPrice !== ""
+            ? Number(minPrice)
+            : null;
 
-    const matchesMax =
-      numMax === null ||
-      (!Number.isNaN(numPrice) && numPrice <= numMax);
+        const numMax =
+          maxPrice !== ""
+            ? Number(maxPrice)
+            : null;
 
-    return (
-      matchesSearch &&
-      matchesCategory &&
-      matchesMin &&
-      matchesMax
+        const matchesMin =
+          numMin === null ||
+          (
+            !Number.isNaN(
+              numPrice
+            ) &&
+            numPrice >=
+              numMin
+          );
+
+        const matchesMax =
+          numMax === null ||
+          (
+            !Number.isNaN(
+              numPrice
+            ) &&
+            numPrice <=
+              numMax
+          );
+
+        return (
+          matchesSearch &&
+          matchesCategory &&
+          matchesMin &&
+          matchesMax
+        );
+      }
     );
-  });
 
   if (loading) {
     return (
-      <p className="detail-status">
+      <p>
         Cargando productos...
       </p>
     );
@@ -229,14 +343,21 @@ function Products() {
 
   return (
     <main className="products-page">
-      <h1>Juguetes</h1>
+
+      <h1>
+        Juguetes
+      </h1>
 
       <button
         className={`filter-toggle ${
-          filtersOpen ? "open" : ""
+          filtersOpen
+            ? "open"
+            : ""
         }`}
         onClick={() =>
-          setFiltersOpen((prev) => !prev)
+          setFiltersOpen(
+            (prev) => !prev
+          )
         }
       >
         {filtersOpen
@@ -247,24 +368,33 @@ function Products() {
       {filtersOpen && (
         <div
           className="filter-backdrop"
-          onClick={() => setFiltersOpen(false)}
+          onClick={() =>
+            setFiltersOpen(false)
+          }
         />
       )}
 
       <div className="products-layout">
+
         <aside
           className={`products-filters ${
-            filtersOpen ? "open" : ""
+            filtersOpen
+              ? "open"
+              : ""
           }`}
         >
+
           <div className="filter-panel-header">
-            <span className="filter-handle"></span>
+
+            <span className="filter-handle" />
 
             <div className="filter-panel-title">
-              <h2>Filtros</h2>
+
+              <h2>
+                Filtros
+              </h2>
 
               <button
-                type="button"
                 className="filter-close"
                 onClick={() =>
                   setFiltersOpen(false)
@@ -272,85 +402,122 @@ function Products() {
               >
                 ✕
               </button>
+
             </div>
+
           </div>
 
           <div className="filter-block">
-            <h3>Categoría</h3>
+
+            <h3>
+              Categoría
+            </h3>
 
             <ul className="filter-category-list">
-              {categories.map((cat) => (
-                <li key={cat}>
-                  <button
-                    type="button"
-                    className={
-                      normalizarTexto(category) ===
-                        normalizarTexto(cat)
-                        ? "active"
-                        : ""
-                    }
-                    onClick={() =>
-                      handleCategoryClick(cat)
-                    }
-                  >
-                    {cat === "Todos"
-                      ? "Todos"
-                      : capitalizar(cat)}
-                  </button>
-                </li>
-              ))}
+
+              {categories.map(
+                (cat) => (
+                  <li key={cat}>
+
+                    <button
+                      className={
+                        category === cat
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        handleCategoryClick(
+                          cat
+                        )
+                      }
+                    >
+                      {cat ===
+                      "Todos"
+                        ? "Todos"
+                        : capitalizar(
+                            cat
+                          )}
+                    </button>
+
+                  </li>
+                )
+              )}
+
             </ul>
+
           </div>
 
           <div className="filter-block">
-            <h3>Precio</h3>
+
+            <h3>
+              Precio
+            </h3>
 
             <div className="filter-price-inputs">
+
               <input
                 type="number"
                 placeholder="Mín"
                 value={minPrice}
-                onChange={handleMinChange}
+                onChange={
+                  handleMinChange
+                }
                 min="0"
               />
 
-              <span>—</span>
+              <span>
+                —
+              </span>
 
               <input
                 type="number"
                 placeholder="Máx"
                 value={maxPrice}
-                onChange={handleMaxChange}
+                onChange={
+                  handleMaxChange
+                }
                 min="0"
               />
+
             </div>
+
           </div>
 
           <button
-            type="button"
             className="filter-clear"
-            onClick={limpiarFiltros}
+            onClick={
+              limpiarFiltros
+            }
           >
             Limpiar filtros
           </button>
+
         </aside>
 
         <section className="products-grid">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
-            ))
+
+          {filteredProducts.length >
+          0 ? (
+            filteredProducts.map(
+              (product) => (
+                <ProductCard
+                  key={`${product.type}-${product.id}`}
+                  product={product}
+                />
+              )
+            )
           ) : (
             <p className="no-products">
-              No hay productos que coincidan con
-              los filtros.
+              No hay productos que
+              coincidan con los
+              filtros.
             </p>
           )}
+
         </section>
+
       </div>
+
     </main>
   );
 }

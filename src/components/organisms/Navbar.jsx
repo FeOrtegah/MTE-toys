@@ -1,126 +1,245 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import {
+  Link,
+} from "react-router-dom";
+
+import {
+  useState,
+  useEffect,
+} from "react";
+
 import "../../css/Navbar.css";
+
 import LogoMTE from "../../assets/LogoMTE.png";
-import { useCart } from "../../context/CartContext";
-import { useSearch } from "../../context/SearchContext";
-import { useUser } from "../../context/UserContext";
-import { getProducts } from "../../services/api";
 
-function Navbar(){
+import {
+  useCart,
+} from "../../context/CartContext";
 
-const {cart}=useCart();
-const {search,setSearch}=useSearch();
-const {user,logout}=useUser();
+import {
+  useSearch,
+} from "../../context/SearchContext";
 
-const [allProducts,setAllProducts]=useState([]);
+import {
+  useUser,
+} from "../../context/UserContext";
 
-useEffect(()=>{
+import {
+  getCatalogItems,
+} from "../../services/api";
 
-getProducts()
-.then(setAllProducts)
-.catch(()=>setAllProducts([]));
+function Navbar() {
+  const { cart } =
+    useCart();
 
-},[]);
+  const {
+    search,
+    setSearch,
+  } = useSearch();
 
-const filteredProducts =
-search.trim()===""
-?
-[]
-:
-allProducts
-.filter(product=>
-product.name.toLowerCase().includes(search.toLowerCase())
-)
-.slice(0,5);
+  const {
+    user,
+  } = useUser();
 
-return(
+  const [
+    allProducts,
+    setAllProducts,
+  ] = useState([]);
 
-<>
+  useEffect(() => {
+    getCatalogItems()
+      .then(setAllProducts)
+      .catch((error) => {
+        console.error(
+          "Error cargando catálogo para búsqueda:",
+          error
+        );
 
-<nav className="navbar">
+        setAllProducts([]);
+      });
+  }, []);
 
-<div className="logo">
-<Link to="/">
-<img src={LogoMTE} alt="MTE Toys"/>
-</Link>
-</div>
+  const textoBusqueda =
+    search.trim().toLowerCase();
 
-<div className="search">
+  const filteredProducts =
+    textoBusqueda === ""
+      ? []
+      : allProducts
+          .filter(
+            (product) => {
+              const nombre =
+                (
+                  product.name ||
+                  ""
+                ).toLowerCase();
 
-<input
-value={search}
-onChange={(e)=>setSearch(e.target.value)}
-placeholder="Buscar juguetes..."
-/>
+              const descripcion =
+                (
+                  product.description ||
+                  ""
+                ).toLowerCase();
 
-<button>
-🔍
-</button>
+              return (
+                nombre.includes(
+                  textoBusqueda
+                ) ||
+                descripcion.includes(
+                  textoBusqueda
+                )
+              );
+            }
+          )
+          .slice(0, 5);
 
-{filteredProducts.length>0 && (
-<div className="search-results">
-{filteredProducts.map(product=>(
-<Link
-key={product.id}
-to={`/producto/${product.id}`}
-className="search-item"
-onClick={()=>setSearch("")}
->
-<img
-src={product.image}
-alt={product.name}
-/>
-<span>
-{product.name}
-</span>
-</Link>
-))}
-</div>
-)}
+  return (
+    <>
+      <nav className="navbar">
 
-</div>
+        <div className="logo">
+          <Link to="/">
+            <img
+              src={LogoMTE}
+              alt="MTE Toys"
+            />
+          </Link>
+        </div>
 
-<div className="actions">
-    {user?.rol === "admin" && (
-  <Link to="/admin" className="admin-link">
-    ⚙️ Admin
-  </Link>
-)}
+        <div className="search">
 
-{
-user ?
-<Link to="/mi-cuenta" className="user">
-👤
-</Link>
-:
-<Link to="/login" className="user">
-👤
-</Link>
-}
+          <input
+            value={search}
+            onChange={(e) =>
+              setSearch(
+                e.target.value
+              )
+            }
+            placeholder="Buscar juguetes..."
+          />
 
-<Link to="/carrito" className="cart">
-🛒
-<span className="cart-count">
-{cart.length}
-</span>
-</Link>
+          <button type="button">
+            🔍
+          </button>
 
-</div>
+          {filteredProducts.length >
+            0 && (
+            <div className="search-results">
 
-</nav>
+              {filteredProducts.map(
+                (product) => {
+                  const isCombo =
+                    product.type ===
+                    "combo";
 
-<div className="menu">
-<Link to="/">Inicio</Link>
-<Link to="/productos">Juguetes</Link>
-<Link to="/marcas">Marcas</Link>
-<Link to="/contacto">Contacto</Link>
-</div>
+                  return (
+                    <Link
+                      key={`${product.type}-${product.id}`}
+                      to={`/producto/${product.id}?tipo=${
+                        isCombo
+                          ? "combo"
+                          : "producto"
+                      }`}
+                      className="search-item"
+                      onClick={() =>
+                        setSearch("")
+                      }
+                    >
 
-</>
+                      <img
+                        src={
+                          product.image
+                        }
+                        alt={
+                          product.name
+                        }
+                      />
 
-);
+                      <span>
+                        {product.name}
+                      </span>
 
+                    </Link>
+                  );
+                }
+              )}
+
+            </div>
+          )}
+
+        </div>
+
+        <div className="actions">
+
+          {user?.rol ===
+            "admin" && (
+            <Link
+              to="/admin"
+              className="admin-link"
+            >
+              ⚙️ Admin
+            </Link>
+          )}
+
+          {user ? (
+            <Link
+              to="/mi-cuenta"
+              className="user"
+            >
+              👤
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="user"
+            >
+              👤
+            </Link>
+          )}
+
+          <Link
+            to="/carrito"
+            className="cart"
+          >
+            🛒
+
+            <span className="cart-count">
+              {cart.reduce(
+                (
+                  total,
+                  item
+                ) =>
+                  total +
+                  Number(
+                    item.quantity ||
+                      0
+                  ),
+                0
+              )}
+            </span>
+          </Link>
+
+        </div>
+
+      </nav>
+
+      <div className="menu">
+        <Link to="/">
+          Inicio
+        </Link>
+
+        <Link to="/productos">
+          Juguetes
+        </Link>
+
+        <Link to="/marcas">
+          Marcas
+        </Link>
+
+        <Link to="/contacto">
+          Contacto
+        </Link>
+      </div>
+    </>
+  );
 }
 
 export default Navbar;

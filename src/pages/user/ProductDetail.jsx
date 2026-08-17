@@ -2,6 +2,7 @@ import {
   useParams,
   useNavigate,
   Link,
+  useSearchParams,
 } from "react-router-dom";
 
 import {
@@ -11,6 +12,7 @@ import {
 
 import {
   getProductById,
+  getComboById,
 } from "../../services/api";
 
 import {
@@ -20,103 +22,86 @@ import {
 import "../../css/ProductDetail.css";
 
 function ProductDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } =
+    useParams();
+
+  const [
+    searchParams,
+  ] = useSearchParams();
+
+  const tipo =
+    searchParams.get(
+      "tipo"
+    ) || "producto";
+
+  const navigate =
+    useNavigate();
 
   const {
     addToCart,
-    cart,
+    addComboToCart,
   } = useCart();
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
+  const [
+    product,
+    setProduct,
+  ] = useState(null);
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+  const [
+    activeImage,
+    setActiveImage,
+  ] = useState(0);
+
+  const [
+    quantity,
+    setQuantity,
+  ] = useState(1);
+
+  const [
+    added,
+    setAdded,
+  ] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
 
-    getProductById(id)
-      .then((p) => {
-        setProduct(p);
-        setActiveImage(0);
-        setQuantity(1);
+    setLoading(true);
+    setProduct(null);
+    setActiveImage(0);
+    setQuantity(1);
+
+    const request =
+      tipo === "combo"
+        ? getComboById(id)
+        : getProductById(id);
+
+    request
+      .then((data) => {
+        if (!cancelled) {
+          setProduct(data);
+        }
       })
       .catch(() => {
-        setProduct(null);
+        if (!cancelled) {
+          setProduct(null);
+        }
       })
       .finally(() => {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       });
-  }, [id]);
 
-  /*
-   * Buscamos el producto en el carrito.
-   *
-   * Este cálculo se hace incluso mientras
-   * el producto está cargando, para que todos
-   * los hooks se ejecuten siempre en el mismo orden.
-   */
-  const itemInCart = product
-    ? cart.find(
-        (item) =>
-          item.id === product.id &&
-          (item.type === "producto" || !item.type)
-      )
-    : null;
+    return () => {
+      cancelled = true;
+    };
+  }, [id, tipo]);
 
-  const quantityInCart = itemInCart
-    ? Number(itemInCart.quantity) || 0
-    : 0;
-
-  const stock = product
-    ? Number(product.stock) || 0
-    : 0;
-
-  const remainingStock = Math.max(
-    0,
-    stock - quantityInCart
-  );
-
-  /*
-   * Ajustamos la cantidad seleccionada cuando
-   * cambia el stock disponible.
-   *
-   * IMPORTANTE:
-   * Este hook está ANTES de los return.
-   */
-  useEffect(() => {
-    if (!product) {
-      return;
-    }
-
-    if (remainingStock <= 0) {
-      setQuantity(1);
-      return;
-    }
-
-    setQuantity((currentQuantity) =>
-      Math.min(
-        currentQuantity,
-        remainingStock
-      )
-    );
-  }, [product, remainingStock]);
-
-  /*
-   * También limpiamos el estado "Agregado"
-   * cuando cambiamos de producto.
-   */
-  useEffect(() => {
-    setAdded(false);
-  }, [id]);
-
-  /*
-   * A partir de aquí sí podemos hacer
-   * returns condicionales porque TODOS
-   * los hooks ya fueron ejecutados.
-   */
   if (loading) {
     return (
       <p className="detail-status">
@@ -128,7 +113,9 @@ function ProductDetail() {
   if (!product) {
     return (
       <h2 className="detail-status">
-        Producto no encontrado
+        {tipo === "combo"
+          ? "Combo no encontrado"
+          : "Producto no encontrado"}
       </h2>
     );
   }
@@ -138,43 +125,58 @@ function ProductDetail() {
       ? product.images
       : [product.image];
 
-  const hasStock = stock > 0;
-  const canAdd = remainingStock > 0;
+  const hasStock =
+    Number(
+      product.stock || 0
+    ) > 0;
 
   const lowStock =
-    canAdd && remainingStock <= 5;
+    hasStock &&
+    Number(product.stock) <=
+      5;
 
-  function handleQuantity(delta) {
-    setQuantity((currentQuantity) =>
+  function handleQuantity(
+    delta
+  ) {
+    setQuantity((q) =>
       Math.min(
-        remainingStock,
+        Number(
+          product.stock || 1
+        ),
         Math.max(
           1,
-          currentQuantity + delta
+          q + delta
         )
       )
     );
   }
 
   function handleAddToCart() {
-    if (!canAdd || quantity <= 0) {
-      return;
-    }
-
-    /*
-     * Agregamos la cantidad seleccionada.
-     *
-     * El primer addToCart muestra el modal.
-     * Los siguientes no vuelven a abrirlo.
-     */
     for (
       let i = 0;
       i < quantity;
       i++
     ) {
-      addToCart(product, {
-        showModal: i === 0,
-      });
+      if (
+        tipo ===
+        "combo"
+      ) {
+        addComboToCart(
+          product,
+          {
+            showModal:
+              i === 0,
+          }
+        );
+      } else {
+        addToCart(
+          product,
+          {
+            showModal:
+              i === 0,
+          }
+        );
+      }
     }
 
     setAdded(true);
@@ -183,6 +185,10 @@ function ProductDetail() {
       setAdded(false);
     }, 2000);
   }
+
+  const tituloCategoria =
+    product.category ||
+    "Juguetes";
 
   return (
     <main className="product-detail-page">
@@ -193,28 +199,33 @@ function ProductDetail() {
           Inicio
         </Link>
 
-        <span>/</span>
+        <span>
+          /
+        </span>
 
         <Link to="/productos">
           Juguetes
         </Link>
 
-        <span>/</span>
+        <span>
+          /
+        </span>
 
         <button
-          type="button"
           onClick={() =>
             navigate(
               `/productos?categoria=${encodeURIComponent(
-                product.category
+                tituloCategoria
               )}`
             )
           }
         >
-          {product.category}
+          {tituloCategoria}
         </button>
 
-        <span>/</span>
+        <span>
+          /
+        </span>
 
         <span className="current">
           {product.name}
@@ -229,30 +240,47 @@ function ProductDetail() {
           <div className="detail-image">
 
             <img
-              src={images[activeImage]}
-              alt={product.name}
+              src={
+                images[
+                  activeImage
+                ]
+              }
+              alt={
+                product.name
+              }
             />
 
           </div>
 
-          {images.length > 1 && (
+          {images.length >
+            1 && (
             <div className="detail-thumbnails">
 
-              {images.map((img, index) => (
-                <img
-                  key={`${img}-${index}`}
-                  src={img}
-                  alt={`${product.name} ${index + 1}`}
-                  className={
-                    index === activeImage
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    setActiveImage(index)
-                  }
-                />
-              ))}
+              {images.map(
+                (
+                  img,
+                  i
+                ) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`${product.name} ${
+                      i + 1
+                    }`}
+                    className={
+                      i ===
+                      activeImage
+                        ? "active"
+                        : ""
+                    }
+                    onClick={() =>
+                      setActiveImage(
+                        i
+                      )
+                    }
+                  />
+                )
+              )}
 
             </div>
           )}
@@ -262,23 +290,55 @@ function ProductDetail() {
         <div className="detail-info">
 
           <span className="detail-category">
-            {product.category}
+            {tipo ===
+            "combo"
+              ? "Combo"
+              : product.category}
           </span>
 
           <h1>
             {product.name}
           </h1>
 
+          {tipo ===
+            "combo" &&
+            product.cantidadAdicional && (
+              <p
+                style={{
+                  color:
+                    "#666",
+                  marginTop:
+                    "-8px",
+                }}
+              >
+                Incluye{" "}
+                {product.cantidadAdicional}{" "}
+                unidad
+                {product.cantidadAdicional >
+                1
+                  ? "es"
+                  : ""}{" "}
+                adicional
+                {product.cantidadAdicional >
+                1
+                  ? "es"
+                  : ""}
+              </p>
+            )}
+
           <div className="detail-price-row">
 
             <h2 className="detail-price">
               $
               {Number(
-                product.price || 0
-              ).toLocaleString("es-CL")}
+                product.price ||
+                  0
+              ).toLocaleString(
+                "es-CL"
+              )}
             </h2>
 
-            {canAdd ? (
+            {hasStock ? (
               <span
                 className={`stock-badge ${
                   lowStock
@@ -287,7 +347,7 @@ function ProductDetail() {
                 }`}
               >
                 {lowStock
-                  ? `¡Últimas ${remainingStock} unidades!`
+                  ? `¡Últimas ${product.stock} unidades!`
                   : "En stock"}
               </span>
             ) : (
@@ -303,7 +363,7 @@ function ProductDetail() {
               "Producto de excelente calidad. Ideal para regalar y disfrutar."}
           </p>
 
-          {canAdd && (
+          {hasStock && (
             <div className="quantity-selector">
 
               <span>
@@ -313,11 +373,15 @@ function ProductDetail() {
               <div className="quantity-controls">
 
                 <button
-                  type="button"
                   onClick={() =>
-                    handleQuantity(-1)
+                    handleQuantity(
+                      -1
+                    )
                   }
-                  disabled={quantity <= 1}
+                  disabled={
+                    quantity <=
+                    1
+                  }
                 >
                   −
                 </button>
@@ -327,12 +391,14 @@ function ProductDetail() {
                 </span>
 
                 <button
-                  type="button"
                   onClick={() =>
-                    handleQuantity(1)
+                    handleQuantity(
+                      1
+                    )
                   }
                   disabled={
-                    quantity >= remainingStock
+                    quantity >=
+                    product.stock
                   }
                 >
                   +
@@ -344,17 +410,25 @@ function ProductDetail() {
           )}
 
           <button
-            type="button"
             className={`add-to-cart-btn ${
-              added ? "added" : ""
+              added
+                ? "added"
+                : ""
             }`}
-            onClick={handleAddToCart}
-            disabled={!canAdd}
+            onClick={
+              handleAddToCart
+            }
+            disabled={
+              !hasStock
+            }
           >
-            {!hasStock || !canAdd
+            {!hasStock
               ? "No disponible"
               : added
               ? "✓ Agregado"
+              : tipo ===
+                "combo"
+              ? "🛒 Agregar combo"
               : "🛒 Agregar al carrito"}
           </button>
 
