@@ -5,20 +5,20 @@ function Categories() {
   const categories = [
     {
       image: "/categoria_logo/clogo1.webp",
-      filter: "Mattel"
+      filter: "Mattel",
     },
     {
       image: "/categoria_logo/clogo2.png",
-      filter: "Marvel"
+      filter: "Marvel",
     },
     {
       image: "/categoria_logo/clogo3.png",
-      filter: "Disney"
+      filter: "Disney",
     },
     {
       image: "/categoria_logo/clogo4.png",
-      filter: "Barbie"
-    }
+      filter: "Barbie",
+    },
   ];
 
   return (
@@ -28,14 +28,20 @@ function Categories() {
       <div className="categories-container">
         {categories.map((category) => (
           <Link
-            key={category.name}
-            to={`/productos?brand=${encodeURIComponent(category.filter)}`}
+            key={category.filter}
+            to={`/productos?brand=${encodeURIComponent(
+              category.filter
+            )}`}
             className="category-card"
           >
             <div className="category-icon">
-              <img src={category.image} alt={category.name} />
+              <img
+                src={category.image}
+                alt={category.filter}
+              />
             </div>
-            <h3>{category.name}</h3>
+
+            <h3>{category.filter}</h3>
           </Link>
         ))}
       </div>

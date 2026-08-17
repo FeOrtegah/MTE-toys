@@ -1,9 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-
 import Navbar from "./components/organisms/Navbar";
 import Contact from "./components/organisms/Contact";
+import Footer from "./components/organisms/Footer";
+import AddedToCartModal from "./components/organisms/AddedToCartModal";
+
 import Home from "./pages/user/Home";
 import Products from "./pages/user/Products";
 import Brands from "./pages/user/Brands";
@@ -12,125 +14,184 @@ import ReturnPolicy from "./pages/user/ReturnPolicy";
 import Cart from "./pages/user/Cart";
 import ContactPage from "./pages/user/Contact";
 import ProductDetail from "./pages/user/ProductDetail";
-import Footer from "./components/organisms/Footer";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
 import Checkout from "./pages/user/Checkout";
 import PaymentResult from "./pages/user/PaymentResult";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import AdminOrders from "./pages/admin/AdminOrders";
+
 import Account from "./pages/user/Account";
 import AccountHome from "./pages/user/AccountHome";
 import MyOrders from "./pages/user/MyOrders";
-import AdminOrders from "./pages/admin/AdminOrders";
 
+function App() {
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [showContact, setShowContact] = useState(true);
 
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let timer;
 
-function App(){
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
 
-const [showNavbar, setShowNavbar] = useState(true);
-const [showContact, setShowContact] = useState(true);
+      if (currentScrollY <= 100) {
+        setShowContact(true);
+        setShowNavbar(true);
 
-useEffect(() => {
+        clearTimeout(timer);
+      } else {
+        setShowContact(false);
 
-let lastScrollY = window.scrollY;
-let timer;
+        if (currentScrollY > lastScrollY) {
+          setShowNavbar(false);
 
-const handleScroll = () => {
+          clearTimeout(timer);
 
-const currentScrollY = window.scrollY;
+          timer = setTimeout(() => {
+            setShowNavbar(true);
+          }, 3000);
+        } else {
+          setShowNavbar(true);
 
-if (currentScrollY <= 100) {
+          clearTimeout(timer);
+        }
+      }
 
-setShowContact(true);
-setShowNavbar(true);
+      lastScrollY = currentScrollY;
+    };
 
-clearTimeout(timer);
+    window.addEventListener("scroll", handleScroll);
 
-} else {
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timer);
+    };
+  }, []);
 
-setShowContact(false);
+  return (
+    <div className="app">
 
-if (currentScrollY > lastScrollY) {
+      <header
+        className={`site-header ${
+          showNavbar ? "navbar-show" : "navbar-hide"
+        } ${
+          showContact ? "with-contact" : "without-contact"
+        }`}
+      >
+        <Contact />
+        <Navbar />
+      </header>
 
-setShowNavbar(false);
+      <main className="content">
+        <Routes>
 
-clearTimeout(timer);
+          <Route
+            path="/login"
+            element={<Login />}
+          />
 
-timer = setTimeout(() => {
+          <Route
+            path="/registro"
+            element={<Register />}
+          />
 
-setShowNavbar(true);
+          <Route
+            path="/"
+            element={<Home />}
+          />
 
-}, 3000);
+          <Route
+            path="/productos"
+            element={<Products />}
+          />
 
-} else {
+          <Route
+            path="/marcas"
+            element={<Brands />}
+          />
 
-setShowNavbar(true);
+          <Route
+            path="/politicas-envio"
+            element={<ShippingPolicy />}
+          />
 
-clearTimeout(timer);
+          <Route
+            path="/politicas-cambio"
+            element={<ReturnPolicy />}
+          />
 
-}
+          <Route
+            path="/producto/:id"
+            element={<ProductDetail />}
+          />
 
-}
+          <Route
+            path="/carrito"
+            element={<Cart />}
+          />
 
-lastScrollY = currentScrollY;
+          <Route
+            path="/contacto"
+            element={<ContactPage />}
+          />
 
-};
+          <Route
+            path="/checkout"
+            element={<Checkout />}
+          />
 
-window.addEventListener("scroll", handleScroll);
+          <Route
+            path="/pago-resultado"
+            element={<PaymentResult />}
+          />
 
-return () => {
-window.removeEventListener("scroll", handleScroll);
-clearTimeout(timer);
-};
+          <Route
+            path="/mi-cuenta"
+            element={<AccountHome />}
+          />
 
-}, []);
+          <Route
+            path="/mi-cuenta/perfil"
+            element={<Account />}
+          />
 
-return(
-<div className="app">
+          <Route
+            path="/mi-cuenta/compras"
+            element={<MyOrders />}
+          />
 
-<header className={`site-header ${showNavbar ? "navbar-show" : "navbar-hide"} ${showContact ? "with-contact" : "without-contact"}`}>
-<Contact/>
-<Navbar/>
-</header>
+          <Route
+            path="/admin/pedidos"
+            element={
+              <ProtectedAdminRoute>
+                <AdminOrders />
+              </ProtectedAdminRoute>
+            }
+          />
 
-<main className="content">
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
 
-<Routes>
-<Route path="/login" element={<Login/>}/>
-<Route path="/registro" element={<Register/>}/>
-<Route path="/" element={<Home/>}/>
-<Route path="/productos" element={<Products/>}/>
-<Route path="/marcas" element={<Brands/>}/>
-<Route path="/politicas-envio" element={<ShippingPolicy/>}/>
-<Route path="/politicas-cambio" element={<ReturnPolicy/>}/>
-<Route path="/producto/:id" element={<ProductDetail/>}/>
-<Route path="/carrito" element={<Cart/>}/>
-<Route path="/contacto" element={<ContactPage/>}/>
-<Route path="/checkout" element={<Checkout/>}/>
-<Route path="/pago-resultado" element={<PaymentResult/>}/>
-<Route path="/mi-cuenta" element={<AccountHome/>}/>
-<Route path="/mi-cuenta/perfil" element={<Account/>}/>
-<Route path="/mi-cuenta/compras" element={<MyOrders/>}/>
-<Route path="/admin/pedidos" element={<ProtectedAdminRoute><AdminOrders/></ProtectedAdminRoute>}/>
+        </Routes>
+      </main>
 
-<Route
-path="/admin"
-element={
-<ProtectedAdminRoute>
-<AdminDashboard/>
-</ProtectedAdminRoute>
-}
-/>
-</Routes>
+      <Footer />
 
-</main>
+      <AddedToCartModal />
 
-<Footer/>
-
-</div>
-);
-
+    </div>
+  );
 }
 
 export default App;

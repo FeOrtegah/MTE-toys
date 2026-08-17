@@ -1,0 +1,165 @@
+.added-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.55);
+
+  padding: 20px;
+
+  animation: addedOverlayAppear 0.2s ease;
+}
+
+.added-modal {
+  width: 100%;
+  max-width: 420px;
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  padding: 35px 30px;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.25);
+
+  animation: addedModalAppear 0.25s ease;
+}
+
+.added-check {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #28a745;
+
+  color: #ffffff;
+
+  font-size: 42px;
+  font-weight: bold;
+
+  animation: addedCheckAppear 0.35s ease;
+}
+
+.added-modal h2 {
+  margin: 0 0 10px;
+
+  font-size: 22px;
+
+  color: #222222;
+}
+
+.added-product-name {
+  margin: 0 0 25px;
+
+  color: #666666;
+
+  font-size: 15px;
+}
+
+.added-modal-actions {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.go-cart-btn,
+.continue-shopping-btn {
+  width: 100%;
+
+  border: none;
+
+  padding: 13px 20px;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.go-cart-btn {
+  background: #28a745;
+
+  color: #ffffff;
+}
+
+.go-cart-btn:hover {
+  background: #f7931e;
+
+  transform: translateY(-1px);
+}
+
+.continue-shopping-btn {
+  background: #e9e9e9;
+
+  color: #333333;
+}
+
+.continue-shopping-btn:hover {
+  background: #dcdcdc;
+}
+
+@keyframes addedOverlayAppear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes addedModalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes addedCheckAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .added-modal {
+    padding: 30px 20px;
+  }
+
+  .added-modal h2 {
+    font-size: 19px;
+  }
+}
