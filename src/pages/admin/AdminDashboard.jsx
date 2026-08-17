@@ -1032,24 +1032,29 @@ function AdminDashboard() {
     }
   }
 
-  async function handleActivateCombo(
-    id
-  ) {
-    try {
-      const combo =
+    async function handleActivateCombo(id) {
+      try {
         await activateCombo(id);
 
-      setCombos((prev) =>
-        prev.map((c) =>
-          c._id === id
-            ? combo
-            : c
-        )
-      );
-    } catch (err) {
-      alert(err.message);
+        setCombos((prev) =>
+          prev.map((combo) =>
+            String(combo._id) === String(id)
+              ? {
+                  ...combo,
+                  activo: true,
+                }
+              : combo
+          )
+        );
+      } catch (err) {
+        console.error("Error activando combo:", err);
+
+        alert(
+          err.message ||
+            "No se pudo activar el combo"
+        );
+      }
     }
-  }
 
   // =========================
   // ELIMINAR COMBO PERMANENTEMENTE
