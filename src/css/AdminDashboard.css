@@ -345,6 +345,31 @@ cursor:pointer;
   border-radius: 20px;
   display: inline-block;
 }
+.url-cloudinary {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.url-cloudinary textarea {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  min-height: 80px;
+  resize: horizontal;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.url-cloudinary button {
+  white-space: nowrap;
+  align-self: center;
+}
 
 .badge-pendiente { background:#fff4cc; color:#a67c00; }
 .badge-pagado { background:#e3f0ff; color:#1a6dd1; }

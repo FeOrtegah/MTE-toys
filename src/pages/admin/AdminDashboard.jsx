@@ -195,22 +195,22 @@ function AdminDashboard() {
   // =========================
 
   function startEdit(p) {
-  setEditingId(p.id);
+    setEditingId(p.id);
 
-  setDraft({
-    nombre: p.name || "",
-    descripcion: p.description || p.descripcion || "",
-    precio: p.price ?? "",
-    precioOferta: p.precioOferta ?? "",
-    enOferta: Boolean(p.enOferta),
-    destacado: Boolean(p.destacado),
-    categoria: p.category || p.categoria || "",
-    stock: p.stock ?? "",
-    imagenes: p.images || p.imagenes || [],
-  });
+    setDraft({
+      nombre: p.name || "",
+      descripcion: p.description || p.descripcion || "",
+      precio: p.price ?? "",
+      precioOferta: p.precioOferta ?? "",
+      enOferta: Boolean(p.enOferta),
+      destacado: Boolean(p.destacado),
+      categoria: p.category || p.categoria || "",
+      stock: p.stock ?? "",
+      imagenes: p.images || p.imagenes || [],
+    });
 
-  setUrlImagenEdit("");
-}
+    setUrlImagenEdit("");
+  }
 
   function cancelEdit() {
     setEditingId(null);
@@ -410,25 +410,38 @@ function AdminDashboard() {
   }
 
   function addImagenPorUrl() {
-    const url = urlImagen.trim();
+    const texto = urlImagen.trim();
 
-    if (!url) return;
+    if (!texto) return;
 
-    if (
-      productForm.imagenes.includes(url)
-    ) {
-      setUrlImagen("");
+    // Permite pegar varias URLs:
+    // - una por línea
+    // - separadas por coma
+    // - separadas por espacios
+    const urls = texto
+      .split(/[\n,\s]+/)
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0);
+
+    if (urls.length === 0) {
       return;
     }
 
-    setProductForm((prev) => ({
-      ...prev,
+    setProductForm((prev) => {
+      const imagenesActuales = prev.imagenes || [];
 
-      imagenes: [
-        ...prev.imagenes,
-        url,
-      ],
-    }));
+      const nuevasImagenes = urls.filter(
+        (url) => !imagenesActuales.includes(url)
+      );
+
+      return {
+        ...prev,
+        imagenes: [
+          ...imagenesActuales,
+          ...nuevasImagenes,
+        ],
+      };
+    });
 
     setUrlImagen("");
   }
@@ -1492,25 +1505,22 @@ function AdminDashboard() {
               />
             </label>
 
-            <div className="url-imagen-row">
-              <input
-                type="text"
-                placeholder="URL de imagen"
-                value={urlImagen}
-                onChange={(e) =>
-                  setUrlImagen(
-                    e.target.value
-                  )
-                }
+            <div className="url-imagen-row url-cloudinary">
+              <textarea
+                placeholder={`Pega una o varias URLs de Cloudinary aquí.
+                  Puedes poner una URL por línea o separarlas por comas.`}
+                  value={urlImagen}
+                  onChange={(e) =>
+                    setUrlImagen(e.target.value)
+                  }
+                  rows={4}
               />
 
               <button
                 type="button"
-                onClick={
-                  addImagenPorUrl
-                }
+                onClick={addImagenPorUrl}
               >
-                Agregar
+                Agregar imágenes
               </button>
             </div>
 
