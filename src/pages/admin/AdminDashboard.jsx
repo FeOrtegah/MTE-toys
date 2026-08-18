@@ -14,7 +14,6 @@ import StatsCards from "../../components/admin/StatsCards";
 import OrdersSection from "../../components/admin/OrdersSection";
 import ProductCreateForm from "../../components/admin/ProductCreateForm";
 import ProductsSection from "../../components/admin/ProductsSection";
-import ComboCreateForm from "../../components/admin/ComboCreateForm";
 import CombosSection from "../../components/admin/CombosSection";
 
 import "../../css/AdminDashboard.css";
@@ -122,13 +121,6 @@ function AdminDashboard() {
       <ProductsSection
         products={products}
         setProducts={setProducts}
-      />
-
-      <ComboCreateForm
-        products={products}
-        onCreated={(newCombo) =>
-          setCombos((prev) => [newCombo, ...prev])
-        }
       />
 
       <CombosSection
