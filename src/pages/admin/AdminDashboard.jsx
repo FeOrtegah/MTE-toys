@@ -11,6 +11,7 @@ import {
 import { getOrders } from "../../services/orderService";
 
 import StatsCards from "../../components/admin/StatsCards";
+import AdminTabs from "../../components/admin/AdminTabs";
 import OrdersSection from "../../components/admin/OrdersSection";
 import ProductCreateForm from "../../components/admin/ProductCreateForm";
 import ProductsSection from "../../components/admin/ProductsSection";
@@ -25,6 +26,9 @@ function AdminDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [activeTab, setActiveTab] =
+    useState("pedidos");
 
   function cargarDatosIniciales() {
     setLoading(true);
@@ -104,30 +108,44 @@ function AdminDashboard() {
         pedidosStats={pedidosStats}
       />
 
-      <OrdersSection
-        orders={orders}
-        setOrders={setOrders}
+      <AdminTabs
+        activeTab={activeTab}
+        onChange={setActiveTab}
       />
 
-      <ProductCreateForm
-        onCreated={(newProduct) =>
-          setProducts((prev) => [
-            newProduct,
-            ...prev,
-          ])
-        }
-      />
+      {activeTab === "pedidos" && (
+        <OrdersSection
+          orders={orders}
+          setOrders={setOrders}
+        />
+      )}
 
-      <ProductsSection
-        products={products}
-        setProducts={setProducts}
-      />
+      {activeTab === "crear-producto" && (
+        <ProductCreateForm
+          onCreated={(newProduct) => {
+            setProducts((prev) => [
+              newProduct,
+              ...prev,
+            ]);
+            setActiveTab("productos");
+          }}
+        />
+      )}
 
-      <CombosSection
-        combos={combos}
-        setCombos={setCombos}
-        products={products}
-      />
+      {activeTab === "productos" && (
+        <ProductsSection
+          products={products}
+          setProducts={setProducts}
+        />
+      )}
+
+      {activeTab === "combos" && (
+        <CombosSection
+          combos={combos}
+          setCombos={setCombos}
+          products={products}
+        />
+      )}
     </main>
   );
 }

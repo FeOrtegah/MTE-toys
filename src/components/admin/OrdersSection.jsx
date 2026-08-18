@@ -1,4 +1,10 @@
-import { getOrders, cancelOrder } from "../../services/orderService";
+import { useState } from "react";
+
+import {
+  getOrders,
+  cancelOrder,
+  markAsShipped,
+} from "../../services/orderService";
 
 const ESTADOS_PEDIDO = {
   pendiente: {
@@ -19,11 +25,21 @@ const ESTADOS_PEDIDO = {
   },
 };
 
+const FILTROS = [
+  { key: "todos", label: "Todos" },
+  { key: "pagado", label: "Pagados (por enviar)" },
+  { key: "pendiente", label: "Pendientes" },
+  { key: "enviado", label: "Enviados" },
+  { key: "cancelado", label: "Cancelados" },
+];
+
 function formatFechaPedido(fecha) {
   return new Date(fecha).toLocaleString("es-CL");
 }
 
 function OrdersSection({ orders, setOrders }) {
+  const [filtro, setFiltro] = useState("todos");
+
   function recargarPedidos() {
     getOrders()
       .then(setOrders)
@@ -55,6 +71,39 @@ function OrdersSection({ orders, setOrders }) {
     }
   }
 
+  async function handleMarkAsShipped(id) {
+    if (
+      !confirm(
+        "¿Marcar este pedido como enviado?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await markAsShipped(id);
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === id
+            ? { ...o, estado: "enviado" }
+            : o
+        )
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  const ordersFiltrados =
+    filtro === "todos"
+      ? orders
+      : orders.filter((o) => o.estado === filtro);
+
+  const pagadosPorEnviar = orders.filter(
+    (o) => o.estado === "pagado"
+  ).length;
+
   return (
     <section className="admin-section">
       <h2>Pedidos</h2>
@@ -70,6 +119,29 @@ function OrdersSection({ orders, setOrders }) {
         minutos se cancelan automáticamente.
       </p>
 
+      <div className="admin-filtros">
+        {FILTROS.map((f) => (
+          <button
+            key={f.key}
+            type="button"
+            className={
+              filtro === f.key
+                ? "admin-filtro-btn admin-filtro-activo"
+                : "admin-filtro-btn"
+            }
+            onClick={() => setFiltro(f.key)}
+          >
+            {f.label}
+            {f.key === "pagado" &&
+              pagadosPorEnviar > 0 && (
+                <span className="admin-filtro-badge">
+                  {pagadosPorEnviar}
+                </span>
+              )}
+          </button>
+        ))}
+      </div>
+
       <div className="admin-table-wrapper">
         <table className="admin-table">
           <thead>
@@ -83,7 +155,7 @@ function OrdersSection({ orders, setOrders }) {
           </thead>
 
           <tbody>
-            {orders.length === 0 ? (
+            {ordersFiltrados.length === 0 ? (
               <tr>
                 <td
                   colSpan="5"
@@ -93,11 +165,11 @@ function OrdersSection({ orders, setOrders }) {
                     color: "#777",
                   }}
                 >
-                  Todavía no hay pedidos.
+                  No hay pedidos en esta categoría.
                 </td>
               </tr>
             ) : (
-              orders.map((o) => {
+              ordersFiltrados.map((o) => {
                 const estado =
                   ESTADOS_PEDIDO[o.estado] ||
                   ESTADOS_PEDIDO.pendiente;
@@ -137,8 +209,7 @@ function OrdersSection({ orders, setOrders }) {
                     </td>
 
                     <td className="admin-actions">
-                      {o.estado ===
-                        "pendiente" && (
+                      {o.estado === "pendiente" && (
                         <button
                           className="btn-eliminar"
                           onClick={() =>
@@ -148,6 +219,19 @@ function OrdersSection({ orders, setOrders }) {
                           }
                         >
                           Cancelar
+                        </button>
+                      )}
+
+                      {o.estado === "pagado" && (
+                        <button
+                          className="btn-guardar"
+                          onClick={() =>
+                            handleMarkAsShipped(
+                              o._id
+                            )
+                          }
+                        >
+                          Marcar como enviado
                         </button>
                       )}
                     </td>
