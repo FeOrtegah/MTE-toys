@@ -1680,7 +1680,8 @@ function Checkout() {
 
       const { url, token } =
         await initWebpayTransaction(
-          pedido._id
+          pedido._id,
+          pedido.accessToken
         );
 
       redirectToWebpay(url, token);

@@ -1,8 +1,13 @@
 import { request } from "./api.js";
 
 // Inicia la transacción en Transbank para un pedido ya creado (estado "pendiente")
-export const initWebpayTransaction = (orderId) =>
-  request("/webpay/init", { method: "POST", body: { orderId } });
+// accessToken: entregado una sola vez por el backend al crear el pedido,
+// obligatorio para evitar que alguien inicie el pago de un pedido ajeno.
+export const initWebpayTransaction = (orderId, accessToken) =>
+  request("/webpay/init", {
+    method: "POST",
+    body: { orderId, accessToken },
+  });
 
 // Redirige al navegador al formulario de pago de Webpay.
 // Webpay Plus exige que la llegada sea un POST con el campo token_ws,
