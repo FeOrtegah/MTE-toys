@@ -381,3 +381,139 @@ cursor:pointer;
 grid-template-columns:repeat(2,1fr);
 }
 }
+
+/* ================= MODAL EDITAR PRODUCTO ================= */
+
+.admin-modal-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.5);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:1000;
+padding:20px;
+}
+
+.admin-modal{
+background:white;
+border-radius:14px;
+width:100%;
+max-width:560px;
+max-height:90vh;
+overflow-y:auto;
+box-shadow:0 10px 40px rgba(0,0,0,0.25);
+}
+
+.admin-modal-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:20px 24px;
+border-bottom:1px solid #eee;
+position:sticky;
+top:0;
+background:white;
+}
+
+.admin-modal-header h3{
+margin:0;
+font-size:18px;
+}
+
+.admin-modal-close{
+background:none;
+border:none;
+font-size:22px;
+line-height:1;
+cursor:pointer;
+color:#666;
+padding:4px 8px;
+}
+
+.admin-modal-body{
+padding:24px;
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+.admin-modal-field{
+display:flex;
+flex-direction:column;
+gap:6px;
+flex:1;
+}
+
+.admin-modal-field label{
+font-size:13px;
+font-weight:600;
+color:#444;
+}
+
+.admin-modal-field input[type="text"],
+.admin-modal-field input[type="number"]{
+padding:9px 10px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:14px;
+width:100%;
+box-sizing:border-box;
+}
+
+.admin-modal-field textarea{
+padding:9px 10px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:14px;
+min-height:70px;
+font-family:inherit;
+resize:vertical;
+width:100%;
+box-sizing:border-box;
+}
+
+.admin-modal-row{
+display:flex;
+gap:16px;
+}
+
+.admin-modal-row .checkbox-label{
+display:flex;
+align-items:center;
+gap:6px;
+font-size:14px;
+}
+
+.admin-modal-footer{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:16px 24px;
+border-top:1px solid #eee;
+gap:10px;
+flex-wrap:wrap;
+position:sticky;
+bottom:0;
+background:white;
+}
+
+.admin-modal-footer-left,
+.admin-modal-footer-right{
+display:flex;
+gap:8px;
+}
+
+@media(max-width:600px){
+.admin-modal-row{
+flex-direction:column;
+}
+.admin-modal-footer{
+flex-direction:column;
+align-items:stretch;
+}
+.admin-modal-footer-left,
+.admin-modal-footer-right{
+justify-content:center;
+}
+}
