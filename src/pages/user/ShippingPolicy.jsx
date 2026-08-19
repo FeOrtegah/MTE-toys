@@ -1,4 +1,5 @@
 import "../../css/Policy.css";
+import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
 
 function ShippingPolicy() {
   return (
@@ -17,7 +18,26 @@ function ShippingPolicy() {
       </section>
 
       <section className="policy-section">
-        <h2>3. Seguimiento</h2>
+        <h2>3. Zonas de Cobertura en Santiago</h2>
+        <p>
+          Dentro del Gran Santiago trabajamos con distintos couriers según la
+          comuna de destino:
+        </p>
+
+        <img
+          src={mapaZonasEnvio}
+          alt="Mapa de zonas de cobertura en Santiago: Logística 360 (verde) y Bluexpress (celeste)"
+          className="policy-image"
+        />
+
+        <p>
+          Fuera de estas zonas, el despacho se realiza a través de
+          Chilexpress, pagado directamente al recibir el pedido.
+        </p>
+      </section>
+
+      <section className="policy-section">
+        <h2>4. Seguimiento</h2>
         <p>Una vez que tu pedido sea despachado, recibirás la información necesaria para realizar el seguimiento del paquete hasta la puerta de tu casa.</p>
       </section>
     </main>
