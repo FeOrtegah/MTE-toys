@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import {
   getOrders,
@@ -37,8 +37,15 @@ function formatFechaPedido(fecha) {
   return new Date(fecha).toLocaleString("es-CL");
 }
 
+// Formato yyyy-mm-dd que usan los <input type="date">
+function toInputDate(date) {
+  return date.toISOString().slice(0, 10);
+}
+
 function OrdersSection({ orders, setOrders }) {
   const [filtro, setFiltro] = useState("todos");
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
 
   function recargarPedidos() {
     getOrders()
@@ -95,14 +102,65 @@ function OrdersSection({ orders, setOrders }) {
     }
   }
 
-  const ordersFiltrados =
-    filtro === "todos"
-      ? orders
-      : orders.filter((o) => o.estado === filtro);
+  function aplicarAtajoFecha(dias) {
+    const hasta = new Date();
+    const desde = new Date();
+
+    if (dias !== null) {
+      desde.setDate(desde.getDate() - dias);
+      setFechaDesde(toInputDate(desde));
+      setFechaHasta(toInputDate(hasta));
+    } else {
+      // "Todo el tiempo": limpiar filtro de fecha
+      setFechaDesde("");
+      setFechaHasta("");
+    }
+  }
+
+  function limpiarFiltroFecha() {
+    setFechaDesde("");
+    setFechaHasta("");
+  }
+
+  const ordersFiltrados = useMemo(() => {
+    let lista = orders;
+
+    if (filtro !== "todos") {
+      lista = lista.filter(
+        (o) => o.estado === filtro
+      );
+    }
+
+    if (fechaDesde) {
+      const desde = new Date(
+        `${fechaDesde}T00:00:00`
+      );
+
+      lista = lista.filter(
+        (o) => new Date(o.createdAt) >= desde
+      );
+    }
+
+    if (fechaHasta) {
+      const hasta = new Date(
+        `${fechaHasta}T23:59:59`
+      );
+
+      lista = lista.filter(
+        (o) => new Date(o.createdAt) <= hasta
+      );
+    }
+
+    return lista;
+  }, [orders, filtro, fechaDesde, fechaHasta]);
 
   const pagadosPorEnviar = orders.filter(
     (o) => o.estado === "pagado"
   ).length;
+
+  const hayFiltroFechaActivo = Boolean(
+    fechaDesde || fechaHasta
+  );
 
   return (
     <section className="admin-section">
@@ -141,6 +199,78 @@ function OrdersSection({ orders, setOrders }) {
           </button>
         ))}
       </div>
+
+      <div className="admin-filtro-fechas">
+        <div className="admin-filtro-fechas-atajos">
+          <button
+            type="button"
+            className="admin-filtro-btn"
+            onClick={() => aplicarAtajoFecha(0)}
+          >
+            Hoy
+          </button>
+
+          <button
+            type="button"
+            className="admin-filtro-btn"
+            onClick={() => aplicarAtajoFecha(7)}
+          >
+            Últimos 7 días
+          </button>
+
+          <button
+            type="button"
+            className="admin-filtro-btn"
+            onClick={() => aplicarAtajoFecha(30)}
+          >
+            Últimos 30 días
+          </button>
+
+          {hayFiltroFechaActivo && (
+            <button
+              type="button"
+              className="admin-filtro-btn"
+              onClick={limpiarFiltroFecha}
+            >
+              Quitar filtro de fecha
+            </button>
+          )}
+        </div>
+
+        <div className="admin-filtro-fechas-manual">
+          <label>
+            Desde
+            <input
+              type="date"
+              value={fechaDesde}
+              onChange={(e) =>
+                setFechaDesde(e.target.value)
+              }
+            />
+          </label>
+
+          <label>
+            Hasta
+            <input
+              type="date"
+              value={fechaHasta}
+              onChange={(e) =>
+                setFechaHasta(e.target.value)
+              }
+            />
+          </label>
+        </div>
+      </div>
+
+      <p
+        style={{
+          color: "#777",
+          fontSize: 13,
+        }}
+      >
+        Mostrando {ordersFiltrados.length} de{" "}
+        {orders.length} pedidos
+      </p>
 
       <div className="admin-table-wrapper">
         <table className="admin-table">

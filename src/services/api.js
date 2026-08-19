@@ -17,10 +17,23 @@ export async function request(
     }
   }
 
+  // Métodos que pueden llevar cuerpo (PATCH, POST, PUT, DELETE):
+  // si no se pasó "body" explícito, mandamos "{}" en vez de nada.
+  // Algunos proxies/servidores (ej. LiteSpeed en cPanel) rechazan
+  // peticiones con Content-Type: application/json pero sin cuerpo real.
+  const metodosConCuerpo = ["POST", "PUT", "PATCH", "DELETE"];
+
+  const necesitaCuerpo =
+    metodosConCuerpo.includes(method.toUpperCase());
+
   const res = await fetch(`${API_URL}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body
+      ? JSON.stringify(body)
+      : necesitaCuerpo
+      ? "{}"
+      : undefined,
   });
 
   let data = null;
