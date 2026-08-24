@@ -3,6 +3,7 @@ import mastercardLogo from "../../assets/mastercard-logo.png";
 import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
 import {
   COSTO_LOGISTICA_360,
+  DIRECCION_SEDE,
   NOMBRES_METODO_ENVIO,
 } from "../../data/comunasChile.js";
 
@@ -89,6 +90,12 @@ function OrderSummary({
               : `${NOMBRES_METODO_ENVIO[metodoEnvio]} por pagar`}
           </span>
         </div>
+      )}
+
+      {metodoEnvio === "retiro_local" && (
+        <p className="order-pickup-address">
+          📍 {DIRECCION_SEDE}
+        </p>
       )}
 
       <div className="line"></div>

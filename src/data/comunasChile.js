@@ -453,16 +453,21 @@ const COMUNAS_AZULES = [
 
 const COSTO_LOGISTICA_360 = 3490;
 
+// Dirección de la sede para retiro en persona
+const DIRECCION_SEDE = "Heraldo Latorre 974, Pudahuel";
+
 // Etiquetas legibles para cada método de envío
 const NOMBRES_METODO_ENVIO = {
   logistica360: "Logística 360",
   bluexpress: "Bluexpress",
   starken: "Starken",
   chilexpress: "Chilexpress",
-  retiro_local: "Retiro en local",
+  retiro_local: "Retiro en sede",
 };
 
-// Métodos de envío disponibles según la zona de la comuna
+// Métodos de envío disponibles según la zona de la comuna.
+// "Retiro en sede" solo aplica dentro de Santiago (verde/azul):
+// fuera de Santiago no tiene sentido ofrecer retiro presencial.
 const METODOS_POR_ZONA = {
   verde: [
     "logistica360",
@@ -471,12 +476,7 @@ const METODOS_POR_ZONA = {
     "retiro_local",
   ],
   azul: ["bluexpress", "starken", "retiro_local"],
-  fuera: [
-    "bluexpress",
-    "starken",
-    "chilexpress",
-    "retiro_local",
-  ],
+  fuera: ["bluexpress", "starken", "chilexpress"],
 };
 
 export {
@@ -485,6 +485,7 @@ export {
   COMUNAS_VERDES,
   COMUNAS_AZULES,
   COSTO_LOGISTICA_360,
+  DIRECCION_SEDE,
   NOMBRES_METODO_ENVIO,
   METODOS_POR_ZONA,
 };

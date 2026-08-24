@@ -505,3 +505,32 @@
   height: auto;
   border-radius: 8px;
 }
+/* ================= MENSAJE ENVÍO GRATIS ================= */
+
+.shipping-free-msg {
+  background: #e6f7ec;
+  color: #1f9d55;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ================= DIRECCIÓN DE RETIRO EN SEDE ================= */
+
+.shipping-pickup-address {
+  background: #f0f7ff;
+  color: #1a5fb4;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* ================= DIRECCIÓN DE RETIRO EN EL RESUMEN ================= */
+
+.order-pickup-address {
+  font-size: 13px;
+  color: #1a5fb4;
+  margin: -6px 0 6px;
+}

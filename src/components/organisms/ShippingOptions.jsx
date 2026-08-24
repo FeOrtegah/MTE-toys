@@ -1,4 +1,7 @@
-import { COSTO_LOGISTICA_360 } from "../../data/comunasChile.js";
+import {
+  COSTO_LOGISTICA_360,
+  DIRECCION_SEDE,
+} from "../../data/comunasChile.js";
 
 // Bloque de radios de método de envío (Logística 360,
 // Bluexpress, Starken, Chilexpress, Retiro en local),
@@ -40,7 +43,7 @@ function ShippingOptions({
                     </strong>
                     . Puedes elegir entre
                     Logística 360, Bluexpress,
-                    Starken o retiro en local.
+                    Starken o retiro en sede.
                   </p>
                 )}
 
@@ -51,7 +54,7 @@ function ShippingOptions({
                     <strong> comunas azules</strong>.
                     Puedes elegir entre Bluexpress,
                     Starken (ambos por pagar) o
-                    retiro en local.
+                    retiro en sede.
                   </p>
                 )}
 
@@ -60,8 +63,7 @@ function ShippingOptions({
                   Hacemos despacho a
                   <strong> todo Chile</strong> a
                   través de Bluexpress, Starken o
-                  Chilexpress, todos por pagar. También
-                  puedes retirar en local.
+                  Chilexpress, todos por pagar.
                 </p>
               )}
 
@@ -243,11 +245,10 @@ function ShippingOptions({
                   </label>
                 )}
 
-                {/* RETIRO EN LOCAL */}
+                {/* RETIRO EN SEDE (SOLO DENTRO DE SANTIAGO) */}
 
                 {(zonaEnvio === "verde" ||
-                  zonaEnvio === "azul" ||
-                  zonaEnvio === "fuera") &&
+                  zonaEnvio === "azul") &&
                   !envioGratisSoloLogistica && (
                   <label
                     className={`shipping-method ${
@@ -276,11 +277,11 @@ function ShippingOptions({
                     <span>
 
                       <strong>
-                        Retiro en local
+                        Retiro en sede
                       </strong>
 
                       <small>
-                        Gratis
+                        Gratis · {DIRECCION_SEDE}
                       </small>
 
                     </span>
@@ -289,6 +290,13 @@ function ShippingOptions({
                 )}
 
               </div>
+
+              {metodoEnvio === "retiro_local" && (
+                <p className="shipping-pickup-address">
+                  📍 Retira tu pedido en:{" "}
+                  <strong>{DIRECCION_SEDE}</strong>
+                </p>
+              )}
 
               {errores.metodoEnvio && (
                 <small className="field-error">

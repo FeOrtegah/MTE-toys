@@ -43,10 +43,11 @@ function ShippingPolicy() {
       </section>
 
       <section className="policy-section">
-        <h2>5. Retiro en Local</h2>
+        <h2>5. Retiro en Sede</h2>
         <p>
-          También puedes retirar tu pedido directamente en nuestro local,
-          sin costo de envío.
+          Si tu dirección está dentro de Santiago, también puedes retirar
+          tu pedido directamente en nuestra sede, sin costo de envío:
+          <strong> Heraldo Latorre 974, Pudahuel</strong>.
         </p>
       </section>
 
