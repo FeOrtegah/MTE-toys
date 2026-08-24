@@ -32,6 +32,7 @@ function Banner() {
   );
 
   const [current, setCurrent] = useState(0);
+  const [pausado, setPausado] = useState(false);
 
   useEffect(() => {
     getSiteContent("banner")
@@ -46,6 +47,11 @@ function Banner() {
   }, []);
 
   useEffect(() => {
+    // No rotar mientras el admin está editando un banner
+    if (pausado) {
+      return;
+    }
+
     const interval = setInterval(() => {
       setCurrent(
         (prev) => (prev + 1) % banners.length
@@ -53,7 +59,7 @@ function Banner() {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [banners.length]);
+  }, [banners.length, pausado]);
 
   function next() {
     setCurrent(
@@ -144,6 +150,7 @@ function Banner() {
                   ? () => handleDelete(banner)
                   : undefined
               }
+              onEditingChange={setPausado}
             >
               <img
                 src={banner.imagen}

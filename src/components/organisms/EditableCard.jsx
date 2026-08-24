@@ -31,6 +31,7 @@ function EditableCard({
   camposTexto = "titulo",
   onSave,
   onDelete,
+  onEditingChange,
   children,
 }) {
   const [editando, setEditando] = useState(false);
@@ -44,9 +45,15 @@ function EditableCard({
     link,
   });
 
+  function cerrarEdicion() {
+    setEditando(false);
+    onEditingChange?.(false);
+  }
+
   function abrirEdicion() {
     setDraft({ imagen, titulo, subtitulo, link });
     setEditando(true);
+    onEditingChange?.(true);
   }
 
   async function handleImagenChange(e) {
@@ -83,7 +90,7 @@ function EditableCard({
 
     try {
       await onSave(draft);
-      setEditando(false);
+      cerrarEdicion();
     } catch (err) {
       alert(err.message);
     } finally {
@@ -98,7 +105,7 @@ function EditableCard({
 
     try {
       await onDelete();
-      setEditando(false);
+      cerrarEdicion();
     } catch (err) {
       alert(err.message);
     }
@@ -124,7 +131,7 @@ function EditableCard({
       {editando && (
         <div
           className="editable-card-overlay"
-          onClick={() => setEditando(false)}
+          onClick={cerrarEdicion}
         >
           <div
             className="editable-card-form"
@@ -195,7 +202,7 @@ function EditableCard({
             <div className="editable-card-actions">
               <button
                 type="button"
-                onClick={() => setEditando(false)}
+                onClick={cerrarEdicion}
               >
                 Cancelar
               </button>
