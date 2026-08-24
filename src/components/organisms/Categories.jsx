@@ -100,6 +100,41 @@ function Categories() {
     setMarcas((prev) => [...prev, nuevo]);
   }
 
+  function renderMarca(marca, key) {
+    return (
+      <EditableCard
+        key={key}
+        isAdmin={isAdmin}
+        imagen={marca.imagen}
+        titulo={marca.titulo}
+        link={marca.link}
+        camposTexto="titulo"
+        onSave={(draft) =>
+          handleSave(marca, draft)
+        }
+        onDelete={
+          marca._id
+            ? () => handleDelete(marca)
+            : undefined
+        }
+      >
+        <Link
+          to={marca.link || "/productos"}
+          className="category-card"
+        >
+          <div className="category-icon">
+            <img
+              src={marca.imagen}
+              alt={`Productos ${marca.titulo}`}
+            />
+          </div>
+
+          <h3>{marca.titulo}</h3>
+        </Link>
+      </EditableCard>
+    );
+  }
+
   return (
     <section
       className="categories-section"
@@ -107,48 +142,37 @@ function Categories() {
     >
       <h2>Conoce nuestras marcas</h2>
 
+      {/* La cinta se arma duplicando la lista de marcas
+          para que la animación se vea continua (efecto
+          "marquee"): al llegar a -50% del ancho, coincide
+          exactamente con el inicio y no se nota el salto. */}
       <div className="categories-carousel">
-        {marcas.map((marca, index) => (
-          <EditableCard
-            key={marca._id || index}
-            isAdmin={isAdmin}
-            imagen={marca.imagen}
-            titulo={marca.titulo}
-            link={marca.link}
-            camposTexto="titulo"
-            onSave={(draft) =>
-              handleSave(marca, draft)
-            }
-            onDelete={
-              marca._id
-                ? () => handleDelete(marca)
-                : undefined
-            }
-          >
-            <Link
-              to={marca.link || "/productos"}
-              className="category-card"
-            >
-              <div className="category-icon">
-                <img
-                  src={marca.imagen}
-                  alt={`Productos ${marca.titulo}`}
-                />
-              </div>
+        <div className="categories-track">
+          {marcas.map((marca, index) =>
+            renderMarca(
+              marca,
+              marca._id || `a-${index}`
+            )
+          )}
 
-              <h3>{marca.titulo}</h3>
-            </Link>
-          </EditableCard>
-        ))}
+          {marcas.map((marca, index) =>
+            renderMarca(
+              marca,
+              `dup-${marca._id || index}`
+            )
+          )}
+        </div>
+      </div>
 
-        {isAdmin && (
+      {isAdmin && (
+        <div className="categories-add-row">
           <AddContentCard
             camposTexto="titulo"
             className="category-card"
             onCreate={handleCreate}
           />
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
