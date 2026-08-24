@@ -298,6 +298,7 @@ function OrdersSection({ orders, setOrders }) {
           <thead>
             <tr>
               <th>Cliente</th>
+              <th>Método</th>
               <th>Dirección de envío</th>
               <th>Fecha</th>
               <th>Estado</th>
@@ -310,7 +311,7 @@ function OrdersSection({ orders, setOrders }) {
             {ordersFiltrados.length === 0 ? (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7"
                   style={{
                     textAlign: "center",
                     padding: 20,
@@ -327,6 +328,9 @@ function OrdersSection({ orders, setOrders }) {
                   ESTADOS_PEDIDO.pendiente;
 
                 const envio = o.cliente?.envio;
+                const esRetiroEnSede =
+                  o.metodoEnvio ===
+                  "Retiro en sede";
 
                 return (
                   <tr key={o._id}>
@@ -347,7 +351,25 @@ function OrdersSection({ orders, setOrders }) {
                     </td>
 
                     <td>
-                      {envio ? (
+                      {esRetiroEnSede ? (
+                        <span className="badge-retiro-sede">
+                          📍 Retiro en sede
+                        </span>
+                      ) : (
+                        o.metodoEnvio || "—"
+                      )}
+                    </td>
+
+                    <td>
+                      {esRetiroEnSede ? (
+                        <small
+                          style={{
+                            color: "#777",
+                          }}
+                        >
+                          No requiere despacho
+                        </small>
+                      ) : envio ? (
                         <>
                           {envio.nombreReceptor}
                           <br />
