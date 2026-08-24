@@ -27,3 +27,10 @@ export const hardDeleteOrder = (id) =>
     method: "DELETE",
     auth: true,
   });
+
+// Pública: la llama el cliente al hacer clic en el
+// botón de WhatsApp en la página de transferencia
+export const markWhatsappNotified = (id) =>
+  request(`/orders/${id}/aviso-whatsapp`, {
+    method: "PATCH",
+  });

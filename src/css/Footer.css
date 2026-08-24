@@ -56,3 +56,22 @@ text-align:center;
 align-items:center;
 }
 }
+
+/* ================= LOGOS DE MEDIOS DE PAGO ================= */
+
+.footer-payment-methods {
+  align-items: flex-start;
+}
+
+.footer-payment-logos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.footer-payment-logos img {
+  width: auto;
+  height: 24px;
+  object-fit: contain;
+}

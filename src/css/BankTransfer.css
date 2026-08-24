@@ -1,0 +1,102 @@
+.transfer-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.transfer-datos > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.transfer-datos > div:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.transfer-datos span {
+  color: #666;
+  font-size: 14px;
+}
+
+.transfer-datos strong {
+  color: #111;
+  text-align: right;
+}
+
+.transfer-monto {
+  background: #e6f7ec;
+  margin: 6px -20px -20px;
+  padding: 14px 20px !important;
+  border-radius: 0 0 12px 12px;
+  border-bottom: none !important;
+}
+
+.transfer-monto strong {
+  color: #1f9d55;
+  font-size: 18px;
+}
+
+.transfer-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25d366;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.transfer-whatsapp-btn:hover {
+  background: #1ebe57;
+}
+
+.transfer-volver-btn {
+  background: none;
+  border: 1px solid #ccc;
+  color: #444;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.transfer-volver-btn:hover {
+  background: #f5f5f5;
+}
+
+@media (max-width: 480px) {
+  .transfer-datos > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .transfer-datos strong {
+    text-align: left;
+  }
+}
+
+/* ================= AVISO CONFIRMADO ================= */
+
+.transfer-aviso-confirmado {
+  background: #e6f7ec;
+  color: #1f9d55;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-top: 10px;
+  font-weight: 600;
+}

@@ -11,6 +11,7 @@ import Products from "./pages/user/Products";
 import Brands from "./pages/user/Brands";
 import ShippingPolicy from "./pages/user/ShippingPolicy";
 import PaymentMethods from "./pages/user/PaymentMethods";
+import BankTransfer from "./pages/user/BankTransfer";
 import ReturnPolicy from "./pages/user/ReturnPolicy";
 import Cart from "./pages/user/Cart";
 import ContactPage from "./pages/user/Contact";
@@ -124,6 +125,11 @@ function App() {
           <Route
             path="/medios-de-pago"
             element={<PaymentMethods />}
+          />
+
+          <Route
+            path="/pago-transferencia"
+            element={<BankTransfer />}
           />
 
           <Route

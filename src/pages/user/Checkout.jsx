@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/api";
@@ -46,6 +47,7 @@ import {
 // =====================================================
 
 function Checkout() {
+  const navigate = useNavigate();
   const { cart, total: totalFromCart } = useCart();
 
   const totalProductos =
@@ -95,6 +97,14 @@ function Checkout() {
   // ===================================================
 
   const [metodoEnvio, setMetodoEnvio] = useState("");
+
+  // ===================================================
+  // MÉTODO DE PAGO
+  // ===================================================
+
+  const [metodoPago, setMetodoPago] = useState(
+    "webpay"
+  );
 
   const comunaEnvio = normalizarEspacios(
     mismosDatos
@@ -982,6 +992,8 @@ function Checkout() {
           NOMBRES_METODO_ENVIO[metodoEnvio] ||
           null,
 
+        metodoPago,
+
         costoEnvio,
 
         totalProductos,
@@ -996,6 +1008,18 @@ function Checkout() {
       // =================================================
 
       const pedido = await createOrder(orderData);
+
+      // =================================================
+      // TRANSFERENCIA BANCARIA
+      // =================================================
+
+      if (metodoPago === "transferencia") {
+        navigate("/pago-transferencia", {
+          state: { pedido },
+        });
+
+        return;
+      }
 
       // =================================================
       // WEBPAY
@@ -1903,6 +1927,8 @@ function Checkout() {
           cart={cart}
           totalProductos={totalProductos}
           metodoEnvio={metodoEnvio}
+          metodoPago={metodoPago}
+          setMetodoPago={setMetodoPago}
           costoEnvio={costoEnvio}
           totalFinal={totalFinal}
           enviando={enviando}

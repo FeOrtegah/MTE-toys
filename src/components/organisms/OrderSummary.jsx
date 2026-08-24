@@ -15,6 +15,8 @@ function OrderSummary({
   cart,
   totalProductos,
   metodoEnvio,
+  metodoPago,
+  setMetodoPago,
   costoEnvio,
   totalFinal,
   enviando,
@@ -110,6 +112,50 @@ function OrderSummary({
         </span>
       </div>
 
+      {/* MÉTODO DE PAGO */}
+
+      <div className="order-payment-method">
+        <label
+          className={
+            metodoPago === "webpay"
+              ? "order-payment-option selected"
+              : "order-payment-option"
+          }
+        >
+          <input
+            type="radio"
+            name="metodoPago"
+            value="webpay"
+            checked={metodoPago === "webpay"}
+            onChange={() =>
+              setMetodoPago("webpay")
+            }
+          />
+          Webpay (tarjetas)
+        </label>
+
+        <label
+          className={
+            metodoPago === "transferencia"
+              ? "order-payment-option selected"
+              : "order-payment-option"
+          }
+        >
+          <input
+            type="radio"
+            name="metodoPago"
+            value="transferencia"
+            checked={
+              metodoPago === "transferencia"
+            }
+            onChange={() =>
+              setMetodoPago("transferencia")
+            }
+          />
+          Transferencia bancaria
+        </label>
+      </div>
+
       <button
         type="button"
         onClick={onFinishOrder}
@@ -117,13 +163,17 @@ function OrderSummary({
       >
         {enviando
           ? "Procesando..."
+          : metodoPago === "transferencia"
+          ? "Ver datos para transferir"
           : "Pagar con Webpay"}
       </button>
 
-      <div className="checkout-card-logos">
-        <img src={visaLogo} alt="Visa" />
-        <img src={mastercardLogo} alt="Mastercard" />
-      </div>
+      {metodoPago === "webpay" && (
+        <div className="checkout-card-logos">
+          <img src={visaLogo} alt="Visa" />
+          <img src={mastercardLogo} alt="Mastercard" />
+        </div>
+      )}
 
       <div className="checkout-zonas-envio">
         <p>Zonas de despacho en Santiago</p>

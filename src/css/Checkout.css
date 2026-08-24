@@ -534,3 +534,38 @@
   color: #1a5fb4;
   margin: -6px 0 6px;
 }
+/* ================= MÉTODO DE PAGO EN EL RESUMEN ================= */
+
+.order-payment-method {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.order-payment-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.order-payment-option:hover {
+  border-color: #43b96d;
+}
+
+.order-payment-option.selected {
+  border-color: #43b96d;
+  background: #f0faf4;
+  font-weight: 600;
+}
+
+.order-payment-option input[type="radio"] {
+  margin: 0;
+}

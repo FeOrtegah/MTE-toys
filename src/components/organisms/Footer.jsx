@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import "../../css/Footer.css";
 import LogoMTE from "../../assets/LogoMTE.png";
+import visaLogo from "../../assets/Visa-Logo.png";
+import mastercardLogo from "../../assets/mastercard-logo.png";
+import webpayPlusLogo from "../../assets/webpay-logo-plus.jpg";
+import scotiabankLogo from "../../assets/scotiabank_logo.png";
 
 function Footer() {
   return (
@@ -24,6 +28,7 @@ function Footer() {
         <h3>Información</h3>
         <Link to="/politicas-envio">Políticas de envío</Link>
         <Link to="/politicas-cambio">Políticas de cambio</Link>
+        <Link to="/medios-de-pago">Medios de pago</Link>
       </div>
 
       <div className="footer-section">
@@ -57,6 +62,16 @@ function Footer() {
               alt="WhatsApp"
             />
           </a>
+        </div>
+      </div>
+
+      <div className="footer-section footer-payment-methods">
+        <h3>Pagos seguros</h3>
+        <div className="footer-payment-logos">
+          <img src={visaLogo} alt="Visa" />
+          <img src={mastercardLogo} alt="Mastercard" />
+          <img src={webpayPlusLogo} alt="Webpay Plus" />
+          <img src={scotiabankLogo} alt="Scotiabank" />
         </div>
       </div>
     </footer>

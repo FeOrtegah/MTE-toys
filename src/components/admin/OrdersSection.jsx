@@ -5,6 +5,7 @@ import {
   cancelOrder,
   markAsShipped,
   hardDeleteOrder,
+  confirmPayment,
 } from "../../services/orderService";
 
 const ESTADOS_PEDIDO = {
@@ -117,6 +118,30 @@ function OrdersSection({ orders, setOrders }) {
 
       setOrders((prev) =>
         prev.filter((o) => o._id !== id)
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  async function handleConfirmPayment(id) {
+    if (
+      !confirm(
+        "¿Confirmar que el pago (transferencia) fue recibido?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const actualizado = await confirmPayment(
+        id
+      );
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === id ? actualizado : o
+        )
       );
     } catch (err) {
       alert(err.message);
@@ -348,6 +373,45 @@ function OrdersSection({ orders, setOrders }) {
                       >
                         {o.cliente?.telefono}
                       </small>
+                      <br />
+                      <small
+                        style={{
+                          color:
+                            o.metodoPago ===
+                            "transferencia"
+                              ? "#b58900"
+                              : "#777",
+                          fontWeight:
+                            o.metodoPago ===
+                            "transferencia"
+                              ? 600
+                              : 400,
+                        }}
+                      >
+                        {o.metodoPago ===
+                        "transferencia"
+                          ? "💸 Transferencia"
+                          : "Webpay"}
+                      </small>
+
+                      {o.metodoPago ===
+                        "transferencia" && (
+                        <>
+                          <br />
+                          <small
+                            style={{
+                              color:
+                                o.avisoWhatsappEnviado
+                                  ? "#1f9d55"
+                                  : "#999",
+                            }}
+                          >
+                            {o.avisoWhatsappEnviado
+                              ? "✅ Avisó por WhatsApp"
+                              : "⏳ Sin avisar"}
+                          </small>
+                        </>
+                      )}
                     </td>
 
                     <td>
@@ -424,6 +488,21 @@ function OrdersSection({ orders, setOrders }) {
                     </td>
 
                     <td className="admin-actions">
+                      {o.estado === "pendiente" &&
+                        o.metodoPago ===
+                          "transferencia" && (
+                          <button
+                            className="btn-guardar"
+                            onClick={() =>
+                              handleConfirmPayment(
+                                o._id
+                              )
+                            }
+                          >
+                            Confirmar pago
+                          </button>
+                        )}
+
                       {o.estado === "pendiente" && (
                         <button
                           className="btn-eliminar"

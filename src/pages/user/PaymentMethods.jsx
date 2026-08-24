@@ -1,6 +1,6 @@
 import "../../css/Policy.css";
 import webpayPlusLogo from "../../assets/webpay-logo-plus.jpg";
-import transbankLogo from "../../assets/logo_transbank.png";
+import scotiabankLogo from "../../assets/scotiabank_logo.png";
 
 function PaymentMethods() {
   return (
@@ -35,15 +35,16 @@ function PaymentMethods() {
         <h2>Transferencia bancaria</h2>
 
         <img
-          src={transbankLogo}
-          alt="Transbank"
+          src={scotiabankLogo}
+          alt="Scotiabank"
           className="policy-image"
           style={{ maxWidth: 220 }}
         />
 
         <p>
           Para transferencias bancarias, contáctanos directamente y te
-          enviaremos los datos de nuestra cuenta para coordinar tu compra.
+          enviaremos los datos de nuestra cuenta Scotiabank para coordinar
+          tu compra.
         </p>
       </section>
     </main>
