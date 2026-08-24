@@ -1,4 +1,5 @@
 import "../../css/Home.css";
+import { Link } from "react-router-dom";
 import Banner from "../../components/organisms/Banner";
 import Categories from "../../components/organisms/Categories";
 import FeaturedProducts from "../../components/organisms/FeaturedProducts";
@@ -11,15 +12,18 @@ function Home() {
       <Banner />
 
       <section className="benefits">
-        {/* Enlace que desplaza hasta la sección de SubBanners */}
-        <a href="#seccion-subbanners" className="benefit-card benefit-link">
+        {/* Redirige a Políticas de Envío */}
+        <Link
+          to="/politicas-envio"
+          className="benefit-card benefit-link"
+        >
           <img
             src="/benefits/camion.png"
             alt="Envíos rápidos"
           />
           <h3>Envíos rápidos</h3>
-          <p>Compra segura y rápida</p>
-        </a>
+          <p>Conoce el sistema de envío</p>
+        </Link>
 
         {/* Enlace que desplaza hasta la sección de Regalos */}
         <a href="#regalos-por-precio" className="benefit-card benefit-link">
@@ -31,23 +35,31 @@ function Home() {
           <p>Para toda ocasión</p>
         </a>
 
-        <div className="benefit-card">
+        {/* Redirige a Medios de Pago */}
+        <Link
+          to="/medios-de-pago"
+          className="benefit-card benefit-link"
+        >
           <img
             src="/benefits/tarjeta-de-credito.png"
             alt="Pagos seguros"
           />
           <h3>Pagos seguros</h3>
           <p>Múltiples métodos de pago</p>
-        </div>
+        </Link>
 
-        <div className="benefit-card">
+        {/* Desplaza hasta la sección Compra por marca */}
+        <a
+          href="#compra-por-marca"
+          className="benefit-card benefit-link"
+        >
           <img
             src="/benefits/estrella.png"
             alt="Grandes marcas"
           />
           <h3>Grandes marcas</h3>
           <p>Los mejores juguetes</p>
-        </div>
+        </a>
       </section>
 
       {/* Productos Destacados arriba */}

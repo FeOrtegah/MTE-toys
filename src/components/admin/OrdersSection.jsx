@@ -4,6 +4,7 @@ import {
   getOrders,
   cancelOrder,
   markAsShipped,
+  hardDeleteOrder,
 } from "../../services/orderService";
 
 const ESTADOS_PEDIDO = {
@@ -96,6 +97,26 @@ function OrdersSection({ orders, setOrders }) {
             ? { ...o, estado: "enviado" }
             : o
         )
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  async function handleHardDeleteOrder(id) {
+    if (
+      !confirm(
+        "¿Eliminar este pedido de forma PERMANENTE? Esta acción no se puede deshacer."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await hardDeleteOrder(id);
+
+      setOrders((prev) =>
+        prev.filter((o) => o._id !== id)
       );
     } catch (err) {
       alert(err.message);
@@ -277,6 +298,7 @@ function OrdersSection({ orders, setOrders }) {
           <thead>
             <tr>
               <th>Cliente</th>
+              <th>Dirección de envío</th>
               <th>Fecha</th>
               <th>Estado</th>
               <th>Total</th>
@@ -288,7 +310,7 @@ function OrdersSection({ orders, setOrders }) {
             {ordersFiltrados.length === 0 ? (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan="6"
                   style={{
                     textAlign: "center",
                     padding: 20,
@@ -304,6 +326,8 @@ function OrdersSection({ orders, setOrders }) {
                   ESTADOS_PEDIDO[o.estado] ||
                   ESTADOS_PEDIDO.pendiente;
 
+                const envio = o.cliente?.envio;
+
                 return (
                   <tr key={o._id}>
                     <td>
@@ -314,6 +338,45 @@ function OrdersSection({ orders, setOrders }) {
                       >
                         {o.cliente?.email}
                       </small>
+                      <br />
+                      <small
+                        style={{ color: "#777" }}
+                      >
+                        {o.cliente?.telefono}
+                      </small>
+                    </td>
+
+                    <td>
+                      {envio ? (
+                        <>
+                          {envio.nombreReceptor}
+                          <br />
+                          {envio.direccion}{" "}
+                          {envio.numero}
+                          {envio.departamento
+                            ? `, ${envio.departamento}`
+                            : ""}
+                          <br />
+                          {envio.comuna},{" "}
+                          {envio.region}
+                          {envio.indicaciones && (
+                            <>
+                              <br />
+                              <small
+                                style={{
+                                  color: "#777",
+                                }}
+                              >
+                                {
+                                  envio.indicaciones
+                                }
+                              </small>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        "—"
+                      )}
                     </td>
 
                     <td>
@@ -364,6 +427,17 @@ function OrdersSection({ orders, setOrders }) {
                           Marcar como enviado
                         </button>
                       )}
+
+                      <button
+                        className="btn-borrar"
+                        onClick={() =>
+                          handleHardDeleteOrder(
+                            o._id
+                          )
+                        }
+                      >
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 );

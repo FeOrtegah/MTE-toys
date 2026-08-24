@@ -21,3 +21,9 @@ export const markAsShipped = (id) =>
     method: "PATCH",
     auth: true,
   });
+
+export const hardDeleteOrder = (id) =>
+  request(`/orders/${id}`, {
+    method: "DELETE",
+    auth: true,
+  });

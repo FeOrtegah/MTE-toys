@@ -26,7 +26,10 @@ function Categories() {
   ];
 
   return (
-    <section className="categories-section">
+    <section
+      className="categories-section"
+      id="compra-por-marca"
+    >
       <h2>Compra por marca</h2>
 
       <div className="categories-container">

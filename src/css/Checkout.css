@@ -468,3 +468,40 @@
     padding: 22px;
   }
 }
+/* ================= LOGOS DE TARJETAS ================= */
+
+.checkout-card-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.checkout-card-logos img {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ================= MAPA DE ZONAS DE ENVÍO ================= */
+
+.checkout-zonas-envio {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.checkout-zonas-envio p {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.checkout-zonas-envio img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

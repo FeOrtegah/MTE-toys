@@ -8,6 +8,9 @@ import {
   redirectToWebpay,
 } from "../../services/webpayService";
 import "../../css/Checkout.css";
+import visaLogo from "../../assets/visa-logo.png";
+import mastercardLogo from "../../assets/mastercard-logo.png";
+import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
 
 // =====================================================
 // REGIONES Y COMUNAS DE CHILE
@@ -799,13 +802,18 @@ function Checkout() {
   }, [comunaEnvio]);
 
   const costoEnvio = useMemo(() => {
+    // Envío gratis para compras sobre $49.990
+    if (totalProductos >= 49990) {
+      return 0;
+    }
+
     if (metodoEnvio === "logistica360") {
       return COSTO_LOGISTICA_360;
     }
 
-    // Chilexpress y Bluexpress ahora son por pagar ($0 en línea)
+    // Chilexpress, Bluexpress y Starken son por pagar ($0 en línea)
     return 0;
-  }, [metodoEnvio]);
+  }, [metodoEnvio, totalProductos]);
 
   const totalFinal = totalProductos + costoEnvio;
 
@@ -1988,13 +1996,13 @@ function Checkout() {
             <div className="field-container">
 
               <label htmlFor="fact-numero">
-                Número *
+                Número de domicilio *
               </label>
 
               <input
                 id="fact-numero"
                 name="numero"
-                placeholder="Número *"
+                placeholder="Número de domicilio *"
                 value={
                   form.facturacion.numero
                 }
@@ -2336,13 +2344,13 @@ function Checkout() {
                 <div className="field-container">
 
                   <label htmlFor="env-numero">
-                    Número *
+                    Número de domicilio *
                   </label>
 
                   <input
                     id="env-numero"
                     name="numero"
-                    placeholder="Número *"
+                    placeholder="Número de domicilio *"
                     value={
                       form.envio.numero
                     }
@@ -2624,6 +2632,7 @@ function Checkout() {
                       </strong>
 
                       <small>
+                        Envíos en 24 horas ·
                         $3.490
                       </small>
                     </span>
@@ -2861,6 +2870,23 @@ function Checkout() {
               ? "Procesando..."
               : "Pagar con Webpay"}
           </button>
+
+          <div className="checkout-card-logos">
+            <img src={visaLogo} alt="Visa" />
+            <img
+              src={mastercardLogo}
+              alt="Mastercard"
+            />
+          </div>
+
+          <div className="checkout-zonas-envio">
+            <p>Zonas de despacho en Santiago</p>
+
+            <img
+              src={mapaZonasEnvio}
+              alt="Mapa de zonas de despacho en Santiago"
+            />
+          </div>
 
         </aside>
 
