@@ -14,30 +14,44 @@ function ShippingPolicy() {
 
       <section className="policy-section">
         <h2>2. Costos de Envío</h2>
-        <p>El valor del despacho se calcula automáticamente en el checkout al ingresar tu dirección exacta según las tarifas vigentes del courier.</p>
+        <p>El valor del despacho se calcula automáticamente en el checkout al ingresar tu dirección exacta según las tarifas vigentes del courier. Las compras sobre $49.990 tienen envío gratis.</p>
       </section>
 
       <section className="policy-section">
         <h2>3. Zonas de Cobertura en Santiago</h2>
         <p>
-          Dentro del Gran Santiago trabajamos con distintos couriers según la
-          comuna de destino:
+          Dentro del Gran Santiago (comunas verdes y azules) trabajamos con
+          Bluexpress y Starken, ambos pagados directamente al recibir el
+          pedido. Las comunas verdes además tienen disponible Logística
+          360, con envíos en 24 horas:
         </p>
 
         <img
           src={mapaZonasEnvio}
-          alt="Mapa de zonas de cobertura en Santiago: Logística 360 (verde) y Bluexpress (celeste)"
+          alt="Mapa de zonas de cobertura en Santiago: comunas verdes y azules"
           className="policy-image"
         />
+      </section>
 
+      <section className="policy-section">
+        <h2>4. Envíos fuera de Santiago</h2>
         <p>
-          Fuera de estas zonas, el despacho se realiza a través de
-          Chilexpress, pagado directamente al recibir el pedido.
+          Para el resto de Chile hacemos despacho a través de Bluexpress,
+          Starken o Chilexpress, todos pagados directamente al recibir el
+          pedido.
         </p>
       </section>
 
       <section className="policy-section">
-        <h2>4. Seguimiento</h2>
+        <h2>5. Retiro en Local</h2>
+        <p>
+          También puedes retirar tu pedido directamente en nuestro local,
+          sin costo de envío.
+        </p>
+      </section>
+
+      <section className="policy-section">
+        <h2>6. Seguimiento</h2>
         <p>Una vez que tu pedido sea despachado, recibirás la información necesaria para realizar el seguimiento del paquete hasta la puerta de tu casa.</p>
       </section>
     </main>

@@ -8,8 +8,8 @@ import {
   redirectToWebpay,
 } from "../../services/webpayService";
 import "../../css/Checkout.css";
-import visaLogo from "../../assets/visa-logo.png";
-import mastercardLogo from "../../assets/mastercard-logo.png";
+import visaLogo from "../../assets/Visa-Logo.png";
+import mastercardLogo from "../../assets/mastercard-Logo.png";
 import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
 
 // =====================================================
@@ -459,6 +459,32 @@ const COMUNAS_AZULES = [
 ];
 
 const COSTO_LOGISTICA_360 = 3490;
+
+// Etiquetas legibles para cada método de envío
+const NOMBRES_METODO_ENVIO = {
+  logistica360: "Logística 360",
+  bluexpress: "Bluexpress",
+  starken: "Starken",
+  chilexpress: "Chilexpress",
+  retiro_local: "Retiro en local",
+};
+
+// Métodos de envío disponibles según la zona de la comuna
+const METODOS_POR_ZONA = {
+  verde: [
+    "logistica360",
+    "bluexpress",
+    "starken",
+    "retiro_local",
+  ],
+  azul: ["bluexpress", "starken", "retiro_local"],
+  fuera: [
+    "bluexpress",
+    "starken",
+    "chilexpress",
+    "retiro_local",
+  ],
+};
 
 // =====================================================
 // FUNCIONES DE NORMALIZACIÓN
@@ -916,22 +942,10 @@ function Checkout() {
   // ===================================================
 
   useEffect(() => {
-    if (zonaEnvio === "verde") {
-      if (
-        metodoEnvio !== "logistica360" &&
-        metodoEnvio !== "bluexpress"
-      ) {
-        setMetodoEnvio("");
-      }
-    } else if (zonaEnvio === "azul") {
-      if (metodoEnvio !== "bluexpress") {
-        setMetodoEnvio("bluexpress");
-      }
-    } else if (zonaEnvio === "fuera") {
-      if (metodoEnvio !== "chilexpress") {
-        setMetodoEnvio("chilexpress");
-      }
-    } else {
+    const disponibles =
+      METODOS_POR_ZONA[zonaEnvio] || [];
+
+    if (!disponibles.includes(metodoEnvio)) {
       setMetodoEnvio("");
     }
   }, [zonaEnvio, metodoEnvio]);
@@ -941,15 +955,10 @@ function Checkout() {
   // ===================================================
 
   const handleMetodoEnvio = (metodo) => {
-    if (metodo === "logistica360" && zonaEnvio !== "verde") {
-      return;
-    }
+    const disponibles =
+      METODOS_POR_ZONA[zonaEnvio] || [];
 
-    if (metodo === "bluexpress" && !["verde", "azul"].includes(zonaEnvio)) {
-      return;
-    }
-
-    if (metodo === "chilexpress" && zonaEnvio !== "fuera") {
+    if (!disponibles.includes(metodo)) {
       return;
     }
 
@@ -1302,27 +1311,13 @@ function Checkout() {
         "Ingresa una comuna válida para calcular el envío";
     }
 
-    if (zonaEnvio === "verde") {
-      if (
-        metodoEnvio !== "logistica360" &&
-        metodoEnvio !== "bluexpress"
-      ) {
+    if (zonaEnvio) {
+      const disponibles =
+        METODOS_POR_ZONA[zonaEnvio] || [];
+
+      if (!disponibles.includes(metodoEnvio)) {
         nuevosErrores.metodoEnvio =
           "Selecciona un método de envío válido";
-      }
-    }
-
-    if (zonaEnvio === "azul") {
-      if (metodoEnvio !== "bluexpress") {
-        nuevosErrores.metodoEnvio =
-          "Para esta comuna el envío disponible es Bluexpress";
-      }
-    }
-
-    if (zonaEnvio === "fuera") {
-      if (metodoEnvio !== "chilexpress") {
-        nuevosErrores.metodoEnvio =
-          "Para esta comuna el envío disponible es Chilexpress";
       }
     }
 
@@ -1659,13 +1654,8 @@ function Checkout() {
         // =================================================
 
         metodoEnvio:
-          metodoEnvio === "logistica360"
-            ? "Logística 360"
-            : metodoEnvio === "bluexpress"
-            ? "Bluexpress"
-            : metodoEnvio === "chilexpress"
-            ? "Chilexpress"
-            : null,
+          NOMBRES_METODO_ENVIO[metodoEnvio] ||
+          null,
 
         costoEnvio,
 
@@ -2575,8 +2565,9 @@ function Checkout() {
                 <p>
                   Tu comuna pertenece a las
                   <strong> comunas verdes</strong>.
-                  Puedes elegir entre Logística 360
-                  o Bluexpress.
+                  Puedes elegir entre Logística
+                  360, Bluexpress, Starken o
+                  retiro en local.
                 </p>
               )}
 
@@ -2584,8 +2575,9 @@ function Checkout() {
                 <p>
                   Tu comuna pertenece a las
                   <strong> comunas azules</strong>.
-                  El envío disponible es Bluexpress
-                  por pagar.
+                  Puedes elegir entre Bluexpress,
+                  Starken (ambos por pagar) o
+                  retiro en local.
                 </p>
               )}
 
@@ -2593,7 +2585,9 @@ function Checkout() {
                 <p>
                   Hacemos despacho a
                   <strong> todo Chile</strong> a
-                  través de Chilexpress por pagar.
+                  través de Bluexpress, Starken o
+                  Chilexpress, todos por pagar. También
+                  puedes retirar en local.
                 </p>
               )}
 
@@ -2643,7 +2637,8 @@ function Checkout() {
                 {/* BLUEXPRESS */}
 
                 {(zonaEnvio === "verde" ||
-                  zonaEnvio === "azul") && (
+                  zonaEnvio === "azul" ||
+                  zonaEnvio === "fuera") && (
                   <label
                     className={`shipping-method ${
                       metodoEnvio ===
@@ -2672,6 +2667,48 @@ function Checkout() {
 
                       <strong>
                         Bluexpress
+                      </strong>
+
+                      <small>
+                        Por pagar
+                      </small>
+
+                    </span>
+
+                  </label>
+                )}
+
+                {/* STARKEN */}
+
+                {(zonaEnvio === "verde" ||
+                  zonaEnvio === "azul" ||
+                  zonaEnvio === "fuera") && (
+                  <label
+                    className={`shipping-method ${
+                      metodoEnvio === "starken"
+                        ? "selected"
+                        : ""
+                    }`}
+                  >
+
+                    <input
+                      type="radio"
+                      name="metodoEnvio"
+                      value="starken"
+                      checked={
+                        metodoEnvio === "starken"
+                      }
+                      onChange={() =>
+                        handleMetodoEnvio(
+                          "starken"
+                        )
+                      }
+                    />
+
+                    <span>
+
+                      <strong>
+                        Starken
                       </strong>
 
                       <small>
@@ -2718,6 +2755,50 @@ function Checkout() {
 
                       <small>
                         Por pagar
+                      </small>
+
+                    </span>
+
+                  </label>
+                )}
+
+                {/* RETIRO EN LOCAL */}
+
+                {(zonaEnvio === "verde" ||
+                  zonaEnvio === "azul" ||
+                  zonaEnvio === "fuera") && (
+                  <label
+                    className={`shipping-method ${
+                      metodoEnvio ===
+                      "retiro_local"
+                        ? "selected"
+                        : ""
+                    }`}
+                  >
+
+                    <input
+                      type="radio"
+                      name="metodoEnvio"
+                      value="retiro_local"
+                      checked={
+                        metodoEnvio ===
+                        "retiro_local"
+                      }
+                      onChange={() =>
+                        handleMetodoEnvio(
+                          "retiro_local"
+                        )
+                      }
+                    />
+
+                    <span>
+
+                      <strong>
+                        Retiro en local
+                      </strong>
+
+                      <small>
+                        Gratis
                       </small>
 
                     </span>
@@ -2824,15 +2905,16 @@ function Checkout() {
 
               <span>
 
-                {metodoEnvio ===
-                "logistica360"
-                  ? `$${COSTO_LOGISTICA_360.toLocaleString(
-                      "es-CL"
-                    )}`
+                {metodoEnvio === "retiro_local"
+                  ? "Gratis"
                   : metodoEnvio ===
-                    "chilexpress"
-                  ? "Chilexpress por pagar"
-                  : "Bluexpress por pagar"}
+                    "logistica360"
+                  ? costoEnvio === 0
+                    ? "Gratis (envío gratis desde $49.990)"
+                    : `$${COSTO_LOGISTICA_360.toLocaleString(
+                        "es-CL"
+                      )}`
+                  : `${NOMBRES_METODO_ENVIO[metodoEnvio]} por pagar`}
 
               </span>
 

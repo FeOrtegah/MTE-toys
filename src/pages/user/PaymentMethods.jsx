@@ -1,6 +1,6 @@
 import "../../css/Policy.css";
-import webpayPlusLogo from "../../assets/webpay-plus-logo.jpg";
-import transbankLogo from "../../assets/transbank-logo.png";
+import webpayPlusLogo from "../../assets/webpay-logo-plus.jpg";
+import transbankLogo from "../../assets/logo_transbank.png";
 
 function PaymentMethods() {
   return (
