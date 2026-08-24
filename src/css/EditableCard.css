@@ -154,3 +154,33 @@
   font-size: 28px;
   line-height: 1;
 }
+/* ================= URL DE IMAGEN (ALTERNATIVA A SUBIR) ================= */
+
+.editable-card-url-row {
+  display: flex;
+  gap: 6px;
+}
+
+.editable-card-url-row input {
+  flex: 1;
+  padding: 9px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.editable-card-url-row button {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #eee;
+  color: #333;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.editable-card-url-row button:hover {
+  background: #e0e0e0;
+}

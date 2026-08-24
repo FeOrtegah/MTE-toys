@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { uploadImages } from "../../services/uploadService";
 import "../../css/EditableCard.css";
 
@@ -37,6 +38,7 @@ function EditableCard({
   const [editando, setEditando] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const [urlImagen, setUrlImagen] = useState("");
 
   const [draft, setDraft] = useState({
     imagen,
@@ -47,13 +49,30 @@ function EditableCard({
 
   function cerrarEdicion() {
     setEditando(false);
+    setUrlImagen("");
     onEditingChange?.(false);
   }
 
   function abrirEdicion() {
     setDraft({ imagen, titulo, subtitulo, link });
+    setUrlImagen("");
     setEditando(true);
     onEditingChange?.(true);
+  }
+
+  function usarUrlImagen() {
+    const url = urlImagen.trim();
+
+    if (!url) {
+      return;
+    }
+
+    setDraft((prev) => ({
+      ...prev,
+      imagen: url,
+    }));
+
+    setUrlImagen("");
   }
 
   async function handleImagenChange(e) {
@@ -128,109 +147,141 @@ function EditableCard({
         ✏️
       </button>
 
-      {editando && (
-        <div
-          className="editable-card-overlay"
-          onClick={cerrarEdicion}
-        >
+      {editando &&
+        createPortal(
           <div
-            className="editable-card-form"
-            onClick={(e) => e.stopPropagation()}
+            className="editable-card-overlay"
+            onClick={cerrarEdicion}
           >
-            <h4>Editar</h4>
-
-            <div className="editable-card-preview">
-              <img src={draft.imagen} alt="" />
-            </div>
-
-            <label className="editable-card-upload">
-              {subiendo
-                ? "Subiendo..."
-                : "Cambiar imagen"}
-
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                disabled={subiendo}
-                onChange={handleImagenChange}
-              />
-            </label>
-
-            {(camposTexto === "titulo" ||
-              camposTexto ===
-                "tituloYSubtitulo") && (
-              <input
-                type="text"
-                placeholder="Título"
-                value={draft.titulo}
-                onChange={(e) =>
-                  setDraft({
-                    ...draft,
-                    titulo: e.target.value,
-                  })
-                }
-              />
-            )}
-
-            {camposTexto === "tituloYSubtitulo" && (
-              <input
-                type="text"
-                placeholder="Subtítulo"
-                value={draft.subtitulo}
-                onChange={(e) =>
-                  setDraft({
-                    ...draft,
-                    subtitulo: e.target.value,
-                  })
-                }
-              />
-            )}
-
-            <input
-              type="text"
-              placeholder="Link (ej: /productos?categoria=mattel)"
-              value={draft.link}
-              onChange={(e) =>
-                setDraft({
-                  ...draft,
-                  link: e.target.value,
-                })
+            <div
+              className="editable-card-form"
+              onClick={(e) =>
+                e.stopPropagation()
               }
-            />
+            >
+              <h4>Editar</h4>
 
-            <div className="editable-card-actions">
-              <button
-                type="button"
-                onClick={cerrarEdicion}
-              >
-                Cancelar
-              </button>
+              <div className="editable-card-preview">
+                <img src={draft.imagen} alt="" />
+              </div>
 
-              {onDelete && (
+              <label className="editable-card-upload">
+                {subiendo
+                  ? "Subiendo..."
+                  : "Cambiar imagen"}
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  disabled={subiendo}
+                  onChange={
+                    handleImagenChange
+                  }
+                />
+              </label>
+
+              <div className="editable-card-url-row">
+                <input
+                  type="text"
+                  placeholder="O pega una URL de imagen"
+                  value={urlImagen}
+                  onChange={(e) =>
+                    setUrlImagen(
+                      e.target.value
+                    )
+                  }
+                />
+
                 <button
                   type="button"
-                  className="editable-card-delete"
-                  onClick={eliminar}
+                  onClick={usarUrlImagen}
                 >
-                  Eliminar
+                  Usar
                 </button>
+              </div>
+
+              {(camposTexto === "titulo" ||
+                camposTexto ===
+                  "tituloYSubtitulo") && (
+                <input
+                  type="text"
+                  placeholder="Título"
+                  value={draft.titulo}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      titulo: e.target.value,
+                    })
+                  }
+                />
               )}
 
-              <button
-                type="button"
-                className="editable-card-save"
-                disabled={guardando || subiendo}
-                onClick={guardar}
-              >
-                {guardando
-                  ? "Guardando..."
-                  : "Guardar"}
-              </button>
+              {camposTexto ===
+                "tituloYSubtitulo" && (
+                <input
+                  type="text"
+                  placeholder="Subtítulo"
+                  value={draft.subtitulo}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      subtitulo:
+                        e.target.value,
+                    })
+                  }
+                />
+              )}
+
+              {camposTexto !== "ninguno" && (
+                <input
+                  type="text"
+                  placeholder="Link (ej: /productos?categoria=mattel)"
+                  value={draft.link}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      link: e.target.value,
+                    })
+                  }
+                />
+              )}
+
+              <div className="editable-card-actions">
+                <button
+                  type="button"
+                  onClick={cerrarEdicion}
+                >
+                  Cancelar
+                </button>
+
+                {onDelete && (
+                  <button
+                    type="button"
+                    className="editable-card-delete"
+                    onClick={eliminar}
+                  >
+                    Eliminar
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  className="editable-card-save"
+                  disabled={
+                    guardando || subiendo
+                  }
+                  onClick={guardar}
+                >
+                  {guardando
+                    ? "Guardando..."
+                    : "Guardar"}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
