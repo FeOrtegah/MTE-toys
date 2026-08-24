@@ -9,7 +9,7 @@ import {
 } from "../../services/webpayService";
 import "../../css/Checkout.css";
 import visaLogo from "../../assets/Visa-Logo.png";
-import mastercardLogo from "../../assets/mastercard-Logo.png";
+import mastercardLogo from "../../assets/mastercard-logo.png";
 import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
 
 // =====================================================
