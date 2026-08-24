@@ -15,6 +15,29 @@
   flex-wrap:wrap;
 }
 
+.categories-carousel{
+  display:flex;
+  gap:24px;
+  overflow-x:auto;
+  padding:10px 20px 20px;
+  scroll-snap-type:x proximity;
+}
+
+.categories-carousel::-webkit-scrollbar{
+  height:8px;
+}
+
+.categories-carousel::-webkit-scrollbar-thumb{
+  background:#ddd;
+  border-radius:10px;
+}
+
+.categories-carousel .category-card,
+.categories-carousel .add-content-card{
+  flex:0 0 auto;
+  scroll-snap-align:start;
+}
+
 .category-card{
   width:180px;
   height:180px;
@@ -28,6 +51,7 @@
   text-decoration:none;
   color:#222;
   transition:.3s;
+  position:relative;
 }
 
 .category-card:hover{

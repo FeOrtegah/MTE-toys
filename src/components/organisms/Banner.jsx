@@ -1,111 +1,208 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import banners from "../../data/banners";
+import { useUser } from "../../context/UserContext";
+import bannersPorDefecto from "../../data/banners";
+import {
+  getSiteContent,
+  createSiteContent,
+  updateSiteContent,
+  deleteSiteContent,
+} from "../../services/siteContentService";
+import EditableCard from "./EditableCard";
+import AddContentCard from "./AddContentCard";
 import "../../css/Banner.css";
 
-function Banner(){
-
-const [current,setCurrent]=useState(0);
-
-useEffect(()=>{
-
-const interval=setInterval(()=>{
-setCurrent(prev=>(prev+1)%banners.length);
-},4000);
-
-return()=>clearInterval(interval);
-
-},[]);
-
-
-function next(){
-setCurrent((current+1)%banners.length);
-}
-
-function previous(){
-setCurrent((current-1+banners.length)%banners.length);
-}
-
-
-return(
-<section className="banner-slider">
-
-<div 
-className="banner-track"
-style={{
-transform:`translateX(-${current*100}%)`
-}}
->
-
-{
-banners.map(banner=>(
-
-<div 
-className="banner-slide"
-key={banner.id}
->
-
-<img
-src={banner.image}
-alt={banner.title}
-/>
-
-<div className="banner-text">
-
-<h1>{banner.title}</h1>
-
-<p>{banner.text}</p>
-
-<Link to={banner.link || "/productos"}>
-Ver productos
-</Link>
-
-</div>
-
-</div>
-
-))
-}
-
-</div>
-
-
-<button 
-className="banner-btn left"
-onClick={previous}
->
-❮
-</button>
-
-
-<button 
-className="banner-btn right"
-onClick={next}
->
-❯
-</button>
-
-
-<div className="dots">
-
-{
-banners.map((_,index)=>(
-
-<span
-key={index}
-className={index===current?"active":""}
-onClick={()=>setCurrent(index)}
-></span>
-
-))
-}
-
-</div>
-
-
-</section>
+// Adapta el formato viejo de banners.js (title/text/image)
+// al formato del contenido editable (titulo/subtitulo/imagen)
+const BANNERS_POR_DEFECTO = bannersPorDefecto.map(
+  (b) => ({
+    titulo: b.title,
+    subtitulo: b.text,
+    imagen: b.image,
+    link: b.link || "",
+  })
 );
 
+function Banner() {
+  const { user } = useUser();
+  const isAdmin = user?.rol === "admin";
+
+  const [banners, setBanners] = useState(
+    BANNERS_POR_DEFECTO
+  );
+
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    getSiteContent("banner")
+      .then((items) => {
+        if (items && items.length > 0) {
+          setBanners(items);
+        }
+      })
+      .catch(() => {
+        // Si falla, se queda con el contenido por defecto
+      });
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(
+        (prev) => (prev + 1) % banners.length
+      );
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  function next() {
+    setCurrent(
+      (current + 1) % banners.length
+    );
+  }
+
+  function previous() {
+    setCurrent(
+      (current - 1 + banners.length) %
+        banners.length
+    );
+  }
+
+  async function handleSave(banner, draft) {
+    if (banner._id) {
+      const actualizado = await updateSiteContent(
+        banner._id,
+        draft
+      );
+
+      setBanners((prev) =>
+        prev.map((b) =>
+          b._id === banner._id ? actualizado : b
+        )
+      );
+    } else {
+      const nuevo = await createSiteContent({
+        ...draft,
+        seccion: "banner",
+      });
+
+      setBanners((prev) => [
+        ...prev.filter((b) => b !== banner),
+        nuevo,
+      ]);
+    }
+  }
+
+  async function handleDelete(banner) {
+    if (banner._id) {
+      await deleteSiteContent(banner._id);
+
+      setBanners((prev) =>
+        prev.filter((b) => b._id !== banner._id)
+      );
+
+      setCurrent(0);
+    }
+  }
+
+  async function handleCreate(draft) {
+    const nuevo = await createSiteContent({
+      ...draft,
+      seccion: "banner",
+    });
+
+    setBanners((prev) => [...prev, nuevo]);
+  }
+
+  return (
+    <section className="banner-slider">
+      <div
+        className="banner-track"
+        style={{
+          transform: `translateX(-${
+            current * 100
+          }%)`,
+        }}
+      >
+        {banners.map((banner, index) => (
+          <div
+            className="banner-slide"
+            key={banner._id || index}
+          >
+            <EditableCard
+              isAdmin={isAdmin}
+              imagen={banner.imagen}
+              titulo={banner.titulo}
+              subtitulo={banner.subtitulo}
+              link={banner.link}
+              camposTexto="tituloYSubtitulo"
+              onSave={(draft) =>
+                handleSave(banner, draft)
+              }
+              onDelete={
+                banner._id
+                  ? () => handleDelete(banner)
+                  : undefined
+              }
+            >
+              <img
+                src={banner.imagen}
+                alt={banner.titulo}
+              />
+
+              <div className="banner-text">
+                <h1>{banner.titulo}</h1>
+                <p>{banner.subtitulo}</p>
+
+                <Link
+                  to={
+                    banner.link || "/productos"
+                  }
+                >
+                  Ver productos
+                </Link>
+              </div>
+            </EditableCard>
+          </div>
+        ))}
+      </div>
+
+      <button
+        className="banner-btn left"
+        onClick={previous}
+      >
+        ❮
+      </button>
+
+      <button
+        className="banner-btn right"
+        onClick={next}
+      >
+        ❯
+      </button>
+
+      <div className="dots">
+        {banners.map((_, index) => (
+          <span
+            key={index}
+            className={
+              index === current ? "active" : ""
+            }
+            onClick={() => setCurrent(index)}
+          ></span>
+        ))}
+      </div>
+
+      {isAdmin && (
+        <div className="banner-add">
+          <AddContentCard
+            camposTexto="tituloYSubtitulo"
+            onCreate={handleCreate}
+          />
+        </div>
+      )}
+    </section>
+  );
 }
 
 export default Banner;

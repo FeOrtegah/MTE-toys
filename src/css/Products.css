@@ -33,7 +33,9 @@ background:#fafafa;
 border-radius:16px;
 padding:24px;
 position:sticky;
-top:200px;
+top:100px;
+max-height:calc(100vh - 120px);
+overflow-y:auto;
 }
 
 .filter-block{
