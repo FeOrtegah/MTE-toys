@@ -103,7 +103,7 @@ function ProductCard({
       </button>
 
       <Link
-        to={`/producto/${product.id}?tipo=${
+        to={`/producto/${product.slug || product.id}?tipo=${
           isCombo
             ? "combo"
             : "producto"

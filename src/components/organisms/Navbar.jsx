@@ -133,7 +133,7 @@ function Navbar() {
                   return (
                     <Link
                       key={`${product.type}-${product.id}`}
-                      to={`/producto/${product.id}?tipo=${
+                      to={`${product.type}-${product.id}`{
                         isCombo
                           ? "combo"
                           : "producto"

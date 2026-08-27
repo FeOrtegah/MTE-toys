@@ -69,6 +69,8 @@ export function mapProduct(p) {
   return {
     id: p._id || p.id,
 
+    slug: p.slug || null,
+
     name: p.nombre || p.name || "",
 
     price: enOferta
