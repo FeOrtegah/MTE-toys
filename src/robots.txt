@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin/pedidos
+Disallow: /mi-cuenta
+Disallow: /mi-cuenta/perfil
+Disallow: /mi-cuenta/compras
+Disallow: /checkout
+Disallow: /pago-resultado
+Disallow: /carrito
+Allow: /
+
+Sitemap: https://api.mtetoys.cl/sitemap.xml
