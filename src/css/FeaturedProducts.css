@@ -67,27 +67,40 @@ transform:none;
 
 @media(max-width:600px){
 .featured{
-padding:30px 15px;
+padding:30px 0;
 }
 
 .featured h2{
 font-size:24px;
 margin-bottom:22px;
+padding:0 15px;
+}
+
+/* En mobile el swipe con el dedo reemplaza a las flechas:
+   ocultarlas evita que compriman el ancho de forma
+   despareja y rompan el centrado de las tarjetas. */
+.arrow{
+display:none;
+}
+
+.featured-wrapper{
+gap:0;
 }
 
 .featured-item{
-width:180px;
-min-width:180px;
-max-width:180px;
+width:200px;
+min-width:200px;
+max-width:200px;
+scroll-snap-align:center;
 }
 
 .featured-products{
+width:100%;
 gap:15px;
-}
-
-.arrow{
-width:36px;
-height:36px;
-font-size:16px;
+justify-content:flex-start;
+/* Relleno lateral = mitad del ancho disponible menos
+   mitad de la tarjeta, así la primera y última tarjeta
+   también pueden llegar a quedar centradas. */
+padding:0 calc(50% - 100px);
 }
 }
