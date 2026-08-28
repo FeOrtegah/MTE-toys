@@ -92,8 +92,13 @@ border-radius:8px;
 font-size:13px;
 }
 
+.filter-actions{
+display:flex;
+gap:10px;
+}
+
 .filter-clear{
-width:100%;
+flex:1;
 padding:10px;
 border:1px solid #ddd;
 border-radius:10px;
@@ -106,6 +111,24 @@ font-size:14px;
 
 .filter-clear:hover{
 background:#f1f1f1;
+}
+
+.filter-apply{
+flex:1;
+padding:10px;
+border:none;
+border-radius:10px;
+background:#43b96d;
+color:white;
+font-weight:600;
+cursor:pointer;
+transition:.2s;
+font-size:14px;
+display:none;
+}
+
+.filter-apply:hover{
+background:#379159;
 }
 
 .products-grid{
@@ -301,6 +324,15 @@ font-size:14px;
 color:#bbb;
 }
 
+.filter-actions{
+flex-direction:column-reverse;
+position:sticky;
+bottom:-1px;
+background:white;
+padding-top:10px;
+margin-top:6px;
+}
+
 .filter-clear{
 background:#fdeaea;
 color:#ed4b25;
@@ -311,6 +343,12 @@ margin-top:4px;
 
 .filter-clear:hover{
 background:#fbd8d6;
+}
+
+.filter-apply{
+display:block;
+font-size:15px;
+padding:13px;
 }
 
 .products-grid{

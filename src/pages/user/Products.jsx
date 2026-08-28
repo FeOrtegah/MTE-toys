@@ -483,14 +483,25 @@ function Products() {
 
           </div>
 
-          <button
-            className="filter-clear"
-            onClick={
-              limpiarFiltros
-            }
-          >
-            Limpiar filtros
-          </button>
+          <div className="filter-actions">
+            <button
+              className="filter-clear"
+              onClick={
+                limpiarFiltros
+              }
+            >
+              Limpiar filtros
+            </button>
+
+            <button
+              className="filter-apply"
+              onClick={() =>
+                setFiltersOpen(false)
+              }
+            >
+              🔍 Buscar
+            </button>
+          </div>
 
         </aside>
 

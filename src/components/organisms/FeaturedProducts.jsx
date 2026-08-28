@@ -39,14 +39,21 @@ function FeaturedProducts() {
   useEffect(() => {
     getCatalogItems()
       .then((data) => {
-        setProducts(
-          data.filter(
+        const destacados = data
+          .filter(
             (p) =>
               p.destacado ===
                 true &&
               p.activo !== false
           )
-        );
+          .sort((a, b) =>
+            (a.name || "").localeCompare(
+              b.name || "",
+              "es"
+            )
+          );
+
+        setProducts(destacados);
       })
       .catch((err) =>
         console.error(

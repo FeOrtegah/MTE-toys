@@ -26,20 +26,13 @@
   display:flex;
   gap:24px;
   width:max-content;
-  animation:categories-marquee 30s linear infinite;
+  cursor:grab;
+  touch-action:pan-y;
+  user-select:none;
 }
 
-.categories-carousel:hover .categories-track{
-  animation-play-state:paused;
-}
-
-@keyframes categories-marquee{
-from{
-  transform:translateX(0);
-}
-to{
-  transform:translateX(-50%);
-}
+.categories-track:active{
+  cursor:grabbing;
 }
 
 .categories-track .category-card,

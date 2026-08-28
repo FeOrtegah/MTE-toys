@@ -35,7 +35,8 @@ localStorage.setItem("token", data.token);
 
 login({
 email: data.email,
-rol: data.rol
+rol: data.rol,
+name: data.nombre
 });
 
 navigate("/");
