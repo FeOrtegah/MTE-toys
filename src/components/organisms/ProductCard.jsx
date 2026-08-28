@@ -164,7 +164,7 @@ function ProductCard({
           </p>
         )}
 
-      {hasStock && (
+      {maxStockReached && (
         <p
           style={{
             fontSize:
@@ -175,9 +175,7 @@ function ProductCard({
               "5px 0",
           }}
         >
-          {maxStockReached
-            ? `Máximo disponible: ${product.stock}`
-            : `Stock: ${product.stock}`}
+          Máximo disponible: {product.stock}
         </p>
       )}
 
