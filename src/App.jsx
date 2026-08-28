@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+import ScrollToTop from "./components/ScrollToTop";
+
 import Navbar from "./components/organisms/Navbar";
 import Contact from "./components/organisms/Contact";
 import Footer from "./components/organisms/Footer";
@@ -77,6 +79,8 @@ function App() {
 
   return (
     <div className="app">
+
+      <ScrollToTop />
 
       <header
         className={`site-header ${
