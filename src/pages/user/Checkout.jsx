@@ -2,24 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
-import { createOrder } from "../../services/api";
 import { getMe } from "../../services/authService";
-import {
-  initWebpayTransaction,
-  redirectToWebpay,
-} from "../../services/webpayService";
 import "../../css/Checkout.css";
-import OrderSummary from "../../components/organisms/OrderSummary.jsx";
-import ShippingOptions from "../../components/organisms/ShippingOptions.jsx";
+import SavedAddressPicker from "../../components/organisms/SavedAddressPicker.jsx";
+import {
+  getMyAddresses,
+  createAddress,
+  deleteAddress,
+} from "../../services/addressService.js";
 
 import {
   COMUNAS_POR_REGION,
   REGIONES,
-  COMUNAS_VERDES,
-  COMUNAS_AZULES,
-  COSTO_LOGISTICA_360,
-  NOMBRES_METODO_ENVIO,
-  METODOS_POR_ZONA,
 } from "../../data/comunasChile.js";
 
 import {
@@ -93,79 +87,177 @@ function Checkout() {
   const [mismosDatos, setMismosDatos] = useState(true);
 
   // ===================================================
-  // ENVÍO
+  // DIRECCIONES GUARDADAS
   // ===================================================
 
-  const [metodoEnvio, setMetodoEnvio] = useState("");
+  const [
+    direccionesGuardadas,
+    setDireccionesGuardadas,
+  ] = useState([]);
 
-  // ===================================================
-  // MÉTODO DE PAGO
-  // ===================================================
+  const [modoDireccion, setModoDireccion] =
+    useState("nueva");
 
-  const [metodoPago, setMetodoPago] = useState(
-    "webpay"
-  );
+  const [
+    direccionSeleccionadaId,
+    setDireccionSeleccionadaId,
+  ] = useState(null);
 
-  const comunaEnvio = normalizarEspacios(
-    mismosDatos
-      ? form.facturacion.comuna
-      : form.envio.comuna
-  );
+  const [
+    guardarNuevaDireccion,
+    setGuardarNuevaDireccion,
+  ] = useState(false);
 
-  const zonaEnvio = useMemo(() => {
-    if (!comunaEnvio) {
-      return null;
+  const [
+    nombreNuevaDireccion,
+    setNombreNuevaDireccion,
+  ] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+
+    getMyAddresses()
+      .then((data) => {
+        setDireccionesGuardadas(data);
+
+        if (data.length > 0) {
+          setModoDireccion("guardada");
+        }
+      })
+      .catch(() => {
+        // Si falla, el checkout sigue funcionando
+        // normal con el formulario manual.
+      });
+  }, [user]);
+
+  // Salvaguarda: si en algún momento quedan 0 direcciones
+  // guardadas pero el modo sigue en "guardada", no habría
+  // nada que mostrar (ni el picker ni el formulario). Se
+  // vuelve a "nueva" automáticamente.
+  useEffect(() => {
+    if (
+      modoDireccion === "guardada" &&
+      direccionesGuardadas.length === 0
+    ) {
+      setModoDireccion("nueva");
+    }
+  }, [modoDireccion, direccionesGuardadas]);
+
+  function seleccionarDireccionGuardada(
+    direccion
+  ) {
+    setDireccionSeleccionadaId(
+      direccion._id
+    );
+
+    setMismosDatos(false);
+
+    setForm((prev) => ({
+      ...prev,
+      rut: direccion.rut
+        ? formatearRut(direccion.rut)
+        : prev.rut,
+      facturacion: {
+        nombre: direccion.nombreReceptor,
+        rut: direccion.rut
+          ? formatearRut(direccion.rut)
+          : prev.facturacion.rut,
+        direccion: direccion.direccion,
+        numero: direccion.numero,
+        departamento:
+          direccion.departamento || "",
+        region: direccion.region,
+        comuna: direccion.comuna,
+      },
+      envio: {
+        nombreReceptor:
+          direccion.nombreReceptor,
+        telefono: direccion.telefono,
+        direccion: direccion.direccion,
+        numero: direccion.numero,
+        departamento:
+          direccion.departamento || "",
+        region: direccion.region,
+        comuna: direccion.comuna,
+        indicaciones:
+          direccion.indicaciones || "",
+      },
+    }));
+  }
+
+  async function eliminarDireccionGuardada(
+    direccion
+  ) {
+    if (
+      !confirm(
+        `¿Eliminar la dirección "${direccion.nombre}"?`
+      )
+    ) {
+      return;
     }
 
-    if (COMUNAS_VERDES.includes(comunaEnvio)) {
-      return "verde";
+    try {
+      await deleteAddress(direccion._id);
+
+      setDireccionesGuardadas((prev) => {
+        const restantes = prev.filter(
+          (d) => d._id !== direccion._id
+        );
+
+        // Si esa era la última dirección guardada,
+        // no queda nada que mostrar en modo "guardada":
+        // se vuelve a modo "nueva" para que aparezca
+        // el formulario completo de nuevo.
+        if (restantes.length === 0) {
+          setModoDireccion("nueva");
+        }
+
+        return restantes;
+      });
+
+      if (
+        direccionSeleccionadaId ===
+        direccion._id
+      ) {
+        setDireccionSeleccionadaId(null);
+      }
+    } catch (err) {
+      alert(
+        err.message ||
+          "No se pudo eliminar la dirección"
+      );
+    }
+  }
+
+  // Los datos de envío "reales" para este pedido: si
+  // "mismosDatos" está marcado, son una copia de la
+  // facturación; si no, son los campos de envío propios.
+  function obtenerDatosEnvioActuales() {
+    if (mismosDatos) {
+      return {
+        nombreReceptor:
+          `${form.nombre} ${form.apellidos}`.trim(),
+        telefono: form.telefono,
+        direccion: form.facturacion.direccion,
+        numero: form.facturacion.numero,
+        departamento:
+          form.facturacion.departamento,
+        region: form.facturacion.region,
+        comuna: form.facturacion.comuna,
+        indicaciones:
+          form.envio.indicaciones,
+      };
     }
 
-    if (COMUNAS_AZULES.includes(comunaEnvio)) {
-      return "azul";
-    }
-
-    return "fuera";
-  }, [comunaEnvio]);
-
-  const costoEnvio = useMemo(() => {
-    // Envío gratis sobre $49.990, solo dentro de Santiago
-    // (comunas verdes y azules). Fuera de Santiago los envíos
-    // ya son "por pagar" directo al courier, no hay nada que
-    // cobrar/eximir en el checkout.
-    const envioGratisPorMonto =
-      totalProductos >= 49990 &&
-      (zonaEnvio === "verde" ||
-        zonaEnvio === "azul");
-
-    if (metodoEnvio === "logistica360") {
-      return envioGratisPorMonto
-        ? 0
-        : COSTO_LOGISTICA_360;
-    }
-
-    // Chilexpress, Bluexpress, Starken y Retiro en local
-    // son $0 en línea (por pagar o gratis).
-    return 0;
-  }, [metodoEnvio, totalProductos, zonaEnvio]);
-
-  const totalFinal = totalProductos + costoEnvio;
-
-  // Cuando la comuna es zona verde O azul (ambas son Santiago)
-  // y el total supera $49.990, Logística 360 pasa a ser gratis
-  // y es la ÚNICA opción visible (no tiene sentido ofrecer
-  // pagado vs. gratis a la vez).
-  const envioGratisSoloLogistica =
-    (zonaEnvio === "verde" ||
-      zonaEnvio === "azul") &&
-    totalProductos >= 49990;
+    return form.envio;
+  }
 
   // ===================================================
   // ESTADOS
   // ===================================================
 
   const [errores, setErrores] = useState({});
-  const [enviando, setEnviando] = useState(false);
+  const [continuando, setContinuando] = useState(false);
   const [errorGeneral, setErrorGeneral] = useState("");
 
   // ===================================================
@@ -182,122 +274,119 @@ function Checkout() {
   }, [user, form.email]);
 
   // ===================================================
-  // AUTOCOMPLETAR FACTURACIÓN CON DATOS DEL PERFIL
+  // AUTOCOMPLETAR FACTURACIÓN CON LA PRIMERA DIRECCIÓN GUARDADA
   // ===================================================
 
   const facturacionAutocompletada = useRef(false);
 
   useEffect(() => {
-    if (!user || facturacionAutocompletada.current) {
+    if (
+      !user ||
+      facturacionAutocompletada.current ||
+      direccionesGuardadas.length === 0
+    ) {
       return;
     }
 
-    let cancelado = false;
+    const direccion = direccionesGuardadas[0];
 
-    (async () => {
-      try {
-        const perfil = await getMe();
+    facturacionAutocompletada.current = true;
 
-        if (cancelado) {
-          return;
-        }
+    setForm((prev) => {
+      const facturacionVacia =
+        !prev.facturacion.nombre &&
+        !prev.facturacion.rut &&
+        !prev.facturacion.direccion &&
+        !prev.facturacion.comuna;
 
-        const direcciones = perfil?.direcciones || [];
+      if (!facturacionVacia) {
+        return prev;
+      }
 
-        const direccion =
-          direcciones.find((dir) => dir.predeterminada) ||
-          direcciones[0];
+      return {
+        ...prev,
+        facturacion: {
+          nombre:
+            direccion.nombreReceptor || "",
+          rut: direccion.rut
+            ? formatearRut(direccion.rut)
+            : prev.facturacion.rut,
+          direccion:
+            direccion.direccion || "",
+          numero: direccion.numero || "",
+          departamento:
+            direccion.departamento || "",
+          region: direccion.region || "",
+          comuna: direccion.comuna || "",
+        },
+      };
+    });
+  }, [user, direccionesGuardadas]);
 
-        if (!direccion) {
-          return;
-        }
+  // ===================================================
+  // AUTOCOMPLETAR DATOS DEL CLIENTE DESDE EL PERFIL
+  // ===================================================
+  // Siempre que haya sesión iniciada, se rellenan solos
+  // (el cliente igual los puede editar para este pedido).
 
-        facturacionAutocompletada.current = true;
+  const clienteAutocompletado = useRef(false);
+
+  useEffect(() => {
+    if (!user || clienteAutocompletado.current) {
+      return;
+    }
+
+    getMe()
+      .then((perfil) => {
+        clienteAutocompletado.current = true;
 
         setForm((prev) => {
-          const facturacionVacia =
-            !prev.facturacion.nombre &&
-            !prev.facturacion.rut &&
-            !prev.facturacion.direccion &&
-            !prev.facturacion.comuna;
-
-          if (!facturacionVacia) {
+          if (
+            prev.nombre ||
+            prev.apellidos ||
+            prev.rut ||
+            prev.telefono
+          ) {
             return prev;
           }
 
+          const nombreCompleto = (
+            perfil?.nombre || ""
+          ).trim();
+
+          const espacio =
+            nombreCompleto.indexOf(" ");
+
+          const nombre =
+            espacio === -1
+              ? nombreCompleto
+              : nombreCompleto.slice(
+                  0,
+                  espacio
+                );
+
+          const apellidos =
+            espacio === -1
+              ? ""
+              : nombreCompleto.slice(
+                  espacio + 1
+                );
+
           return {
             ...prev,
-            facturacion: {
-              nombre:
-                direccion.nombreReceptor ||
-                perfil?.nombre ||
-                "",
-              rut: formatearRut(direccion.rut || ""),
-              direccion: direccion.calle || "",
-              numero: direccion.numero || "",
-              departamento: direccion.departamento || "",
-              region: direccion.region || "",
-              comuna: direccion.comuna || "",
-            },
+            nombre,
+            apellidos,
+            rut: formatearRut(
+              perfil?.rut || ""
+            ),
+            telefono: perfil?.telefono || "",
           };
         });
-      } catch (err) {
-        console.error(
-          "No se pudo autocompletar la facturación:",
-          err
-        );
-      }
-    })();
-
-    return () => {
-      cancelado = true;
-    };
+      })
+      .catch(() => {
+        // Si falla, el cliente completa los datos a mano
+      });
   }, [user]);
-
-  // ===================================================
-  // REINICIAR MÉTODO DE ENVÍO
-  // ===================================================
-
-  useEffect(() => {
-    if (envioGratisSoloLogistica) {
-      if (metodoEnvio !== "logistica360") {
-        setMetodoEnvio("logistica360");
-      }
-      return;
-    }
-
-    const disponibles =
-      METODOS_POR_ZONA[zonaEnvio] || [];
-
-    if (!disponibles.includes(metodoEnvio)) {
-      setMetodoEnvio("");
-    }
-  }, [
-    zonaEnvio,
-    metodoEnvio,
-    envioGratisSoloLogistica,
-  ]);
-
-  // ===================================================
-  // CAMBIO DE MÉTODO DE ENVÍO
-  // ===================================================
-
-  const handleMetodoEnvio = (metodo) => {
-    // Con envío gratis por monto, Logística 360 es la
-    // única opción posible: no se puede cambiar.
-    if (envioGratisSoloLogistica) {
-      return;
-    }
-
-    const disponibles =
-      METODOS_POR_ZONA[zonaEnvio] || [];
-
-    if (!disponibles.includes(metodo)) {
-      return;
-    }
-
-    setMetodoEnvio(metodo);
-  };
 
   // ===================================================
   // CAMBIO CLIENTE
@@ -381,14 +470,6 @@ function Checkout() {
         ? { "facturacion.comuna": "" }
         : {}),
     }));
-
-    if (name === "comuna" && mismosDatos) {
-      setMetodoEnvio("");
-    }
-
-    if (name === "region" && mismosDatos) {
-      setMetodoEnvio("");
-    }
   };
 
   // ===================================================
@@ -438,10 +519,6 @@ function Checkout() {
         ? { "envio.comuna": "" }
         : {}),
     }));
-
-    if (name === "comuna" || name === "region") {
-      setMetodoEnvio("");
-    }
   };
 
   // ===================================================
@@ -631,31 +708,6 @@ function Checkout() {
         errorIndicaciones;
     }
 
-    // VALIDACIÓN DEL MÉTODO DE ENVÍO
-
-    if (["verde", "azul", "fuera"].includes(zonaEnvio)) {
-      if (!metodoEnvio) {
-        nuevosErrores.metodoEnvio =
-          "Selecciona un método de envío";
-      }
-    }
-
-    if (!zonaEnvio) {
-      nuevosErrores.metodoEnvio =
-        "Ingresa una comuna válida para calcular el envío";
-    }
-
-    if (zonaEnvio) {
-      const disponibles = envioGratisSoloLogistica
-        ? ["logistica360"]
-        : METODOS_POR_ZONA[zonaEnvio] || [];
-
-      if (!disponibles.includes(metodoEnvio)) {
-        nuevosErrores.metodoEnvio =
-          "Selecciona un método de envío válido";
-      }
-    }
-
     setErrores(nuevosErrores);
 
     return {
@@ -800,8 +852,6 @@ function Checkout() {
 
     setMismosDatos(checked);
 
-    setMetodoEnvio("");
-
     if (checked) {
       setForm((prev) => ({
         ...prev,
@@ -848,7 +898,7 @@ function Checkout() {
   // CREAR PEDIDO
   // ===================================================
 
-  const finishOrder = async () => {
+  const continuarAlPago = () => {
     setErrorGeneral("");
 
     if (cart.length === 0) {
@@ -878,173 +928,92 @@ function Checkout() {
       return;
     }
 
-    setEnviando(true);
+    setContinuando(true);
 
-    try {
-      const datosEnvio = resultado.datosEnvio;
+    const datosEnvio = resultado.datosEnvio;
 
-      const orderData = {
-        cliente: {
-          nombre:
-            `${normalizarEspacios(form.nombre)} ${normalizarEspacios(
-              form.apellidos
-            )}`.trim(),
+    const datosCheckout = {
+      nombre: `${normalizarEspacios(
+        form.nombre
+      )} ${normalizarEspacios(
+        form.apellidos
+      )}`.trim(),
 
-          email:
-            limpiarTexto(form.email).toLowerCase(),
+      email: limpiarTexto(
+        form.email
+      ).toLowerCase(),
 
-          rut:
-            limpiarRut(form.rut),
+      rut: limpiarRut(form.rut),
 
-          telefono:
-            normalizarTelefono(form.telefono),
+      telefono: normalizarTelefono(
+        form.telefono
+      ),
 
-          facturacion: {
-            nombre:
-              normalizarEspacios(
-                form.facturacion.nombre
-              ),
+      facturacion: {
+        nombre: normalizarEspacios(
+          form.facturacion.nombre
+        ),
+        rut: limpiarRut(
+          form.facturacion.rut
+        ),
+        direccion: normalizarEspacios(
+          form.facturacion.direccion
+        ),
+        numero: limpiarTexto(
+          form.facturacion.numero
+        ),
+        departamento: limpiarTexto(
+          form.facturacion.departamento
+        ),
+        region: limpiarTexto(
+          form.facturacion.region
+        ),
+        comuna: normalizarEspacios(
+          form.facturacion.comuna
+        ),
+      },
 
-            rut:
-              limpiarRut(
-                form.facturacion.rut
-              ),
+      envio: {
+        nombreReceptor: normalizarEspacios(
+          datosEnvio.nombreReceptor
+        ),
+        telefono: normalizarTelefono(
+          datosEnvio.telefono
+        ),
+        direccion: normalizarEspacios(
+          datosEnvio.direccion
+        ),
+        numero: limpiarTexto(
+          datosEnvio.numero
+        ),
+        departamento: limpiarTexto(
+          datosEnvio.departamento
+        ),
+        region: limpiarTexto(
+          datosEnvio.region
+        ),
+        comuna: normalizarEspacios(
+          datosEnvio.comuna
+        ),
+        indicaciones: normalizarEspacios(
+          datosEnvio.indicaciones
+        ),
+      },
 
-            direccion:
-              normalizarEspacios(
-                form.facturacion.direccion
-              ),
+      totalProductos,
 
-            numero:
-              limpiarTexto(
-                form.facturacion.numero
-              ),
+      guardarNuevaDireccion:
+        modoDireccion === "nueva" &&
+        guardarNuevaDireccion &&
+        Boolean(nombreNuevaDireccion.trim()),
 
-            departamento:
-              limpiarTexto(
-                form.facturacion.departamento
-              ),
+      nombreNuevaDireccion:
+        nombreNuevaDireccion.trim(),
+    };
 
-            region:
-              limpiarTexto(
-                form.facturacion.region
-              ),
-
-            comuna:
-              normalizarEspacios(
-                form.facturacion.comuna
-              ),
-          },
-
-          envio: {
-            nombreReceptor:
-              normalizarEspacios(
-                datosEnvio.nombreReceptor
-              ),
-
-            telefono:
-              normalizarTelefono(
-                datosEnvio.telefono
-              ),
-
-            direccion:
-              normalizarEspacios(
-                datosEnvio.direccion
-              ),
-
-            numero:
-              limpiarTexto(
-                datosEnvio.numero
-              ),
-
-            departamento:
-              limpiarTexto(
-                datosEnvio.departamento
-              ),
-
-            region:
-              limpiarTexto(
-                datosEnvio.region
-              ),
-
-            comuna:
-              normalizarEspacios(
-                datosEnvio.comuna
-              ),
-
-            indicaciones:
-              normalizarEspacios(
-                datosEnvio.indicaciones
-              ),
-          },
-        },
-
-        items: cart.map((item) => ({
-          producto: item.id,
-          cantidad: item.quantity,
-        })),
-
-        // =================================================
-        // INFORMACIÓN DEL ENVÍO
-        // =================================================
-
-        metodoEnvio:
-          NOMBRES_METODO_ENVIO[metodoEnvio] ||
-          null,
-
-        metodoPago,
-
-        costoEnvio,
-
-        totalProductos,
-
-        total: totalFinal,
-      };
-
-      console.log("Pedido enviado:", orderData);
-
-      // =================================================
-      // CREAR PEDIDO
-      // =================================================
-
-      const pedido = await createOrder(orderData);
-
-      // =================================================
-      // TRANSFERENCIA BANCARIA
-      // =================================================
-
-      if (metodoPago === "transferencia") {
-        navigate("/pago-transferencia", {
-          state: { pedido },
-        });
-
-        return;
-      }
-
-      // =================================================
-      // WEBPAY
-      // =================================================
-
-      const { url, token } =
-        await initWebpayTransaction(
-          pedido._id,
-          pedido.accessToken
-        );
-
-      redirectToWebpay(url, token);
-    } catch (err) {
-      console.error(
-        "Error en checkout:",
-        err
-      );
-
-      setErrorGeneral(
-        err.message ||
-          "Ocurrió un error al procesar tu pedido"
-      );
-
-      setEnviando(false);
-    }
+    navigate("/checkout/pago", {
+      state: { datosCheckout },
+    });
   };
 
   // ===================================================
@@ -1088,7 +1057,7 @@ function Checkout() {
   return (
     <main className="checkout-page">
 
-      <h1>Finalizar compra</h1>
+      <h1>¿A dónde enviamos tu pedido?</h1>
 
       {errorGeneral && (
         <div className="checkout-error">
@@ -1096,13 +1065,36 @@ function Checkout() {
         </div>
       )}
 
-      <div className="checkout-container">
+      <div className="checkout-container checkout-container-single">
 
         {/* =================================================
             FORMULARIO
         ================================================= */}
 
         <section className="billing">
+
+          {user &&
+            direccionesGuardadas.length > 0 && (
+              <SavedAddressPicker
+                direcciones={
+                  direccionesGuardadas
+                }
+                modo={modoDireccion}
+                setModo={setModoDireccion}
+                direccionSeleccionadaId={
+                  direccionSeleccionadaId
+                }
+                onSelect={
+                  seleccionarDireccionGuardada
+                }
+                onDelete={
+                  eliminarDireccionGuardada
+                }
+              />
+            )}
+
+          {modoDireccion === "nueva" && (
+            <>
 
           {/* CLIENTE */}
 
@@ -1901,39 +1893,34 @@ function Checkout() {
 
           </div>
 
-          {/* =================================================
-              OPCIONES DE ENVÍO
-          ================================================= */}
+            </>
+          )}
 
-          <ShippingOptions
-            zonaEnvio={zonaEnvio}
-            envioGratisSoloLogistica={
-              envioGratisSoloLogistica
+          {modoDireccion === "guardada" &&
+            direccionSeleccionadaId && (
+              <p className="checkout-address-summary">
+                ✅ Usaremos tus datos guardados
+                para este pedido.
+              </p>
+            )}
+
+          <button
+            type="button"
+            className="checkout-continue-btn"
+            onClick={continuarAlPago}
+            disabled={
+              continuando ||
+              cart.length === 0 ||
+              (modoDireccion === "guardada" &&
+                !direccionSeleccionadaId)
             }
-            metodoEnvio={metodoEnvio}
-            handleMetodoEnvio={
-              handleMetodoEnvio
-            }
-            errores={errores}
-          />
+          >
+            {continuando
+              ? "Cargando..."
+              : "Continuar"}
+          </button>
 
         </section>
-
-        {/* =================================================
-            RESUMEN
-        ================================================= */}
-
-        <OrderSummary
-          cart={cart}
-          totalProductos={totalProductos}
-          metodoEnvio={metodoEnvio}
-          metodoPago={metodoPago}
-          setMetodoPago={setMetodoPago}
-          costoEnvio={costoEnvio}
-          totalFinal={totalFinal}
-          enviando={enviando}
-          onFinishOrder={finishOrder}
-        />
 
       </div>
 

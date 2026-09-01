@@ -49,6 +49,35 @@
   align-items: start;
 }
 
+/* Página 1 del checkout (dirección): una sola columna,
+   más angosta, ya que no hay panel de resumen al lado. */
+.checkout-container-single {
+  grid-template-columns: 1fr;
+  max-width: 700px;
+}
+
+.checkout-continue-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #43b96d;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 18px;
+}
+
+.checkout-continue-btn:hover {
+  background: #379159;
+}
+
+.checkout-continue-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 /* =====================================================
    TARJETAS
 ===================================================== */
@@ -568,4 +597,102 @@
 
 .order-payment-option input[type="radio"] {
   margin: 0;
+}
+/* ================= DIRECCIONES GUARDADAS ================= */
+
+.saved-address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.saved-address-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.saved-address-item:hover {
+  border-color: #43b96d;
+}
+
+.saved-address-item.selected {
+  border-color: #43b96d;
+  background: #f0faf4;
+}
+
+.saved-address-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.saved-address-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.saved-address-delete:hover {
+  background: #fdeaea;
+}
+
+.saved-address-preview {
+  background: #f7f7f7;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.saved-address-limit {
+  background: #fff7e6;
+  color: #b58900;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.save-address-box {
+  background: #f7f7f7;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.save-address-input {
+  margin-top: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.checkout-address-summary {
+  background: #f0faf4;
+  border: 1px solid #43b96d;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #333;
 }

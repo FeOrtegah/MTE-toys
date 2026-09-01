@@ -19,6 +19,7 @@ import Cart from "./pages/user/Cart";
 import ContactPage from "./pages/user/Contact";
 import ProductDetail from "./pages/user/ProductDetail";
 import Checkout from "./pages/user/Checkout";
+import CheckoutPago from "./pages/user/CheckoutPago";
 import PaymentResult from "./pages/user/PaymentResult";
 
 import Login from "./pages/auth/Login";
@@ -159,6 +160,11 @@ function App() {
           <Route
             path="/checkout"
             element={<Checkout />}
+          />
+
+          <Route
+            path="/checkout/pago"
+            element={<CheckoutPago />}
           />
 
           <Route

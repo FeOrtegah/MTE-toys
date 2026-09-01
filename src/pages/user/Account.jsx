@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { getMe, updateMe } from "../../services/authService";
+import { formatearRut } from "../../utils/checkoutValidacion.js";
 import "../../css/Account.css";
 
 function Account() {
@@ -15,6 +16,7 @@ function Account() {
 
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
+  const [rut, setRut] = useState("");
   const [telefono, setTelefono] = useState("");
   const [direccion, setDireccion] = useState({
     calle: "",
@@ -34,6 +36,7 @@ function Account() {
       .then((data) => {
         setEmail(data.email);
         setNombre(data.nombre || "");
+        setRut(data.rut || "");
         setTelefono(data.telefono || "");
         setDireccion({
           calle: data.direccion?.calle || "",
@@ -58,7 +61,7 @@ function Account() {
     setSaving(true);
 
     try {
-      const data = await updateMe({ nombre, telefono, direccion });
+      const data = await updateMe({ nombre, rut, telefono, direccion });
       updateUser({ name: data.nombre });
       setSuccess("Datos guardados correctamente");
       setTimeout(() => setSuccess(""), 2500);
@@ -103,6 +106,15 @@ function Account() {
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             placeholder="Tu nombre completo"
+          />
+
+          <label>RUT</label>
+          <input
+            type="text"
+            value={rut}
+            onChange={(e) => setRut(formatearRut(e.target.value))}
+            placeholder="Ej: 12.345.678-5"
+            maxLength={12}
           />
 
           <label>Teléfono</label>

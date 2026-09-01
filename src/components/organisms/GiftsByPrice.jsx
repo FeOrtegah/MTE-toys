@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import {
@@ -34,6 +34,24 @@ const REGALOS_POR_DEFECTO = [
   },
 ];
 
+// Saca el "min" del link (?min=X&max=Y) para poder ordenar
+// las tarjetas siempre de menor a mayor precio, sin importar
+// el orden en que se hayan creado o editado en el admin.
+function extraerMinPrecio(link) {
+  try {
+    const url = new URL(
+      link,
+      window.location.origin
+    );
+
+    const min = url.searchParams.get("min");
+
+    return min ? Number(min) : Infinity;
+  } catch {
+    return Infinity;
+  }
+}
+
 function GiftsByPrice() {
   const { user } = useUser();
   const isAdmin = user?.rol === "admin";
@@ -41,6 +59,14 @@ function GiftsByPrice() {
   const [regalos, setRegalos] = useState(
     REGALOS_POR_DEFECTO
   );
+
+  const regalosOrdenados = useMemo(() => {
+    return [...regalos].sort(
+      (a, b) =>
+        extraerMinPrecio(a.link) -
+        extraerMinPrecio(b.link)
+    );
+  }, [regalos]);
 
   useEffect(() => {
     getSiteContent("giftCard")
@@ -108,7 +134,7 @@ function GiftsByPrice() {
       </h2>
 
       <div className="gifts-container">
-        {regalos.map((gift, index) => (
+        {regalosOrdenados.map((gift, index) => (
           <EditableCard
             key={gift._id || index}
             isAdmin={isAdmin}
