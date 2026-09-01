@@ -26,6 +26,7 @@ function Footer() {
 
       <div className="footer-section">
         <h3>Información</h3>
+        <Link to="/quienes-somos">Quiénes somos</Link>
         <Link to="/politicas-envio">Políticas de envío</Link>
         <Link to="/politicas-cambio">Políticas de cambio</Link>
         <Link to="/medios-de-pago">Medios de pago</Link>

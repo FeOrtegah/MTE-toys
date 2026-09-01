@@ -17,6 +17,9 @@ import BankTransfer from "./pages/user/BankTransfer";
 import ReturnPolicy from "./pages/user/ReturnPolicy";
 import Cart from "./pages/user/Cart";
 import ContactPage from "./pages/user/Contact";
+import QuienesSomos from "./pages/user/QuienesSomos";
+import BlogRegalarSinFecha from "./pages/user/BlogRegalarSinFecha";
+import BlogCategoriasJuguetes from "./pages/user/BlogCategoriasJuguetes";
 import ProductDetail from "./pages/user/ProductDetail";
 import Checkout from "./pages/user/Checkout";
 import CheckoutPago from "./pages/user/CheckoutPago";
@@ -155,6 +158,21 @@ function App() {
           <Route
             path="/contacto"
             element={<ContactPage />}
+          />
+
+          <Route
+            path="/quienes-somos"
+            element={<QuienesSomos />}
+          />
+
+          <Route
+            path="/blog/regalar-sin-fecha"
+            element={<BlogRegalarSinFecha />}
+          />
+
+          <Route
+            path="/blog/categorias-juguetes"
+            element={<BlogCategoriasJuguetes />}
           />
 
           <Route

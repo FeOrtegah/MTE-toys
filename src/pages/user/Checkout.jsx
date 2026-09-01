@@ -1547,19 +1547,61 @@ function Checkout() {
 
           <h2>Datos de envío</h2>
 
-          <label className="account">
+          <div className="checkout-toggle-group">
 
-            <input
-              type="checkbox"
-              checked={mismosDatos}
-              onChange={
-                handleMismosDatos
-              }
-            />
+            <label className="account account-toggle">
 
-            Enviar a la misma dirección de facturación
+              <input
+                type="checkbox"
+                checked={mismosDatos}
+                onChange={
+                  handleMismosDatos
+                }
+              />
 
-          </label>
+              Enviar a la misma dirección de facturación
+
+            </label>
+
+            {user && (
+              <>
+                <div className="checkout-toggle-divider" />
+
+                <label className="account account-toggle">
+                  <input
+                    type="checkbox"
+                    checked={
+                      guardarNuevaDireccion
+                    }
+                    onChange={(e) =>
+                      setGuardarNuevaDireccion(
+                        e.target.checked
+                      )
+                    }
+                  />
+                  Guardar esta dirección
+                  para la próxima vez
+                </label>
+
+                {guardarNuevaDireccion && (
+                  <input
+                    type="text"
+                    placeholder="Nómbrala, ej: Casa, Trabajo, Pareja"
+                    value={
+                      nombreNuevaDireccion
+                    }
+                    onChange={(e) =>
+                      setNombreNuevaDireccion(
+                        e.target.value
+                      )
+                    }
+                    className="save-address-input"
+                  />
+                )}
+              </>
+            )}
+
+          </div>
 
           {!mismosDatos && (
             <>

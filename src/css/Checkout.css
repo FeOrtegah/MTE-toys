@@ -270,7 +270,7 @@
 .account {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   margin: 4px 0 22px;
   padding: 13px 16px;
   background: var(--brand-soft);
@@ -289,6 +289,8 @@
 .account input[type="checkbox"] {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
+  margin: 0;
   accent-color: var(--brand);
   cursor: pointer;
 }
@@ -675,6 +677,37 @@
   padding: 14px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.checkout-toggle-group {
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  border-radius: 12px;
+  margin: 4px 0 22px;
+  overflow: hidden;
+}
+
+.checkout-toggle-group .account-toggle {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.checkout-toggle-group .account-toggle:hover {
+  box-shadow: none;
+  background: rgba(67, 185, 109, 0.06);
+}
+
+.checkout-toggle-divider {
+  height: 1px;
+  background: var(--brand-border);
+  margin: 0 16px;
+}
+
+.checkout-toggle-group .save-address-input {
+  margin: 0 16px 14px;
+  width: calc(100% - 32px);
 }
 
 .save-address-input {
