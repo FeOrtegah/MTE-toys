@@ -77,8 +77,27 @@ object-fit:contain;
 transition:.3s;
 }
 
-.product-card:hover img{
+.product-card:hover .product-image-main{
 transform:scale(1.08);
+opacity:0;
+}
+
+.product-image-hover{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+max-width:100%;
+max-height:100%;
+object-fit:contain;
+opacity:0;
+transition:opacity .25s ease;
+background:white;
+}
+
+.product-card:hover .product-image-hover{
+opacity:1;
+transform:translate(-50%,-50%) scale(1.08);
 }
 
 .product-card h3{

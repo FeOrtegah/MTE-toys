@@ -13,6 +13,7 @@ import {
 } from "../../services/api";
 
 import ProductCard from "../../components/organisms/ProductCard";
+import ProductsAdSidebar from "../../components/organisms/ProductsAdSidebar";
 
 import {
   useSearch,
@@ -582,6 +583,8 @@ function Products() {
           )}
 
         </section>
+
+        <ProductsAdSidebar />
 
       </div>
 

@@ -24,6 +24,8 @@ display:none;
 display:flex;
 gap:35px;
 align-items:flex-start;
+max-width:1500px;
+margin:0 auto;
 }
 
 .products-filters{
@@ -134,8 +136,8 @@ background:#379159;
 .products-grid{
 flex:1;
 display:grid;
-grid-template-columns:repeat(3, 1fr);
-gap:25px;
+grid-template-columns:repeat(4, 1fr);
+gap:32px 24px;
 align-content:start;
 }
 
@@ -144,6 +146,12 @@ grid-column:1/-1;
 text-align:center;
 color:#777;
 padding:40px 0;
+}
+
+@media(max-width:1200px){
+.products-grid{
+grid-template-columns:repeat(3, 1fr);
+}
 }
 
 @media(max-width:900px){
@@ -377,4 +385,102 @@ gap:15px;
   height: 16px;
   accent-color: #ed4b25;
   cursor: pointer;
+}
+
+/* ================= TARJETAS MÁS CHICAS EN 4 COLUMNAS ================= */
+
+.products-grid .product-card {
+  height: 340px;
+  padding: 14px;
+}
+
+.products-grid .product-image {
+  height: 130px;
+}
+
+.products-grid .product-card h3 {
+  font-size: 13px;
+  min-height: 34px;
+  max-height: 34px;
+}
+
+/* ================= TARJETAS ESTILO "IMAGEN GRANDE, SIN CAJA" ================= */
+
+.products-grid .product-card {
+  height: auto;
+  min-height: 400px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  text-align: left;
+  overflow: visible;
+  align-self: start;
+}
+
+.products-grid .product-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.products-grid .product-image {
+  height: auto;
+  aspect-ratio: 1 / 1;
+  background: #fafafa;
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.products-grid .product-image img {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.products-grid .product-category {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.products-grid .product-card h3 {
+  font-size: 15px;
+  min-height: 40px;
+  max-height: 40px;
+  text-align: left;
+  margin: 0 0 6px;
+}
+
+.products-grid .stars {
+  font-size: 13px;
+  text-align: left;
+}
+
+.products-grid .old-price {
+  text-align: left;
+}
+
+.products-grid .price {
+  font-size: 18px;
+  text-align: left;
+}
+
+.products-grid .add {
+  background: transparent;
+  border: 1.5px solid #43b96d;
+  color: #2c9a56;
+  margin-top: 10px;
+}
+
+.products-grid .add:hover:not(:disabled) {
+  background: #f0faf4;
+}
+
+.products-grid .add.disabled-btn {
+  border-color: #ccc;
+  color: #999;
+  background: transparent;
 }

@@ -111,10 +111,25 @@ function ProductCard({
         className="product-image"
       >
         <img
+          className="product-image-main"
           src={product.image}
           alt={product.name}
         />
+
+        {product.images?.[1] && (
+          <img
+            className="product-image-hover"
+            src={product.images[1]}
+            alt={product.name}
+          />
+        )}
       </Link>
+
+      {product.category && (
+        <span className="product-category">
+          {product.category}
+        </span>
+      )}
 
       <h3>
         {product.name}
