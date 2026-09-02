@@ -19,6 +19,9 @@ import {
   useCart,
 } from "../../context/CartContext";
 
+import ReviewSection from "../../components/organisms/ReviewSection";
+import RelatedProducts from "../../components/organisms/RelatedProducts";
+
 import "../../css/ProductDetail.css";
 
 function ProductDetail() {
@@ -451,6 +454,17 @@ function ProductDetail() {
         </div>
 
       </div>
+
+      <ReviewSection
+        productoId={product.id}
+        tipo={tipo}
+      />
+
+      <RelatedProducts
+        categoria={tituloCategoria}
+        excluirId={product.id}
+        excluirTipo={tipo}
+      />
 
     </main>
   );
