@@ -63,11 +63,21 @@ function Products() {
     searchParams.get("category") ||
     "Todos";
 
+  const getOfertaFromUrl = () =>
+    searchParams.get("oferta") === "1";
+
   const [
     category,
     setCategory,
   ] = useState(
     getCatFromUrl()
+  );
+
+  const [
+    soloOferta,
+    setSoloOferta,
+  ] = useState(
+    getOfertaFromUrl()
   );
 
   const [
@@ -127,6 +137,10 @@ function Products() {
     setMaxPrice(
       getMaxFromUrl()
     );
+
+    setSoloOferta(
+      getOfertaFromUrl()
+    );
   }, [searchParams]);
 
   // =====================================================
@@ -158,7 +172,8 @@ function Products() {
   function actualizarURL(
     nuevaCat,
     nuevoMin,
-    nuevoMax
+    nuevoMax,
+    nuevaOferta
   ) {
     const params =
       new URLSearchParams();
@@ -193,6 +208,10 @@ function Products() {
       );
     }
 
+    if (nuevaOferta) {
+      params.set("oferta", "1");
+    }
+
     setSearchParams(
       params,
       {
@@ -213,7 +232,8 @@ function Products() {
     actualizarURL(
       cat,
       minPrice,
-      maxPrice
+      maxPrice,
+      soloOferta
     );
   }
 
@@ -226,7 +246,8 @@ function Products() {
     actualizarURL(
       category,
       val,
-      maxPrice
+      maxPrice,
+      soloOferta
     );
   }
 
@@ -239,7 +260,21 @@ function Products() {
     actualizarURL(
       category,
       minPrice,
-      val
+      val,
+      soloOferta
+    );
+  }
+
+  function handleOfertaToggle() {
+    const nuevoValor = !soloOferta;
+
+    setSoloOferta(nuevoValor);
+
+    actualizarURL(
+      category,
+      minPrice,
+      maxPrice,
+      nuevoValor
     );
   }
 
@@ -247,6 +282,7 @@ function Products() {
     setCategory("Todos");
     setMinPrice("");
     setMaxPrice("");
+    setSoloOferta(false);
 
     setSearchParams({});
   }
@@ -289,6 +325,10 @@ function Products() {
           product.category ===
             category;
 
+        const matchesOferta =
+          !soloOferta ||
+          Boolean(product.offer);
+
         const numPrice =
           Number(
             product.price
@@ -327,6 +367,7 @@ function Products() {
         return (
           matchesSearch &&
           matchesCategory &&
+          matchesOferta &&
           matchesMin &&
           matchesMax
         );
@@ -444,6 +485,21 @@ function Products() {
               )}
 
             </ul>
+
+          </div>
+
+          <div className="filter-block">
+
+            <label className="filter-oferta-toggle">
+              <input
+                type="checkbox"
+                checked={soloOferta}
+                onChange={
+                  handleOfertaToggle
+                }
+              />
+              🏷️ Solo productos en oferta
+            </label>
 
           </div>
 

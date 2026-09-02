@@ -295,6 +295,15 @@ header.with-contact.navbar-hide {
   color: black;
 }
 
+.menu-oferta {
+  background: #ed4b25;
+}
+
+.menu-oferta:hover {
+  background: #c93a19 !important;
+  color: white !important;
+}
+
 /* ====================================================== */
 /* MOBILE — mismo alto de header (25 + 100 + 50 = 175px)   */
 /* para no romper la animación de mostrar/ocultar el header */

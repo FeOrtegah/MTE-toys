@@ -230,6 +230,10 @@ function Navbar() {
           Juguetes
         </Link>
 
+        <Link to="/productos?oferta=1" className="menu-oferta">
+          🏷️ Ofertas
+        </Link>
+
         <Link to="/marcas">
           Marcas
         </Link>
