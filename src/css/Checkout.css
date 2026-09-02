@@ -558,6 +558,14 @@
   margin-top: 4px;
 }
 
+.shipping-pickup-note {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #5b7fa6;
+  font-weight: normal;
+}
+
 /* ================= DIRECCIÓN DE RETIRO EN EL RESUMEN ================= */
 
 .order-pickup-address {

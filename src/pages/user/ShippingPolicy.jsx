@@ -23,7 +23,7 @@ const SECCIONES = [
     color: "#7B5EA7",
     titulo: "5. Retiro en Sede",
     texto:
-      "Si tu dirección está dentro de Santiago, también puedes retirar tu pedido directamente en nuestra sede, sin costo de envío: Heraldo Latorre 974, Pudahuel.",
+      "Si tu dirección está dentro de Santiago, también puedes retirar tu pedido directamente en nuestra sede en la comuna de Pudahuel, sin costo de envío. Te enviaremos la dirección exacta por correo una vez confirmado tu pedido.",
   },
   {
     color: "#2E86AB",

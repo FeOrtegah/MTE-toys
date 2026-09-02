@@ -295,6 +295,12 @@ function ShippingOptions({
                 <p className="shipping-pickup-address">
                   📍 Retira tu pedido en:{" "}
                   <strong>{DIRECCION_SEDE}</strong>
+                  <br />
+                  <span className="shipping-pickup-note">
+                    Te enviaremos la dirección
+                    exacta por correo una vez
+                    confirmado tu pedido.
+                  </span>
                 </p>
               )}
 

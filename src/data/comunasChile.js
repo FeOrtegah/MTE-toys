@@ -453,8 +453,11 @@ const COMUNAS_AZULES = [
 
 const COSTO_LOGISTICA_360 = 3490;
 
-// Dirección de la sede para retiro en persona
-const DIRECCION_SEDE = "Heraldo Latorre 974, Pudahuel";
+// Referencia pública del punto de retiro (sin dirección
+// exacta, por seguridad). La dirección exacta solo se
+// envía en el correo de confirmación del pedido, una vez
+// que el cliente ya realizó la compra.
+const DIRECCION_SEDE = "Comuna de Pudahuel";
 
 // Etiquetas legibles para cada método de envío
 const NOMBRES_METODO_ENVIO = {
