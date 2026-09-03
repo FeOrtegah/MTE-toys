@@ -4,11 +4,9 @@ export async function uploadImages(files) {
   const formData = new FormData();
   Array.from(files).forEach((file) => formData.append("imagenes", file));
 
-  const token = localStorage.getItem("token");
-
   const res = await fetch(`${API_URL}/upload`, {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    credentials: "include",
     body: formData,
   });
 

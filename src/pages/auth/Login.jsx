@@ -31,8 +31,6 @@ try{
 
 const data = await loginRequest({email, password});
 
-localStorage.setItem("token", data.token);
-
 login({
 id: data.id,
 email: data.email,

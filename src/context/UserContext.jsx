@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { logout as logoutRequest } from "../services/authService";
 
 const UserContext = createContext();
 
@@ -34,10 +35,15 @@ return actualizado;
 
 function logout(){
 
+// La cookie de sesión es httpOnly: el frontend no puede
+// leerla ni borrarla directamente, por eso hay que avisarle
+// al backend para que la elimine. No se espera (await) para
+// no trabar la salida del usuario si la red falla.
+logoutRequest().catch(() => {});
+
 setUser(null);
 
 localStorage.removeItem("user");
-localStorage.removeItem("token");
 
 }
 

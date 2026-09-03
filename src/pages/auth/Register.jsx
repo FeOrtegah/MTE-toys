@@ -34,13 +34,12 @@ try{
 // Crea la cuenta en el backend (rol "cliente" por defecto)
 await registerRequest({email, password});
 
-// El registro no devuelve token, así que iniciamos sesión
+// El registro no devuelve sesión, así que iniciamos sesión
 // automáticamente para que quede logueado de una vez.
 const data = await loginRequest({email, password});
 
-localStorage.setItem("token", data.token);
-
 login({
+id: data.id,
 name,
 email: data.email,
 rol: data.rol
