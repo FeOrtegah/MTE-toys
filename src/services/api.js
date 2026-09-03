@@ -9,14 +9,6 @@ export async function request(
     "Content-Type": "application/json",
   };
 
-  if (auth) {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  }
-
   // Métodos que pueden llevar cuerpo (PATCH, POST, PUT, DELETE):
   // si no se pasó "body" explícito, mandamos "{}" en vez de nada.
   // Algunos proxies/servidores (ej. LiteSpeed en cPanel) rechazan
@@ -29,6 +21,13 @@ export async function request(
   const res = await fetch(`${API_URL}${path}`, {
     method,
     headers,
+    // "include": el navegador manda/recibe la cookie httpOnly
+    // de sesión en cada petición, aunque el frontend y la API
+    // estén en dominios distintos. Se manda siempre (no solo
+    // cuando auth=true) porque no hace daño mandarla de más,
+    // y evita tener que acordarse de marcar auth=true en cada
+    // endpoint que la necesite.
+    credentials: "include",
     body: body
       ? JSON.stringify(body)
       : necesitaCuerpo
