@@ -323,6 +323,7 @@ function OrdersSection({ orders, setOrders }) {
           <thead>
             <tr>
               <th>Cliente</th>
+              <th>Productos</th>
               <th>Método</th>
               <th>Dirección de envío</th>
               <th>Fecha</th>
@@ -336,7 +337,7 @@ function OrdersSection({ orders, setOrders }) {
             {ordersFiltrados.length === 0 ? (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="8"
                   style={{
                     textAlign: "center",
                     padding: 20,
@@ -418,6 +419,17 @@ function OrdersSection({ orders, setOrders }) {
                               : "⏳ Sin avisar"}
                           </small>
                         </>
+                      )}
+                    </td>
+
+                    <td>
+                      {o.items?.map(
+                        (item, idx) => (
+                          <div key={idx}>
+                            {item.cantidad}×{" "}
+                            {item.nombre}
+                          </div>
+                        )
                       )}
                     </td>
 
