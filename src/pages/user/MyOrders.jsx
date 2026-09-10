@@ -7,6 +7,7 @@ import "../../css/AccountHome.css";
 const ESTADOS = {
   pendiente: { label: "Pendiente", className: "estado-pendiente" },
   pagado: { label: "Pagado", className: "estado-pagado" },
+  preparando: { label: "Preparando tu pedido", className: "estado-preparando" },
   enviado: { label: "Enviado", className: "estado-enviado" },
   cancelado: { label: "Cancelado", className: "estado-cancelado" },
 };

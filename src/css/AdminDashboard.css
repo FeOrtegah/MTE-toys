@@ -338,7 +338,7 @@ font-size:12px;
 line-height:1;
 cursor:pointer;
 }
-.badge-pendiente, .badge-pagado, .badge-enviado, .badge-cancelado {
+.badge-pendiente, .badge-pagado, .badge-preparando, .badge-enviado, .badge-cancelado {
   font-size: 12px;
   font-weight: bold;
   padding: 4px 10px;
@@ -373,6 +373,7 @@ cursor:pointer;
 
 .badge-pendiente { background:#fff4cc; color:#a67c00; }
 .badge-pagado { background:#e3f0ff; color:#1a6dd1; }
+.badge-preparando { background:#fdeee0; color:#c96a1a; }
 .badge-enviado { background:#e6f7ec; color:#1f9d55; }
 .badge-cancelado { background:#fdeaea; color:#ed4b25; }
 

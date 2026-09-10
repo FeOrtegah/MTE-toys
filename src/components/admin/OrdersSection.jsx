@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import {
   getOrders,
   cancelOrder,
+  markAsPreparing,
   markAsShipped,
   hardDeleteOrder,
   confirmPayment,
@@ -17,6 +18,10 @@ const ESTADOS_PEDIDO = {
     label: "Pagado",
     className: "badge-pagado",
   },
+  preparando: {
+    label: "Preparando",
+    className: "badge-preparando",
+  },
   enviado: {
     label: "Enviado",
     className: "badge-enviado",
@@ -29,7 +34,8 @@ const ESTADOS_PEDIDO = {
 
 const FILTROS = [
   { key: "todos", label: "Todos" },
-  { key: "pagado", label: "Pagados (por enviar)" },
+  { key: "pagado", label: "Pagados (por preparar)" },
+  { key: "preparando", label: "Preparando" },
   { key: "pendiente", label: "Pendientes" },
   { key: "enviado", label: "Enviados" },
   { key: "cancelado", label: "Cancelados" },
@@ -72,6 +78,30 @@ function OrdersSection({ orders, setOrders }) {
         prev.map((o) =>
           o._id === id
             ? { ...o, estado: "cancelado" }
+            : o
+        )
+      );
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  async function handleMarkAsPreparing(id) {
+    if (
+      !confirm(
+        "¿Marcar este pedido como en preparación?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await markAsPreparing(id);
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === id
+            ? { ...o, estado: "preparando" }
             : o
         )
       );
@@ -536,6 +566,21 @@ function OrdersSection({ orders, setOrders }) {
                       )}
 
                       {o.estado === "pagado" && (
+                        <button
+                          className="btn-guardar"
+                          onClick={() =>
+                            handleMarkAsPreparing(
+                              o._id
+                            )
+                          }
+                        >
+                          Marcar como preparando
+                        </button>
+                      )}
+
+                      {(o.estado === "pagado" ||
+                        o.estado ===
+                          "preparando") && (
                         <button
                           className="btn-guardar"
                           onClick={() =>

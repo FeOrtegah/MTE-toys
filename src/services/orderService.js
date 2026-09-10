@@ -16,6 +16,12 @@ export const confirmPayment = (id) =>
 export const cancelOrder = (id) =>
   request(`/orders/${id}/cancel`, { method: "PATCH", auth: true });
 
+export const markAsPreparing = (id) =>
+  request(`/orders/${id}/marcar-preparando`, {
+    method: "PATCH",
+    auth: true,
+  });
+
 export const markAsShipped = (id) =>
   request(`/orders/${id}/marcar-enviado`, {
     method: "PATCH",
