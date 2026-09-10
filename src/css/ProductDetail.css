@@ -296,3 +296,15 @@ height:300px;
   font-size: 14px;
   color: #333;
 }
+
+/* ================= AVISO DE DIMENSIONES ================= */
+
+.detail-dimensiones-hint {
+  font-size: 12px;
+  color: #a86b00;
+  background: #fff7e6;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 6px 0 !important;
+  line-height: 1.4;
+}

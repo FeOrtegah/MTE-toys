@@ -235,6 +235,17 @@ function ProductCreateForm({ onCreated }) {
           }
         />
 
+        <label className="product-form-dim-label">
+          Dimensiones del embalaje original
+          (opcional)
+        </label>
+
+        <p className="admin-field-hint">
+          ⚠️ Estas medidas corresponden a la caja
+          del producto y se toman como referencia
+          para calcular el envío.
+        </p>
+
         <div className="product-form-row">
           <input
             type="number"

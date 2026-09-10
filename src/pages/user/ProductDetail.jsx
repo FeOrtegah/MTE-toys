@@ -457,7 +457,17 @@ function ProductDetail() {
               product.dimensiones.alto ||
               product.dimensiones.peso) && (
               <div className="detail-dimensiones">
-                <h3>Dimensiones de envío</h3>
+                <h3>
+                  Dimensiones del embalaje
+                  original
+                </h3>
+
+                <p className="detail-dimensiones-hint">
+                  ⚠️ Estas medidas corresponden a
+                  la caja del producto y se toman
+                  como referencia para calcular el
+                  envío.
+                </p>
 
                 <p>
                   {product.dimensiones.largo &&

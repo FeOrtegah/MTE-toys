@@ -476,8 +476,16 @@ function ProductsSection({ products, setProducts }) {
 
               <div className="admin-modal-field">
                 <label>
-                  Dimensiones de envío (opcional)
+                  Dimensiones del embalaje original
+                  (opcional)
                 </label>
+
+                <p className="admin-field-hint">
+                  ⚠️ Estas medidas corresponden a
+                  la caja del producto y se toman
+                  como referencia para calcular el
+                  envío.
+                </p>
 
                 <div className="admin-modal-row">
                   <input
