@@ -114,6 +114,8 @@ export function mapProduct(p) {
         ? p.activo
         : true,
 
+    dimensiones: p.dimensiones || null,
+
     type: "producto",
   };
 }

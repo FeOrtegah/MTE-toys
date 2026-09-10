@@ -12,6 +12,12 @@ const PRODUCTO_VACIO = {
   categoria: "",
   stock: "",
   imagenes: [],
+  dimensiones: {
+    largo: "",
+    ancho: "",
+    alto: "",
+    peso: "",
+  },
 };
 
 function ProductCreateForm({ onCreated }) {
@@ -131,6 +137,25 @@ function ProductCreateForm({ onCreated }) {
 
         stock: Number(productForm.stock),
         imagenes: productForm.imagenes,
+
+        dimensiones: {
+          largo:
+            productForm.dimensiones.largo === ""
+              ? null
+              : Number(productForm.dimensiones.largo),
+          ancho:
+            productForm.dimensiones.ancho === ""
+              ? null
+              : Number(productForm.dimensiones.ancho),
+          alto:
+            productForm.dimensiones.alto === ""
+              ? null
+              : Number(productForm.dimensiones.alto),
+          peso:
+            productForm.dimensiones.peso === ""
+              ? null
+              : Number(productForm.dimensiones.peso),
+        },
       });
 
       onCreated(newProduct);
@@ -209,6 +234,68 @@ function ProductCreateForm({ onCreated }) {
             })
           }
         />
+
+        <div className="product-form-row">
+          <input
+            type="number"
+            placeholder="Largo (cm)"
+            value={productForm.dimensiones.largo}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                dimensiones: {
+                  ...productForm.dimensiones,
+                  largo: e.target.value,
+                },
+              })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Ancho (cm)"
+            value={productForm.dimensiones.ancho}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                dimensiones: {
+                  ...productForm.dimensiones,
+                  ancho: e.target.value,
+                },
+              })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Alto (cm)"
+            value={productForm.dimensiones.alto}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                dimensiones: {
+                  ...productForm.dimensiones,
+                  alto: e.target.value,
+                },
+              })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Peso (kg)"
+            value={productForm.dimensiones.peso}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                dimensiones: {
+                  ...productForm.dimensiones,
+                  peso: e.target.value,
+                },
+              })
+            }
+          />
+        </div>
 
         <textarea
           placeholder="Descripción"

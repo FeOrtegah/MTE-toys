@@ -375,6 +375,13 @@ function OrdersSection({ orders, setOrders }) {
                       </small>
                       <br />
                       <small
+                        style={{ color: "#777" }}
+                      >
+                        RUT:{" "}
+                        {o.cliente?.rut || "—"}
+                      </small>
+                      <br />
+                      <small
                         style={{
                           color:
                             o.metodoPago ===

@@ -304,6 +304,23 @@ function ShippingOptions({
                 </p>
               )}
 
+              {["bluexpress", "starken", "chilexpress"].includes(
+                metodoEnvio
+              ) && (
+                <p className="shipping-cod-notice">
+                  💵 Este envío es{" "}
+                  <strong>por pagar</strong>: cuando
+                  el paquete llegue a la sucursal de
+                  destino o a la dirección del
+                  destinatario, la persona que lo
+                  recibe debe pagar el valor del
+                  envío directamente al courier (en
+                  efectivo o con tarjeta, según lo
+                  que acepte la empresa) para que le
+                  entreguen la encomienda.
+                </p>
+              )}
+
               {errores.metodoEnvio && (
                 <small className="field-error">
                   {errores.metodoEnvio}

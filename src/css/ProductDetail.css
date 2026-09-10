@@ -276,3 +276,23 @@ position:static;
 height:300px;
 }
 }
+/* ================= DIMENSIONES DE ENVÍO ================= */
+
+.detail-dimensiones {
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: #f7f7f7;
+  border-radius: 10px;
+}
+
+.detail-dimensiones h3 {
+  font-size: 14px;
+  margin: 0 0 4px;
+  color: #555;
+}
+
+.detail-dimensiones p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}

@@ -33,6 +33,12 @@ function ProductsSection({ products, setProducts }) {
       categoria: p.category || p.categoria || "",
       stock: p.stock ?? "",
       imagenes: p.images || p.imagenes || [],
+      dimensiones: {
+        largo: p.dimensiones?.largo ?? "",
+        ancho: p.dimensiones?.ancho ?? "",
+        alto: p.dimensiones?.alto ?? "",
+        peso: p.dimensiones?.peso ?? "",
+      },
     });
 
     setUrlImagenEdit("");
@@ -61,6 +67,25 @@ function ProductsSection({ products, setProducts }) {
         categoria: draft.categoria?.trim() || "General",
         stock: Number(draft.stock),
         imagenes: draft.imagenes || [],
+
+        dimensiones: {
+          largo:
+            draft.dimensiones?.largo === ""
+              ? null
+              : Number(draft.dimensiones?.largo),
+          ancho:
+            draft.dimensiones?.ancho === ""
+              ? null
+              : Number(draft.dimensiones?.ancho),
+          alto:
+            draft.dimensiones?.alto === ""
+              ? null
+              : Number(draft.dimensiones?.alto),
+          peso:
+            draft.dimensiones?.peso === ""
+              ? null
+              : Number(draft.dimensiones?.peso),
+        },
       };
 
       const savedProduct = await updateProduct(
@@ -85,6 +110,7 @@ function ProductsSection({ products, setProducts }) {
                 images: updatedData.imagenes,
                 image:
                   updatedData.imagenes?.[0] || p.image,
+                dimensiones: updatedData.dimensiones,
               }
             : p
         )
@@ -442,6 +468,84 @@ function ProductsSection({ products, setProducts }) {
                       setDraft({
                         ...draft,
                         stock: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="admin-modal-field">
+                <label>
+                  Dimensiones de envío (opcional)
+                </label>
+
+                <div className="admin-modal-row">
+                  <input
+                    type="number"
+                    placeholder="Largo (cm)"
+                    value={
+                      draft.dimensiones?.largo ?? ""
+                    }
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        dimensiones: {
+                          ...draft.dimensiones,
+                          largo: e.target.value,
+                        },
+                      })
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    placeholder="Ancho (cm)"
+                    value={
+                      draft.dimensiones?.ancho ?? ""
+                    }
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        dimensiones: {
+                          ...draft.dimensiones,
+                          ancho: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="admin-modal-row">
+                  <input
+                    type="number"
+                    placeholder="Alto (cm)"
+                    value={
+                      draft.dimensiones?.alto ?? ""
+                    }
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        dimensiones: {
+                          ...draft.dimensiones,
+                          alto: e.target.value,
+                        },
+                      })
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    placeholder="Peso (kg)"
+                    value={
+                      draft.dimensiones?.peso ?? ""
+                    }
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        dimensiones: {
+                          ...draft.dimensiones,
+                          peso: e.target.value,
+                        },
                       })
                     }
                   />

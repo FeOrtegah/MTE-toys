@@ -711,3 +711,21 @@ font-weight:600;
 white-space:nowrap;
 display:inline-block;
 }
+/* ================= FILA DE DIMENSIONES DE ENVÍO ================= */
+
+.product-form-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.product-form-row input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .product-form-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

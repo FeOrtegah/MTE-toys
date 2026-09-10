@@ -451,6 +451,37 @@ function ProductDetail() {
 
           </ul>
 
+          {product.dimensiones &&
+            (product.dimensiones.largo ||
+              product.dimensiones.ancho ||
+              product.dimensiones.alto ||
+              product.dimensiones.peso) && (
+              <div className="detail-dimensiones">
+                <h3>Dimensiones de envío</h3>
+
+                <p>
+                  {product.dimensiones.largo &&
+                  product.dimensiones.ancho &&
+                  product.dimensiones.alto
+                    ? `${product.dimensiones.largo} × ${product.dimensiones.ancho} × ${product.dimensiones.alto} cm`
+                    : null}
+
+                  {product.dimensiones.peso && (
+                    <>
+                      {product.dimensiones
+                        .largo &&
+                      product.dimensiones.ancho &&
+                      product.dimensiones.alto
+                        ? " · "
+                        : ""}
+                      {product.dimensiones.peso}{" "}
+                      kg
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
+
         </div>
 
       </div>
