@@ -39,6 +39,8 @@ function ProductsSection({ products, setProducts }) {
         alto: p.dimensiones?.alto ?? "",
         peso: p.dimensiones?.peso ?? "",
       },
+      edadMinima: p.edadMinima ?? "",
+      edadMaxima: p.edadMaxima ?? "",
     });
 
     setUrlImagenEdit("");
@@ -86,6 +88,15 @@ function ProductsSection({ products, setProducts }) {
               ? null
               : Number(draft.dimensiones?.peso),
         },
+
+        edadMinima:
+          draft.edadMinima === ""
+            ? null
+            : Number(draft.edadMinima),
+        edadMaxima:
+          draft.edadMaxima === ""
+            ? null
+            : Number(draft.edadMaxima),
       };
 
       const savedProduct = await updateProduct(
@@ -111,6 +122,8 @@ function ProductsSection({ products, setProducts }) {
                 image:
                   updatedData.imagenes?.[0] || p.image,
                 dimensiones: updatedData.dimensiones,
+                edadMinima: updatedData.edadMinima,
+                edadMaxima: updatedData.edadMaxima,
               }
             : p
         )
@@ -554,6 +567,50 @@ function ProductsSection({ products, setProducts }) {
                           ...draft.dimensiones,
                           peso: e.target.value,
                         },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="admin-modal-field">
+                <label>
+                  Rango de edad recomendado
+                  (opcional, en meses)
+                </label>
+
+                <p className="admin-field-hint">
+                  ⚠️ Ej: 0 a 12 = "0-12 meses", 12 a
+                  24 = "1-2 años". Se usa para el
+                  filtro "Regalos por edad" del
+                  inicio.
+                </p>
+
+                <div className="admin-modal-row">
+                  <input
+                    type="number"
+                    placeholder="Edad mínima (meses)"
+                    value={
+                      draft.edadMinima ?? ""
+                    }
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        edadMinima: e.target.value,
+                      })
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    placeholder="Edad máxima (meses)"
+                    value={
+                      draft.edadMaxima ?? ""
+                    }
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        edadMaxima: e.target.value,
                       })
                     }
                   />

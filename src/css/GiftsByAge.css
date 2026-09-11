@@ -1,0 +1,200 @@
+.gifts-age-section {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.gifts-age-title {
+  font-size: 28px;
+  margin-bottom: 32px;
+}
+
+.gifts-age-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+}
+
+.gifts-age-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gifts-age-shape {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.25s ease;
+  cursor: pointer;
+}
+
+.gifts-age-shape:hover {
+  transform: scale(1.08) rotate(-3deg);
+  filter: brightness(1.08);
+}
+
+.gifts-age-shape span {
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  padding: 0 20px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+/* ================= FIGURAS ================= */
+
+/* Cuadrado redondeado */
+.figura-cuadrado {
+  border-radius: 24px;
+}
+
+/* Blob orgánico: bordes asimétricos, distinto en cada
+   esquina para que se vea "orgánico" y no un óvalo. */
+.figura-blob {
+  border-radius: 62% 38% 55% 45% / 45% 55% 45% 55%;
+}
+
+.figura-blob:hover {
+  border-radius: 45% 55% 40% 60% / 55% 40% 60% 45%;
+}
+
+/* Estrella de 5 puntas */
+.figura-estrella {
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+.figura-estrella span {
+  padding: 0 30px;
+  margin-top: 6px;
+}
+
+/* Círculo perfecto */
+.figura-circulo {
+  border-radius: 50%;
+}
+
+/* ================= ADMIN ================= */
+
+.gifts-age-admin-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.gifts-age-admin-actions button {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.gifts-age-admin-actions button:hover {
+  background: #f5f5f5;
+}
+
+.gifts-age-add-btn {
+  width: 150px;
+  height: 150px;
+  border: 2px dashed #bbb;
+  border-radius: 24px;
+  background: none;
+  color: #888;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.gifts-age-add-btn:hover {
+  border-color: #43b96d;
+  color: #43b96d;
+}
+
+.gifts-age-edit-box {
+  width: 220px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.gifts-age-edit-box input {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.gifts-age-edit-row {
+  display: flex;
+  gap: 8px;
+}
+
+.gifts-age-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.gifts-age-edit-actions button {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.gifts-age-edit-actions button.guardar {
+  background: #43b96d;
+  color: white;
+  border-color: #43b96d;
+}
+
+.gifts-age-edit-actions button.guardar:hover {
+  background: #379159;
+}
+
+@media (max-width: 600px) {
+  .gifts-age-shape,
+  .gifts-age-add-btn {
+    width: 120px;
+    height: 120px;
+  }
+
+  .gifts-age-shape span {
+    font-size: 13px;
+    padding: 0 14px;
+  }
+}

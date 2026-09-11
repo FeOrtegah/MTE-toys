@@ -18,6 +18,8 @@ const PRODUCTO_VACIO = {
     alto: "",
     peso: "",
   },
+  edadMinima: "",
+  edadMaxima: "",
 };
 
 function ProductCreateForm({ onCreated }) {
@@ -156,6 +158,15 @@ function ProductCreateForm({ onCreated }) {
               ? null
               : Number(productForm.dimensiones.peso),
         },
+
+        edadMinima:
+          productForm.edadMinima === ""
+            ? null
+            : Number(productForm.edadMinima),
+        edadMaxima:
+          productForm.edadMaxima === ""
+            ? null
+            : Number(productForm.edadMaxima),
       });
 
       onCreated(newProduct);
@@ -303,6 +314,49 @@ function ProductCreateForm({ onCreated }) {
                   ...productForm.dimensiones,
                   peso: e.target.value,
                 },
+              })
+            }
+          />
+        </div>
+
+        <label className="product-form-dim-label">
+          Rango de edad recomendado (opcional, en
+          meses)
+        </label>
+
+        <p className="admin-field-hint">
+          ⚠️ Ej: 0 a 12 = "0-12 meses", 12 a 24 =
+          "1-2 años", 144 a 1188 = "12-99 años". Se
+          usa para el filtro "Regalos por edad" del
+          inicio.
+        </p>
+
+        <div
+          className="product-form-row"
+          style={{
+            gridTemplateColumns: "1fr 1fr",
+          }}
+        >
+          <input
+            type="number"
+            placeholder="Edad mínima (meses)"
+            value={productForm.edadMinima}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                edadMinima: e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Edad máxima (meses)"
+            value={productForm.edadMaxima}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                edadMaxima: e.target.value,
               })
             }
           />

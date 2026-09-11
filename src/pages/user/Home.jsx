@@ -4,6 +4,8 @@ import Banner from "../../components/organisms/Banner";
 import Categories from "../../components/organisms/Categories";
 import FeaturedProducts from "../../components/organisms/FeaturedProducts";
 import SubBanner from "../../components/organisms/SubBanner";
+import GiftsByAge from "../../components/organisms/GiftsByAge";
+import SecondaryBanner from "../../components/organisms/SecondaryBanner";
 import GiftsByPrice from "../../components/organisms/GiftsByPrice";
 
 function Home() {
@@ -69,6 +71,10 @@ function Home() {
       <Categories />
 
       <SubBanner />
+
+      <GiftsByAge />
+
+      <SecondaryBanner />
 
       <GiftsByPrice />
     </main>

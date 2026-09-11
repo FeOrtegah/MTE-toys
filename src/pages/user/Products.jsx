@@ -59,6 +59,12 @@ function Products() {
     searchParams.get("maxPrice") ||
     "";
 
+  const getEdadMinFromUrl = () =>
+    searchParams.get("edadMin") || "";
+
+  const getEdadMaxFromUrl = () =>
+    searchParams.get("edadMax") || "";
+
   const getCatFromUrl = () =>
     searchParams.get("categoria") ||
     searchParams.get("category") ||
@@ -93,6 +99,20 @@ function Products() {
     setMaxPrice,
   ] = useState(
     getMaxFromUrl()
+  );
+
+  const [
+    edadMin,
+    setEdadMin,
+  ] = useState(
+    getEdadMinFromUrl()
+  );
+
+  const [
+    edadMax,
+    setEdadMax,
+  ] = useState(
+    getEdadMaxFromUrl()
   );
 
   const [
@@ -137,6 +157,14 @@ function Products() {
 
     setMaxPrice(
       getMaxFromUrl()
+    );
+
+    setEdadMin(
+      getEdadMinFromUrl()
+    );
+
+    setEdadMax(
+      getEdadMaxFromUrl()
     );
 
     setSoloOferta(
@@ -365,12 +393,48 @@ function Products() {
               numMax
           );
 
+        // -------------------------------------------
+        // FILTRO POR EDAD (superposición de rangos)
+        // -------------------------------------------
+        // Solo aplica si el link trae edadMin/edadMax en
+        // la URL. Un producto calza si su propio rango
+        // (edadMinima-edadMaxima) se cruza con el rango
+        // pedido. Productos sin edad cargada no aparecen
+        // en un filtro por edad (todavía no fueron
+        // clasificados).
+
+        const numEdadMin =
+          edadMin !== ""
+            ? Number(edadMin)
+            : null;
+
+        const numEdadMax =
+          edadMax !== ""
+            ? Number(edadMax)
+            : null;
+
+        const matchesEdad =
+          numEdadMin === null &&
+          numEdadMax === null
+            ? true
+            : product.edadMinima !=
+                null &&
+              product.edadMaxima !=
+                null &&
+              (numEdadMin === null ||
+                product.edadMaxima >=
+                  numEdadMin) &&
+              (numEdadMax === null ||
+                product.edadMinima <=
+                  numEdadMax);
+
         return (
           matchesSearch &&
           matchesCategory &&
           matchesOferta &&
           matchesMin &&
-          matchesMax
+          matchesMax &&
+          matchesEdad
         );
       }
     );

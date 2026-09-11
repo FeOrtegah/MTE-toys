@@ -116,6 +116,18 @@ export function mapProduct(p) {
 
     dimensiones: p.dimensiones || null,
 
+    edadMinima:
+      p.edadMinima !== undefined &&
+      p.edadMinima !== null
+        ? Number(p.edadMinima)
+        : null,
+
+    edadMaxima:
+      p.edadMaxima !== undefined &&
+      p.edadMaxima !== null
+        ? Number(p.edadMaxima)
+        : null,
+
     type: "producto",
   };
 }
