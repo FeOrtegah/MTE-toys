@@ -1,0 +1,528 @@
+.login-page {
+          min-height: 80vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: #f5f5f5;
+          padding: 24px;
+          font-family: 'Quicksand', 'Trebuchet MS', sans-serif;
+        }
+
+        .login-card {
+          display: flex;
+          width: 100%;
+          max-width: 920px;
+          min-height: 500px;
+          background: #fff;
+          border-radius: 28px;
+          overflow: hidden;
+          box-shadow: 0 20px 50px rgba(0,0,0,.12);
+        }
+
+        .login-illustration {
+          flex: 1;
+          background: #eceeec;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: 0 10px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* =====================================================
+           Proporciones medidas en píxeles reales sobre el video
+           de referencia (1920x1080), escaladas x0.5:
+           naranja: 156x78 (semicírculo perfecto: alto=ancho/2)
+           azul:     96x210
+           negro:    56x147
+           amarillo: 66x106
+           Posiciones (left) también medidas, relativas entre sí.
+        ===================================================== */
+
+        .mascots {
+          position: relative;
+          width: 248px;
+          height: 215px;
+        }
+
+        .m-body {
+          position: absolute;
+          bottom: 0;
+          transform-origin: bottom center;
+          transition: transform .6s cubic-bezier(.22,.61,.36,1);
+        }
+
+        .m-sway {
+          width: 100%;
+          height: 100%;
+        }
+
+        .estado-idle .m-green .m-sway { animation: swayRotate 4.2s ease-in-out infinite; }
+        .estado-idle .m-black .m-sway { animation: swayBob 3.6s ease-in-out infinite; }
+        .estado-idle .m-red .m-sway { animation: swayRotate 5s ease-in-out infinite .2s; }
+        .estado-idle .m-yellow .m-sway { animation: swayBob 4.6s ease-in-out infinite .3s; }
+
+        @keyframes swayRotate {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(-2deg); }
+        }
+        @keyframes swayBob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+
+        /* ROJO — semicírculo, medida real 156x78 */
+        .m-red {
+          left: 0px;
+          width: 205px;
+          height: 82px;
+          background: #E94F37;
+          border-radius: 102px 102px 0 0;
+          z-index: 4;
+        }
+
+        /* VERDE — el más alto, medida real 96x210 */
+        .m-green {
+          left: 61px;
+          width: 96px;
+          height: 210px;
+          background: #43b96d;
+          border-radius: 48px 48px 4px 4px;
+          z-index: 2;
+        }
+
+        /* MORADO — angosto y alto, medida real 56x147 */
+        .m-black {
+          left: 135px;
+          width: 56px;
+          height: 147px;
+          background: #7B5EA7;
+          border-radius: 28px 28px 3px 3px;
+          z-index: 3;
+        }
+
+        /* AMARILLO — medida real 66x106 */
+        .m-yellow {
+          left: 177px;
+          width: 66px;
+          height: 106px;
+          background: #FFC93C;
+          border-radius: 33px 33px 26px 26px;
+          z-index: 1;
+        }
+
+        .estado-watching .m-green {
+          transform: rotate(11deg) translate(9px, -3px) skewX(-3deg);
+        }
+        .estado-watching .m-black {
+          transform: translateY(-4px);
+        }
+        .estado-watching .m-yellow {
+          transform: translateY(-3px) rotate(-3deg);
+        }
+
+        .estado-peeking .m-green {
+          transform: rotate(20deg) translate(18px, -9px) skewX(-6deg);
+        }
+        .estado-peeking .m-black {
+          transform: rotate(8deg) translate(6px, -4px);
+        }
+        .estado-peeking .m-red {
+          transform: translateY(-3px);
+        }
+        .estado-peeking .m-yellow {
+          transform: rotate(-8deg) translateY(-4px);
+        }
+
+        /* Al revelar la contraseña: el verde se endereza
+           de golpe (deja de inclinarse) y mira de lado,
+           como en el video. */
+        .estado-away .m-green {
+          transform: rotate(0deg) translate(0, 0);
+        }
+        .estado-away .m-yellow {
+          transform: rotate(4deg);
+        }
+
+        .estado-success .m-body {
+          transition: transform .3s ease-out;
+          animation: bounceAll .5s ease-in-out infinite;
+        }
+        .estado-success .m-black { animation-delay: .08s; }
+        .estado-success .m-red { animation-delay: .16s; }
+        .estado-success .m-yellow { animation-delay: .24s; }
+
+        @keyframes bounceAll {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-14px); }
+        }
+
+        .estado-error .m-body {
+          transition: transform .2s ease-out;
+          animation: shakeAll .35s ease-in-out 3;
+        }
+
+        @keyframes shakeAll {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        /* ============= CARAS ============= */
+
+        .m-face {
+          position: absolute;
+          top: 30px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .m-red .m-face {
+          top: 24px;
+        }
+
+        .m-black .m-face,
+        .m-yellow .m-face {
+          top: 20px;
+        }
+
+        .eyes-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          height: 19px;
+        }
+
+        .eyebrows-row {
+          display: flex;
+          justify-content: center;
+          gap: 5px;
+          height: 6px;
+          margin-bottom: 1px;
+        }
+
+        .eyebrow {
+          width: 9px;
+          height: 2.5px;
+          background: #201c1c;
+          border-radius: 2px;
+          opacity: 0;
+          transition: opacity .15s ease, transform .15s ease;
+        }
+
+        .estado-error .eyebrow {
+          opacity: 1;
+        }
+
+        .estado-error .eyebrow--left {
+          transform: rotate(18deg) translate(1px, 2px);
+        }
+
+        .estado-error .eyebrow--right {
+          transform: rotate(-18deg) translate(-1px, 2px);
+        }
+
+        .eye {
+          width: 7px;
+          height: 7px;
+          background: #201c1c;
+          border: 0 solid transparent;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          transition: width .22s ease, height .22s ease,
+            background-color .22s ease, border-color .22s ease,
+            border-width .22s ease, border-radius .22s ease;
+        }
+
+        .pupil {
+          width: 7px;
+          height: 7px;
+          background: #201c1c;
+          border-radius: 50%;
+          opacity: 0;
+          transition: transform .12s ease-out, opacity .15s ease;
+        }
+
+        .eye--dot {
+          width: 7px;
+          height: 7px;
+          background: #201c1c;
+        }
+
+        .eye--wide {
+          width: 18px;
+          height: 18px;
+          background: white;
+        }
+        .eye--wide .pupil {
+          width: 8px;
+          height: 8px;
+          opacity: 1;
+        }
+
+        .eye--squint {
+          width: 17px;
+          height: 9px;
+          background: white;
+          border-radius: 50%;
+        }
+        .eye--squint .pupil {
+          width: 7px;
+          height: 7px;
+          opacity: 1;
+        }
+
+        .eye--away {
+          width: 18px;
+          height: 18px;
+          background: white;
+        }
+        .eye--away .pupil {
+          width: 8px;
+          height: 8px;
+          opacity: 1;
+          transform: translateX(-5px) !important;
+        }
+
+        /* Ojo bien apretado/cerrado con fuerza, como el
+           naranjo del video al revelarse la contraseña
+           (distinto de solo apartar la mirada). */
+        .eye--scrunch {
+          width: 15px;
+          height: 8px;
+          background: transparent;
+          border-width: 3px 0 0;
+          border-color: #201c1c;
+          border-style: solid;
+          border-radius: 50% 50% 0 0/100% 100% 0 0;
+        }
+
+        .eye--worried {
+          width: 19px;
+          height: 19px;
+          background: white;
+        }
+        .eye--worried .pupil {
+          width: 8px;
+          height: 8px;
+          opacity: 1;
+          transform: translateY(4px) !important;
+        }
+
+        .eye--closed {
+          width: 15px;
+          height: 3px;
+          background: #201c1c;
+          border-radius: 3px;
+        }
+
+        .eye--happy {
+          width: 15px;
+          height: 9px;
+          background: transparent;
+          border-width: 0 0 3px;
+          border-color: #201c1c;
+          border-style: solid;
+          border-radius: 0 0 15px 15px;
+        }
+
+        .mouth {
+          margin-top: 1px;
+          background: transparent;
+          border: 0 solid transparent;
+          transition: width .22s ease, height .22s ease,
+            background-color .22s ease, border-color .22s ease,
+            border-width .22s ease, border-radius .22s ease,
+            transform .22s ease;
+        }
+
+        .mouth--smile {
+          width: 12px;
+          height: 6px;
+          border-width: 0 0 2.5px;
+          border-color: #201c1c;
+          border-style: solid;
+          border-radius: 0 0 12px 12px;
+        }
+
+        .mouth--flat {
+          width: 12px;
+          height: 2.5px;
+          background: #201c1c;
+          border-radius: 2px;
+        }
+
+        .mouth--o {
+          width: 9px;
+          height: 9px;
+          background: #201c1c;
+          border-radius: 50%;
+        }
+
+        .mouth--worried {
+          width: 14px;
+          height: 7px;
+          border-width: 3px 0 0;
+          border-color: #201c1c;
+          border-style: solid;
+          border-radius: 14px 14px 0 0;
+          margin-top: 5px;
+        }
+
+        .mouth--happy {
+          width: 20px;
+          height: 11px;
+          border-width: 0 0 3.5px;
+          border-color: #201c1c;
+          border-style: solid;
+          border-radius: 0 0 20px 20px;
+        }
+
+        .mouth-wavy-svg {
+          display: block;
+          margin-top: 2px;
+        }
+
+        .login-form-panel {
+          flex: 1;
+          padding: 48px 44px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .login-plus {
+          font-size: 22px;
+          text-align: center;
+          margin-bottom: 8px;
+          color: #2B2140;
+        }
+
+        .login-form-panel h1 {
+          font-family: 'Baloo 2', 'Trebuchet MS', sans-serif;
+          font-size: 28px;
+          text-align: center;
+          margin: 0 0 6px;
+          color: #2B2140;
+        }
+
+        .login-subtitle {
+          text-align: center;
+          color: #888;
+          font-size: 14px;
+          margin: 0 0 26px;
+        }
+
+        .login-error {
+          background: #fdeaea;
+          color: #ed4b25;
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 13px;
+          margin-bottom: 16px;
+          text-align: center;
+        }
+
+        .login-field {
+          margin-bottom: 16px;
+        }
+
+        .login-field label {
+          display: block;
+          font-size: 13px;
+          font-weight: 600;
+          color: #444;
+          margin-bottom: 6px;
+        }
+
+        .login-field input {
+          width: 100%;
+          padding: 12px 14px;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          font-size: 14px;
+          box-sizing: border-box;
+          font-family: inherit;
+        }
+
+        .login-field input:focus {
+          outline: none;
+          border-color: #43b96d;
+        }
+
+        .login-password-wrap {
+          position: relative;
+        }
+
+        .login-password-wrap input {
+          padding-right: 42px;
+        }
+
+        .login-eye-btn {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 4px;
+          line-height: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .login-submit-btn {
+          width: 100%;
+          padding: 13px;
+          border: none;
+          border-radius: 25px;
+          background: #43b96d;
+          color: white;
+          font-weight: 700;
+          font-size: 15px;
+          cursor: pointer;
+          margin-top: 6px;
+        }
+
+        .login-submit-btn:hover:not(:disabled) {
+          background: #379159;
+        }
+
+        .login-submit-btn:disabled {
+          background: #a8d9bb;
+          cursor: not-allowed;
+        }
+
+        .login-signup-link {
+          text-align: center;
+          font-size: 14px;
+          color: #666;
+          margin-top: 22px;
+        }
+
+        .login-signup-link a {
+          color: #43b96d;
+          font-weight: 700;
+          text-decoration: none;
+        }
+
+        .login-signup-link a:hover {
+          text-decoration: underline;
+        }
+
+        @media (max-width: 700px) {
+          .login-illustration { display: none; }
+          .login-card { border-radius: 20px; }
+          .login-form-panel { padding: 40px 26px; }
+        }
