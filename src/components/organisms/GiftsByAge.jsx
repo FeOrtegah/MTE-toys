@@ -107,9 +107,31 @@ function GiftsByAge() {
 
   useEffect(() => {
     getSiteContent("ageGiftCard")
-      .then((items) => {
+      .then(async (items) => {
         if (items && items.length > 0) {
           setRangos(items);
+          return;
+        }
+
+        // Todavía no hay nada guardado: se crean los
+        // rangos por defecto de verdad en la base de
+        // datos (así cada uno queda con su propio _id
+        // y se puede editar/eliminar como cualquier
+        // otro, en vez de perderse al refrescar).
+        try {
+          const creados = await Promise.all(
+            RANGOS_POR_DEFECTO.map((r) =>
+              createSiteContent({
+                ...r,
+                seccion: "ageGiftCard",
+              })
+            )
+          );
+
+          setRangos(creados);
+        } catch {
+          // Si falla la creación, se queda con los
+          // rangos por defecto solo en memoria.
         }
       })
       .catch(() => {

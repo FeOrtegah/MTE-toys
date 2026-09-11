@@ -12,19 +12,10 @@
 
 .gifts-age-container {
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 28px;
-  overflow-x: auto;
-  padding: 6px 6px 16px;
-  scrollbar-width: thin;
-}
-
-@media (min-width: 1200px) {
-  .gifts-age-container {
-    justify-content: center;
-  }
 }
 
 .gifts-age-item {
