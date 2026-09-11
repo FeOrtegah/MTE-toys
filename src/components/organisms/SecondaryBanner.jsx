@@ -18,6 +18,24 @@ const BANNERS_POR_DEFECTO = [
     imagen: "/banners/banner3.jpg",
     link: "",
   },
+  {
+    titulo: "Ofertas de temporada",
+    subtitulo: "Aprovecha antes de que se acaben",
+    imagen: "/banners/banner4.jpg",
+    link: "",
+  },
+  {
+    titulo: "Envíos a todo Chile",
+    subtitulo: "Rápido y seguro hasta tu puerta",
+    imagen: "/banners/banner5.jpg",
+    link: "",
+  },
+  {
+    titulo: "Los favoritos de siempre",
+    subtitulo: "Juguetes que nunca pasan de moda",
+    imagen: "/banners/banner1.jpg",
+    link: "",
+  },
 ];
 
 function SecondaryBanner() {

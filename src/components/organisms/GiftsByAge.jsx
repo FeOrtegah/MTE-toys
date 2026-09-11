@@ -26,22 +26,64 @@ const RANGOS_POR_DEFECTO = [
 ];
 
 // =====================================================
-// FIGURAS: se asignan por posición (índice), nunca a
-// mano, así nunca se repite la de al lado. Si hay más
-// tarjetas que figuras, se empieza a repetir el ciclo
-// (no hay forma de evitarlo con figuras finitas), pero
-// dos tarjetas vecinas nunca comparten la misma.
+// 10 FIGURAS DISPONIBLES PARA ELEGIR
 // =====================================================
 
 const FIGURAS = [
-  { clase: "figura-cuadrado", color: "#E8B84B" },
-  { clase: "figura-blob", color: "#C1573F" },
-  { clase: "figura-estrella", color: "#CBBE96" },
-  { clase: "figura-circulo", color: "#7FA893" },
+  { clase: "figura-cuadrado", color: "#E8B84B", nombre: "Cuadrado" },
+  { clase: "figura-blob", color: "#C1573F", nombre: "Blob" },
+  { clase: "figura-circulo", color: "#7FA893", nombre: "Círculo" },
+  { clase: "figura-hexagono", color: "#5B87A6", nombre: "Hexágono" },
+  { clase: "figura-pentagono", color: "#8B6BA8", nombre: "Pentágono" },
+  { clase: "figura-rombo", color: "#D98A8A", nombre: "Rombo" },
+  { clase: "figura-octagono", color: "#A97C50", nombre: "Octágono" },
+  { clase: "figura-blob2", color: "#4FA6A0", nombre: "Blob 2" },
+  { clase: "figura-nube", color: "#E0A64E", nombre: "Nube" },
+  { clase: "figura-gota", color: "#6B9BD1", nombre: "Gota" },
 ];
 
+// Cuando no se eligió una figura a mano, se asigna una
+// según la posición, así nunca se repite con la vecina.
 function figuraPorIndice(i) {
   return FIGURAS[i % FIGURAS.length];
+}
+
+function figuraDe(rango, index) {
+  if (rango.forma) {
+    const encontrada = FIGURAS.find(
+      (f) => f.clase === rango.forma
+    );
+
+    if (encontrada) return encontrada;
+  }
+
+  return figuraPorIndice(index);
+}
+
+// Identificador estable para saber qué tarjeta se está
+// editando, incluso las que todavía no existen en la
+// base de datos (los rangos por defecto no tienen _id).
+function keyDe(rango, index) {
+  return rango._id || `default-${index}`;
+}
+
+function SelectorFiguras({ seleccion, onSelect }) {
+  return (
+    <div className="gifts-age-selector-figuras">
+      {FIGURAS.map((f) => (
+        <button
+          key={f.clase}
+          type="button"
+          title={f.nombre}
+          className={`gifts-age-swatch ${f.clase} ${
+            seleccion === f.clase ? "activa" : ""
+          }`}
+          style={{ backgroundColor: f.color }}
+          onClick={() => onSelect(f.clase)}
+        />
+      ))}
+    </div>
+  );
 }
 
 function GiftsByAge() {
@@ -52,13 +94,15 @@ function GiftsByAge() {
     RANGOS_POR_DEFECTO
   );
 
-  const [editandoId, setEditandoId] = useState(null);
+  const [editandoKey, setEditandoKey] =
+    useState(null);
   const [draft, setDraft] = useState(null);
   const [creando, setCreando] = useState(false);
   const [nuevoDraft, setNuevoDraft] = useState({
     titulo: "",
     edadMinima: "",
     edadMaxima: "",
+    forma: "",
   });
 
   useEffect(() => {
@@ -87,12 +131,13 @@ function GiftsByAge() {
     return `/productos?${params.toString()}`;
   }
 
-  function empezarEdicion(rango) {
-    setEditandoId(rango._id);
+  function empezarEdicion(rango, index) {
+    setEditandoKey(keyDe(rango, index));
     setDraft({
       titulo: rango.titulo,
       edadMinima: rango.edadMinima ?? "",
       edadMaxima: rango.edadMaxima ?? "",
+      forma: rango.forma || "",
     });
   }
 
@@ -107,6 +152,7 @@ function GiftsByAge() {
         draft.edadMaxima === ""
           ? null
           : Number(draft.edadMaxima),
+      forma: draft.forma || "",
     };
 
     if (rango._id) {
@@ -132,12 +178,19 @@ function GiftsByAge() {
       ]);
     }
 
-    setEditandoId(null);
+    setEditandoKey(null);
     setDraft(null);
   }
 
   async function eliminar(rango) {
-    if (!rango._id) return;
+    if (!rango._id) {
+      // Es un rango por defecto (nunca se guardó en la
+      // base de datos): solo se saca de la lista local.
+      setRangos((prev) =>
+        prev.filter((r) => r !== rango)
+      );
+      return;
+    }
 
     if (
       !confirm(
@@ -168,6 +221,7 @@ function GiftsByAge() {
         nuevoDraft.edadMaxima === ""
           ? null
           : Number(nuevoDraft.edadMaxima),
+      forma: nuevoDraft.forma || "",
     });
 
     setRangos((prev) => [...prev, nuevo]);
@@ -175,6 +229,7 @@ function GiftsByAge() {
       titulo: "",
       edadMinima: "",
       edadMaxima: "",
+      forma: "",
     });
     setCreando(false);
   }
@@ -187,14 +242,14 @@ function GiftsByAge() {
 
       <div className="gifts-age-container">
         {rangos.map((rango, index) => {
-          const figura = figuraPorIndice(index);
-          const enEdicion =
-            editandoId === (rango._id || rango);
+          const figura = figuraDe(rango, index);
+          const key = keyDe(rango, index);
+          const enEdicion = editandoKey === key;
 
           if (enEdicion) {
             return (
               <div
-                key={rango._id || index}
+                key={key}
                 className="gifts-age-edit-box"
               >
                 <input
@@ -237,11 +292,25 @@ function GiftsByAge() {
                   />
                 </div>
 
+                <label className="gifts-age-selector-label">
+                  Elige una figura:
+                </label>
+
+                <SelectorFiguras
+                  seleccion={draft.forma}
+                  onSelect={(clase) =>
+                    setDraft({
+                      ...draft,
+                      forma: clase,
+                    })
+                  }
+                />
+
                 <div className="gifts-age-edit-actions">
                   <button
                     type="button"
                     onClick={() => {
-                      setEditandoId(null);
+                      setEditandoKey(null);
                       setDraft(null);
                     }}
                   >
@@ -263,10 +332,7 @@ function GiftsByAge() {
           }
 
           return (
-            <div
-              key={rango._id || index}
-              className="gifts-age-item"
-            >
+            <div key={key} className="gifts-age-item">
               <Link
                 to={linkDe(rango)}
                 className={`gifts-age-shape ${figura.clase}`}
@@ -282,22 +348,18 @@ function GiftsByAge() {
                   <button
                     type="button"
                     onClick={() =>
-                      empezarEdicion(rango)
+                      empezarEdicion(rango, index)
                     }
                   >
                     ✏️
                   </button>
 
-                  {rango._id && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        eliminar(rango)
-                      }
-                    >
-                      🗑️
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => eliminar(rango)}
+                  >
+                    🗑️
+                  </button>
                 </div>
               )}
             </div>
@@ -353,6 +415,20 @@ function GiftsByAge() {
                 }
               />
             </div>
+
+            <label className="gifts-age-selector-label">
+              Elige una figura:
+            </label>
+
+            <SelectorFiguras
+              seleccion={nuevoDraft.forma}
+              onSelect={(clase) =>
+                setNuevoDraft({
+                  ...nuevoDraft,
+                  forma: clase,
+                })
+              }
+            />
 
             <div className="gifts-age-edit-actions">
               <button
