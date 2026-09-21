@@ -43,6 +43,13 @@ function CheckoutPago() {
 
   const totalProductos = datosCheckout?.totalProductos || 0;
 
+  // Si TODOS los productos del carrito tienen envío
+  // gratis marcado desde el admin, se elimina por
+  // completo la selección de método de envío.
+  const todosConEnvioGratis =
+    cart.length > 0 &&
+    cart.every((item) => item.envioGratis);
+
   const zonaEnvio = useMemo(() => {
     const comuna = datosCheckout?.envio?.comuna;
 
@@ -66,6 +73,10 @@ function CheckoutPago() {
     totalProductos >= 49990;
 
   const costoEnvio = useMemo(() => {
+    if (todosConEnvioGratis) {
+      return 0;
+    }
+
     const envioGratisPorMonto =
       totalProductos >= 49990 &&
       (zonaEnvio === "verde" || zonaEnvio === "azul");
@@ -75,11 +86,23 @@ function CheckoutPago() {
     }
 
     return 0;
-  }, [metodoEnvio, totalProductos, zonaEnvio]);
+  }, [
+    metodoEnvio,
+    totalProductos,
+    zonaEnvio,
+    todosConEnvioGratis,
+  ]);
 
   const totalFinal = totalProductos + costoEnvio;
 
   useEffect(() => {
+    if (todosConEnvioGratis) {
+      if (metodoEnvio !== "envio_gratis") {
+        setMetodoEnvio("envio_gratis");
+      }
+      return;
+    }
+
     if (envioGratisSoloLogistica) {
       if (metodoEnvio !== "logistica360") {
         setMetodoEnvio("logistica360");
@@ -92,9 +115,18 @@ function CheckoutPago() {
     if (!disponibles.includes(metodoEnvio)) {
       setMetodoEnvio("");
     }
-  }, [zonaEnvio, metodoEnvio, envioGratisSoloLogistica]);
+  }, [
+    zonaEnvio,
+    metodoEnvio,
+    envioGratisSoloLogistica,
+    todosConEnvioGratis,
+  ]);
 
   function handleMetodoEnvio(metodo) {
+    if (todosConEnvioGratis) {
+      return;
+    }
+
     if (envioGratisSoloLogistica) {
       return;
     }
@@ -108,9 +140,6 @@ function CheckoutPago() {
     setMetodoEnvio(metodo);
   }
 
-  // Si no hay datos de la página 1 (ej: se refrescó la
-  // página, o se entró directo por URL), no hay nada que
-  // procesar acá: se manda de vuelta al paso 1.
   if (!datosCheckout) {
     return (
       <main className="checkout-page">
@@ -146,7 +175,9 @@ function CheckoutPago() {
       return;
     }
 
-    const disponibles = envioGratisSoloLogistica
+    const disponibles = todosConEnvioGratis
+      ? ["envio_gratis"]
+      : envioGratisSoloLogistica
       ? ["logistica360"]
       : METODOS_POR_ZONA[zonaEnvio] || [];
 
@@ -182,10 +213,6 @@ function CheckoutPago() {
 
       const pedido = await createOrder(orderData);
 
-      // =================================================
-      // GUARDAR DIRECCIÓN NUEVA (SI SE PIDIÓ EN EL PASO 1)
-      // =================================================
-
       if (
         user &&
         datosCheckout.guardarNuevaDireccion &&
@@ -215,10 +242,6 @@ function CheckoutPago() {
         }
       }
 
-      // =================================================
-      // TRANSFERENCIA BANCARIA
-      // =================================================
-
       if (metodoPago === "transferencia") {
         navigate("/pago-transferencia", {
           state: { pedido },
@@ -226,10 +249,6 @@ function CheckoutPago() {
 
         return;
       }
-
-      // =================================================
-      // WEBPAY
-      // =================================================
 
       const { url, token } = await initWebpayTransaction(
         pedido._id,
@@ -266,6 +285,7 @@ function CheckoutPago() {
             envioGratisSoloLogistica={
               envioGratisSoloLogistica
             }
+            todosConEnvioGratis={todosConEnvioGratis}
             metodoEnvio={metodoEnvio}
             handleMetodoEnvio={handleMetodoEnvio}
             errores={{}}

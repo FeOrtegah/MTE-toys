@@ -12,6 +12,7 @@ const PRODUCTO_VACIO = {
   categoria: "",
   stock: "",
   imagenes: [],
+  envioGratis: false,
   dimensiones: {
     largo: "",
     ancho: "",
@@ -133,6 +134,7 @@ function ProductCreateForm({ onCreated }) {
 
         enOferta: Boolean(productForm.enOferta),
         destacado: Boolean(productForm.destacado),
+        envioGratis: Boolean(productForm.envioGratis),
 
         categoria:
           productForm.categoria || "General",
@@ -145,14 +147,17 @@ function ProductCreateForm({ onCreated }) {
             productForm.dimensiones.largo === ""
               ? null
               : Number(productForm.dimensiones.largo),
+
           ancho:
             productForm.dimensiones.ancho === ""
               ? null
               : Number(productForm.dimensiones.ancho),
+
           alto:
             productForm.dimensiones.alto === ""
               ? null
               : Number(productForm.dimensiones.alto),
+
           peso:
             productForm.dimensiones.peso === ""
               ? null
@@ -163,6 +168,7 @@ function ProductCreateForm({ onCreated }) {
           productForm.edadMinima === ""
             ? null
             : Number(productForm.edadMinima),
+
         edadMaxima:
           productForm.edadMaxima === ""
             ? null
@@ -399,6 +405,22 @@ function ProductCreateForm({ onCreated }) {
             }
           />
           Destacado
+        </label>
+
+        {/* NUEVO: ENVÍO GRATIS */}
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={productForm.envioGratis}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                envioGratis: e.target.checked,
+              })
+            }
+          />
+          Envío gratis (el cliente no paga
+          despacho con este producto)
         </label>
 
         <div className="product-form-imagenes">

@@ -466,6 +466,7 @@ const NOMBRES_METODO_ENVIO = {
   starken: "Starken",
   chilexpress: "Chilexpress",
   retiro_local: "Retiro en sede",
+  envio_gratis: "Envío gratis",
 };
 
 // Métodos de envío disponibles según la zona de la comuna.

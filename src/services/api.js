@@ -128,6 +128,8 @@ export function mapProduct(p) {
         ? Number(p.edadMaxima)
         : null,
 
+    envioGratis: Boolean(p.envioGratis),
+
     type: "producto",
   };
 }

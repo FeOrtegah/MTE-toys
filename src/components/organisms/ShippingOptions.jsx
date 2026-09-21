@@ -11,323 +11,273 @@ import {
 function ShippingOptions({
   zonaEnvio,
   envioGratisSoloLogistica,
+  todosConEnvioGratis,
   metodoEnvio,
   handleMetodoEnvio,
   errores,
 }) {
+  if (todosConEnvioGratis) {
+    return (
+      <div className="shipping-options">
+        <h2>Opciones de envío</h2>
+
+        <p className="shipping-free-msg">
+          🎉 ¡Tu compra incluye envío gratis! No
+          necesitas elegir un método de despacho.
+        </p>
+      </div>
+    );
+  }
+
   if (!zonaEnvio) {
     return null;
   }
 
   return (
-            <div className="shipping-options">
+    <div className="shipping-options">
+      <h2>Opciones de envío</h2>
 
-              <h2>Opciones de envío</h2>
+      {envioGratisSoloLogistica && (
+        <p className="shipping-free-msg">
+          🎉 ¡Tu compra supera los $49.990! El envío por
+          Logística 360 es <strong>gratis</strong>.
+        </p>
+      )}
 
-              {envioGratisSoloLogistica && (
-                <p className="shipping-free-msg">
-                  🎉 ¡Tu compra supera los
-                  $49.990! El envío por
-                  Logística 360 es{" "}
-                  <strong>gratis</strong>.
-                </p>
-              )}
+      {zonaEnvio === "verde" &&
+        !envioGratisSoloLogistica && (
+          <p>
+            Tu comuna pertenece a las
+            <strong>{" "}comunas verdes</strong>.
+            Puedes elegir entre Logística 360,
+            Bluexpress, Starken o retiro en sede.
+          </p>
+        )}
 
-              {zonaEnvio === "verde" &&
-                !envioGratisSoloLogistica && (
-                  <p>
-                    Tu comuna pertenece a las
-                    <strong>
-                      {" "}
-                      comunas verdes
-                    </strong>
-                    . Puedes elegir entre
-                    Logística 360, Bluexpress,
-                    Starken o retiro en sede.
-                  </p>
-                )}
+      {zonaEnvio === "azul" &&
+        !envioGratisSoloLogistica && (
+          <p>
+            Tu comuna pertenece a las
+            <strong> comunas azules</strong>.
+            Puedes elegir entre Bluexpress,
+            Starken (ambos por pagar) o retiro en sede.
+          </p>
+        )}
 
-              {zonaEnvio === "azul" &&
-                !envioGratisSoloLogistica && (
-                  <p>
-                    Tu comuna pertenece a las
-                    <strong> comunas azules</strong>.
-                    Puedes elegir entre Bluexpress,
-                    Starken (ambos por pagar) o
-                    retiro en sede.
-                  </p>
-                )}
+      {zonaEnvio === "fuera" && (
+        <p>
+          Hacemos despacho a
+          <strong> todo Chile</strong> a través de
+          Bluexpress, Starken o Chilexpress, todos por
+          pagar.
+        </p>
+      )}
 
-              {zonaEnvio === "fuera" && (
-                <p>
-                  Hacemos despacho a
-                  <strong> todo Chile</strong> a
-                  través de Bluexpress, Starken o
-                  Chilexpress, todos por pagar.
-                </p>
-              )}
+      <div className="shipping-methods">
+        {/* LOGÍSTICA 360 */}
 
-              <div className="shipping-methods">
+        {zonaEnvio === "verde" ||
+        envioGratisSoloLogistica ? (
+          <label
+            className={`shipping-method ${
+              metodoEnvio === "logistica360"
+                ? "selected"
+                : ""
+            }`}
+          >
+            <input
+              type="radio"
+              name="metodoEnvio"
+              value="logistica360"
+              checked={
+                metodoEnvio === "logistica360"
+              }
+              onChange={() =>
+                handleMetodoEnvio("logistica360")
+              }
+            />
 
-                {/* LOGÍSTICA 360 */}
+            <span>
+              <strong>Logística 360</strong>
 
-                {zonaEnvio === "verde" ||
-                envioGratisSoloLogistica ? (
-                  <label
-                    className={`shipping-method ${
-                      metodoEnvio ===
-                      "logistica360"
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
+              <small>
+                Envíos en 24 horas ·{" "}
+                {envioGratisSoloLogistica
+                  ? "Gratis"
+                  : `$${COSTO_LOGISTICA_360.toLocaleString(
+                      "es-CL"
+                    )}`}
+              </small>
+            </span>
+          </label>
+        ) : null}
 
-                    <input
-                      type="radio"
-                      name="metodoEnvio"
-                      value="logistica360"
-                      checked={
-                        metodoEnvio ===
-                        "logistica360"
-                      }
-                      onChange={() =>
-                        handleMetodoEnvio(
-                          "logistica360"
-                        )
-                      }
-                    />
+        {/* BLUEXPRESS */}
 
-                    <span>
-                      <strong>
-                        Logística 360
-                      </strong>
+        {(zonaEnvio === "verde" ||
+          zonaEnvio === "azul" ||
+          zonaEnvio === "fuera") &&
+          !envioGratisSoloLogistica && (
+            <label
+              className={`shipping-method ${
+                metodoEnvio === "bluexpress"
+                  ? "selected"
+                  : ""
+              }`}
+            >
+              <input
+                type="radio"
+                name="metodoEnvio"
+                value="bluexpress"
+                checked={
+                  metodoEnvio === "bluexpress"
+                }
+                onChange={() =>
+                  handleMetodoEnvio("bluexpress")
+                }
+              />
 
-                      <small>
-                        Envíos en 24 horas ·{" "}
-                        {envioGratisSoloLogistica
-                          ? "Gratis"
-                          : `$${COSTO_LOGISTICA_360.toLocaleString(
-                              "es-CL"
-                            )}`}
-                      </small>
-                    </span>
+              <span>
+                <strong>Bluexpress</strong>
 
-                  </label>
-                ) : null}
+                <small>Por pagar</small>
+              </span>
+            </label>
+          )}
 
-                {/* BLUEXPRESS */}
+        {/* STARKEN */}
 
-                {(zonaEnvio === "verde" ||
-                  zonaEnvio === "azul" ||
-                  zonaEnvio === "fuera") &&
-                  !envioGratisSoloLogistica && (
-                  <label
-                    className={`shipping-method ${
-                      metodoEnvio ===
-                      "bluexpress"
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
+        {(zonaEnvio === "verde" ||
+          zonaEnvio === "azul" ||
+          zonaEnvio === "fuera") &&
+          !envioGratisSoloLogistica && (
+            <label
+              className={`shipping-method ${
+                metodoEnvio === "starken"
+                  ? "selected"
+                  : ""
+              }`}
+            >
+              <input
+                type="radio"
+                name="metodoEnvio"
+                value="starken"
+                checked={
+                  metodoEnvio === "starken"
+                }
+                onChange={() =>
+                  handleMetodoEnvio("starken")
+                }
+              />
 
-                    <input
-                      type="radio"
-                      name="metodoEnvio"
-                      value="bluexpress"
-                      checked={
-                        metodoEnvio ===
-                        "bluexpress"
-                      }
-                      onChange={() =>
-                        handleMetodoEnvio(
-                          "bluexpress"
-                        )
-                      }
-                    />
+              <span>
+                <strong>Starken</strong>
 
-                    <span>
+                <small>Por pagar</small>
+              </span>
+            </label>
+          )}
 
-                      <strong>
-                        Bluexpress
-                      </strong>
+        {/* CHILEXPRESS (COMUNAS FUERA DE SANTIAGO) - POR PAGAR */}
 
-                      <small>
-                        Por pagar
-                      </small>
+        {zonaEnvio === "fuera" && (
+          <label
+            className={`shipping-method ${
+              metodoEnvio === "chilexpress"
+                ? "selected"
+                : ""
+            }`}
+          >
+            <input
+              type="radio"
+              name="metodoEnvio"
+              value="chilexpress"
+              checked={
+                metodoEnvio === "chilexpress"
+              }
+              onChange={() =>
+                handleMetodoEnvio("chilexpress")
+              }
+            />
 
-                    </span>
+            <span>
+              <strong>Chilexpress</strong>
 
-                  </label>
-                )}
+              <small>Por pagar</small>
+            </span>
+          </label>
+        )}
 
-                {/* STARKEN */}
+        {/* RETIRO EN SEDE (SOLO DENTRO DE SANTIAGO) */}
 
-                {(zonaEnvio === "verde" ||
-                  zonaEnvio === "azul" ||
-                  zonaEnvio === "fuera") &&
-                  !envioGratisSoloLogistica && (
-                  <label
-                    className={`shipping-method ${
-                      metodoEnvio === "starken"
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
+        {(zonaEnvio === "verde" ||
+          zonaEnvio === "azul") &&
+          !envioGratisSoloLogistica && (
+            <label
+              className={`shipping-method ${
+                metodoEnvio === "retiro_local"
+                  ? "selected"
+                  : ""
+              }`}
+            >
+              <input
+                type="radio"
+                name="metodoEnvio"
+                value="retiro_local"
+                checked={
+                  metodoEnvio === "retiro_local"
+                }
+                onChange={() =>
+                  handleMetodoEnvio("retiro_local")
+                }
+              />
 
-                    <input
-                      type="radio"
-                      name="metodoEnvio"
-                      value="starken"
-                      checked={
-                        metodoEnvio === "starken"
-                      }
-                      onChange={() =>
-                        handleMetodoEnvio(
-                          "starken"
-                        )
-                      }
-                    />
+              <span>
+                <strong>Retiro en sede</strong>
 
-                    <span>
-
-                      <strong>
-                        Starken
-                      </strong>
-
-                      <small>
-                        Por pagar
-                      </small>
-
-                    </span>
-
-                  </label>
-                )}
-
-                {/* CHILEXPRESS (COMUNAS FUERA DE SANTIAGO) - POR PAGAR */}
-
-                {zonaEnvio === "fuera" && (
-                  <label
-                    className={`shipping-method ${
-                      metodoEnvio ===
-                      "chilexpress"
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
-
-                    <input
-                      type="radio"
-                      name="metodoEnvio"
-                      value="chilexpress"
-                      checked={
-                        metodoEnvio ===
-                        "chilexpress"
-                      }
-                      onChange={() =>
-                        handleMetodoEnvio(
-                          "chilexpress"
-                        )
-                      }
-                    />
-
-                    <span>
-
-                      <strong>
-                        Chilexpress
-                      </strong>
-
-                      <small>
-                        Por pagar
-                      </small>
-
-                    </span>
-
-                  </label>
-                )}
-
-                {/* RETIRO EN SEDE (SOLO DENTRO DE SANTIAGO) */}
-
-                {(zonaEnvio === "verde" ||
-                  zonaEnvio === "azul") &&
-                  !envioGratisSoloLogistica && (
-                  <label
-                    className={`shipping-method ${
-                      metodoEnvio ===
-                      "retiro_local"
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
-
-                    <input
-                      type="radio"
-                      name="metodoEnvio"
-                      value="retiro_local"
-                      checked={
-                        metodoEnvio ===
-                        "retiro_local"
-                      }
-                      onChange={() =>
-                        handleMetodoEnvio(
-                          "retiro_local"
-                        )
-                      }
-                    />
-
-                    <span>
-
-                      <strong>
-                        Retiro en sede
-                      </strong>
-
-                      <small>
-                        Gratis · {DIRECCION_SEDE}
-                      </small>
-
-                    </span>
-
-                  </label>
-                )}
-
-              </div>
-
-              {metodoEnvio === "retiro_local" && (
-                <p className="shipping-pickup-address">
-                  📍 Retira tu pedido en:{" "}
-                  <strong>{DIRECCION_SEDE}</strong>
-                  <br />
-                  <span className="shipping-pickup-note">
-                    Te enviaremos la dirección
-                    exacta por correo una vez
-                    confirmado tu pedido.
-                  </span>
-                </p>
-              )}
-
-              {["bluexpress", "starken", "chilexpress"].includes(
-                metodoEnvio
-              ) && (
-                <p className="shipping-cod-notice">
-                  💵 Este envío es{" "}
-                  <strong>por pagar</strong>: cuando
-                  el paquete llegue a la sucursal de
-                  destino o a la dirección del
-                  destinatario, la persona que lo
-                  recibe debe pagar el valor del
-                  envío directamente al courier (en
-                  efectivo o con tarjeta, según lo
-                  que acepte la empresa) para que le
-                  entreguen la encomienda.
-                </p>
-              )}
-
-              {errores.metodoEnvio && (
-                <small className="field-error">
-                  {errores.metodoEnvio}
+                <small>
+                  Gratis · {DIRECCION_SEDE}
                 </small>
-              )}
+              </span>
+            </label>
+          )}
+      </div>
 
-            </div>
+      {metodoEnvio === "retiro_local" && (
+        <p className="shipping-pickup-address">
+          📍 Retira tu pedido en:{" "}
+          <strong>{DIRECCION_SEDE}</strong>
+          <br />
+          <span className="shipping-pickup-note">
+            Te enviaremos la dirección exacta por correo
+            una vez confirmado tu pedido.
+          </span>
+        </p>
+      )}
+
+      {[
+        "bluexpress",
+        "starken",
+        "chilexpress",
+      ].includes(metodoEnvio) && (
+        <p className="shipping-cod-notice">
+          💵 Este envío es{" "}
+          <strong>por pagar</strong>: cuando el paquete
+          llegue a la sucursal de destino o a la
+          dirección del destinatario, la persona que lo
+          recibe debe pagar el valor del envío
+          directamente al courier (en efectivo o con
+          tarjeta, según lo que acepte la empresa) para
+          que le entreguen la encomienda.
+        </p>
+      )}
+
+      {errores.metodoEnvio && (
+        <small className="field-error">
+          {errores.metodoEnvio}
+        </small>
+      )}
+    </div>
   );
 }
 

@@ -30,6 +30,7 @@ function ProductsSection({ products, setProducts }) {
       precioOferta: p.precioOferta ?? "",
       enOferta: Boolean(p.enOferta),
       destacado: Boolean(p.destacado),
+      envioGratis: Boolean(p.envioGratis),
       categoria: p.category || p.categoria || "",
       stock: p.stock ?? "",
       imagenes: p.images || p.imagenes || [],
@@ -66,7 +67,11 @@ function ProductsSection({ products, setProducts }) {
 
         enOferta: Boolean(draft.enOferta),
         destacado: Boolean(draft.destacado),
-        categoria: draft.categoria?.trim() || "General",
+        envioGratis: Boolean(draft.envioGratis),
+
+        categoria:
+          draft.categoria?.trim() || "General",
+
         stock: Number(draft.stock),
         imagenes: draft.imagenes || [],
 
@@ -75,14 +80,17 @@ function ProductsSection({ products, setProducts }) {
             draft.dimensiones?.largo === ""
               ? null
               : Number(draft.dimensiones?.largo),
+
           ancho:
             draft.dimensiones?.ancho === ""
               ? null
               : Number(draft.dimensiones?.ancho),
+
           alto:
             draft.dimensiones?.alto === ""
               ? null
               : Number(draft.dimensiones?.alto),
+
           peso:
             draft.dimensiones?.peso === ""
               ? null
@@ -93,6 +101,7 @@ function ProductsSection({ products, setProducts }) {
           draft.edadMinima === ""
             ? null
             : Number(draft.edadMinima),
+
         edadMaxima:
           draft.edadMaxima === ""
             ? null
@@ -116,6 +125,7 @@ function ProductsSection({ products, setProducts }) {
                 precioOferta: updatedData.precioOferta,
                 enOferta: updatedData.enOferta,
                 destacado: updatedData.destacado,
+                envioGratis: updatedData.envioGratis,
                 category: updatedData.categoria,
                 stock: updatedData.stock,
                 images: updatedData.imagenes,
@@ -373,7 +383,10 @@ function ProductsSection({ products, setProducts }) {
                         className="preview-thumb-sm"
                         key={url}
                       >
-                        <img src={url} alt="preview" />
+                        <img
+                          src={url}
+                          alt="preview"
+                        />
 
                         <button
                           type="button"
@@ -677,6 +690,21 @@ function ProductsSection({ products, setProducts }) {
                     }
                   />
                   Destacado
+                </label>
+
+                {/* NUEVO: ENVÍO GRATIS */}
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={draft.envioGratis}
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        envioGratis: e.target.checked,
+                      })
+                    }
+                  />
+                  Envío gratis
                 </label>
               </div>
             </div>
