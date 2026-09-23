@@ -134,6 +134,10 @@ function ProductCard({
       <h3>
         {product.name}
       </h3>
+      {product.envioGratis && (
+        <span className="badge-envio-gratis">
+          Envío gratis
+        </span>)}
 
       <div className="stars">
         ⭐⭐⭐⭐⭐

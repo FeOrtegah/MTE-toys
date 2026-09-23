@@ -308,3 +308,12 @@ height:300px;
   margin: 6px 0 !important;
   line-height: 1.4;
 }
+.badge-envio-gratis-detail {
+  display: inline-block;
+  background: #43b96d;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+}

@@ -340,6 +340,11 @@ function ProductDetail() {
                 "es-CL"
               )}
             </h2>
+            {product.envioGratis && (
+              <span className="badge-envio-gratis-detail">
+                Envío gratis
+                </span>
+                )}
 
             {hasStock ? (
               <span

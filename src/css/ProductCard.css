@@ -206,3 +206,15 @@ font-size:11px;
 padding:4px 9px;
 }
 }
+
+.badge-envio-gratis {
+  display: inline-block;
+  align-self: center;
+  background: #43b96d;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin: -2px 0 6px;
+}
