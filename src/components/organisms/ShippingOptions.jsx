@@ -15,7 +15,12 @@ function ShippingOptions({
   metodoEnvio,
   handleMetodoEnvio,
   errores,
+  umbralEnvioGratis,
 }) {
+  const umbralTexto = (
+    umbralEnvioGratis ?? 49990
+  ).toLocaleString("es-CL");
+
   if (todosConEnvioGratis) {
     return (
       <div className="shipping-options">
@@ -39,8 +44,9 @@ function ShippingOptions({
 
       {envioGratisSoloLogistica && (
         <p className="shipping-free-msg">
-          🎉 ¡Tu compra supera los $49.990! El envío por
-          Logística 360 es <strong>gratis</strong>.
+          🎉 ¡Tu compra supera los ${umbralTexto}! El
+          envío por Logística 360 es{" "}
+          <strong>gratis</strong>.
         </p>
       )}
 

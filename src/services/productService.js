@@ -40,6 +40,14 @@ function adaptProduct(p) {
       p.imagenes ||
       p.images ||
       [],
+
+    // Logística / ficha técnica
+    dimensiones: p.dimensiones ?? null,
+    edadMinima: p.edadMinima ?? null,
+    edadMaxima: p.edadMaxima ?? null,
+
+    // Envío
+    envioGratis: p.envioGratis ?? false,
   };
 }
 

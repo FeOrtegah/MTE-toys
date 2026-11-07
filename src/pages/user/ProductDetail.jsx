@@ -21,10 +21,13 @@ import {
 
 import ReviewSection from "../../components/organisms/ReviewSection";
 import RelatedProducts from "../../components/organisms/RelatedProducts";
+import { useEtiquetaVigente } from "../../hooks/useEtiquetaVigente";
 
 import "../../css/ProductDetail.css";
 
 function ProductDetail() {
+  const etiquetaVigente = useEtiquetaVigente();
+
   const { id } =
     useParams();
 
@@ -345,6 +348,18 @@ function ProductDetail() {
                 Envío gratis
                 </span>
                 )}
+
+            {etiquetaVigente && (
+              <span
+                className="badge-etiqueta-detail"
+                style={{
+                  background: etiquetaVigente.color,
+                  color: etiquetaVigente.colorTexto,
+                }}
+              >
+                {etiquetaVigente.texto}
+              </span>
+            )}
 
             {hasStock ? (
               <span

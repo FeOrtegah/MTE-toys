@@ -21,7 +21,12 @@ function OrderSummary({
   totalFinal,
   enviando,
   onFinishOrder,
+  umbralEnvioGratis,
 }) {
+  const umbralTexto = (
+    umbralEnvioGratis ?? 49990
+  ).toLocaleString("es-CL");
+
   return (
     <aside className="order">
       <h2>Resumen del pedido</h2>
@@ -85,7 +90,7 @@ function OrderSummary({
               ? "Gratis"
               : metodoEnvio === "logistica360"
               ? costoEnvio === 0
-                ? "Gratis (envío gratis desde $49.990)"
+                ? `Gratis (envío gratis desde $${umbralTexto})`
                 : `$${COSTO_LOGISTICA_360.toLocaleString(
                     "es-CL"
                   )}`

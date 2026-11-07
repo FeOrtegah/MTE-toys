@@ -16,6 +16,8 @@ import OrdersSection from "../../components/admin/OrdersSection";
 import ProductCreateForm from "../../components/admin/ProductCreateForm";
 import ProductsSection from "../../components/admin/ProductsSection";
 import CombosSection from "../../components/admin/CombosSection";
+import ShippingConfigSection from "../../components/admin/ShippingConfigSection";
+import LabelsSection from "../../components/admin/LabelsSection";
 
 import "../../css/AdminDashboard.css";
 
@@ -146,6 +148,10 @@ function AdminDashboard() {
           products={products}
         />
       )}
+
+      {activeTab === "envio" && <ShippingConfigSection />}
+
+      {activeTab === "etiquetas" && <LabelsSection />}
     </main>
   );
 }

@@ -8,6 +8,10 @@ import {
   redirectToWebpay,
 } from "../../services/webpayService";
 import { createAddress } from "../../services/addressService.js";
+import {
+  getUmbralEnvioGratis,
+  DEFAULT_UMBRAL_ENVIO_GRATIS,
+} from "../../services/siteContentService.js";
 import "../../css/Checkout.css";
 import OrderSummary from "../../components/organisms/OrderSummary.jsx";
 import ShippingOptions from "../../components/organisms/ShippingOptions.jsx";
@@ -41,6 +45,14 @@ function CheckoutPago() {
   const [metodoEnvio, setMetodoEnvio] = useState("");
   const [metodoPago, setMetodoPago] = useState("webpay");
 
+  const [umbralEnvioGratis, setUmbralEnvioGratis] = useState(
+    DEFAULT_UMBRAL_ENVIO_GRATIS
+  );
+
+  useEffect(() => {
+    getUmbralEnvioGratis().then(setUmbralEnvioGratis);
+  }, []);
+
   const totalProductos = datosCheckout?.totalProductos || 0;
 
   // Si TODOS los productos del carrito tienen envío
@@ -70,7 +82,7 @@ function CheckoutPago() {
 
   const envioGratisSoloLogistica =
     (zonaEnvio === "verde" || zonaEnvio === "azul") &&
-    totalProductos >= 49990;
+    totalProductos >= umbralEnvioGratis;
 
   const costoEnvio = useMemo(() => {
     if (todosConEnvioGratis) {
@@ -78,7 +90,7 @@ function CheckoutPago() {
     }
 
     const envioGratisPorMonto =
-      totalProductos >= 49990 &&
+      totalProductos >= umbralEnvioGratis &&
       (zonaEnvio === "verde" || zonaEnvio === "azul");
 
     if (metodoEnvio === "logistica360") {
@@ -91,6 +103,7 @@ function CheckoutPago() {
     totalProductos,
     zonaEnvio,
     todosConEnvioGratis,
+    umbralEnvioGratis,
   ]);
 
   const totalFinal = totalProductos + costoEnvio;
@@ -289,6 +302,7 @@ function CheckoutPago() {
             metodoEnvio={metodoEnvio}
             handleMetodoEnvio={handleMetodoEnvio}
             errores={{}}
+            umbralEnvioGratis={umbralEnvioGratis}
           />
         </section>
 
@@ -302,6 +316,7 @@ function CheckoutPago() {
           totalFinal={totalFinal}
           enviando={enviando}
           onFinishOrder={finishOrder}
+          umbralEnvioGratis={umbralEnvioGratis}
         />
       </div>
     </main>

@@ -8,6 +8,8 @@ import {
   Link,
 } from "react-router-dom";
 
+import { useEtiquetaVigente } from "../../hooks/useEtiquetaVigente";
+
 function ProductCard({
   product,
 }) {
@@ -16,6 +18,8 @@ function ProductCard({
     addComboToCart,
     cart,
   } = useCart();
+
+  const etiquetaVigente = useEtiquetaVigente();
 
   const isCombo =
     product.type ===
@@ -80,7 +84,19 @@ function ProductCard({
       }`}
     >
 
-      {product.offer && (
+      {etiquetaVigente && (
+        <span
+          className="offer offer-seasonal"
+          style={{
+            background: etiquetaVigente.color,
+            color: etiquetaVigente.colorTexto,
+          }}
+        >
+          {etiquetaVigente.texto}
+        </span>
+      )}
+
+      {!etiquetaVigente && product.offer && (
         <span className="offer">
           Oferta
         </span>

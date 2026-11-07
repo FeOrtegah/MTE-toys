@@ -7,6 +7,8 @@ const TABS = [
   },
   { key: "productos", label: "Productos", icon: "🧸" },
   { key: "combos", label: "Combos", icon: "🎁" },
+  { key: "envio", label: "Envío", icon: "🚚" },
+  { key: "etiquetas", label: "Etiquetas", icon: "🏷️" },
 ];
 
 function AdminTabs({ activeTab, onChange }) {

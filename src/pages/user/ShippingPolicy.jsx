@@ -1,18 +1,25 @@
+import { useEffect, useState } from "react";
 import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
+import {
+  getUmbralEnvioGratis,
+  DEFAULT_UMBRAL_ENVIO_GRATIS,
+} from "../../services/siteContentService.js";
 
-const SECCIONES = [
-  {
-    color: "#E94F37",
-    titulo: "1. Tiempos de Despacho",
-    texto:
-      "Los pedidos se procesan y preparan para su envío en un plazo de 24 a 48 horas hábiles. Los tiempos de entrega varían según la región y comuna de destino.",
-  },
-  {
-    color: "#FFC93C",
-    titulo: "2. Costos de Envío",
-    texto:
-      "El valor del despacho se calcula automáticamente en el checkout al ingresar tu dirección exacta según las tarifas vigentes del courier. Las compras sobre $49.990 tienen envío gratis.",
-  },
+function buildSecciones(umbral) {
+  return [
+    {
+      color: "#E94F37",
+      titulo: "1. Tiempos de Despacho",
+      texto:
+        "Los pedidos se procesan y preparan para su envío en un plazo de 24 a 48 horas hábiles. Los tiempos de entrega varían según la región y comuna de destino.",
+    },
+    {
+      color: "#FFC93C",
+      titulo: "2. Costos de Envío",
+      texto: `El valor del despacho se calcula automáticamente en el checkout al ingresar tu dirección exacta según las tarifas vigentes del courier. Las compras sobre $${umbral.toLocaleString(
+        "es-CL"
+      )} tienen envío gratis.`,
+    },
   {
     color: "#3AA655",
     titulo: "4. Envíos fuera de Santiago",
@@ -31,9 +38,20 @@ const SECCIONES = [
     texto:
       "Una vez que tu pedido sea despachado, recibirás la información necesaria para realizar el seguimiento del paquete hasta la puerta de tu casa.",
   },
-];
+  ];
+}
 
 export default function ShippingPolicy() {
+  const [umbral, setUmbral] = useState(
+    DEFAULT_UMBRAL_ENVIO_GRATIS
+  );
+
+  useEffect(() => {
+    getUmbralEnvioGratis().then(setUmbral);
+  }, []);
+
+  const SECCIONES = buildSecciones(umbral);
+
   return (
     <section className="qs-wrap qs-blog-wrap">
       <style>{`
