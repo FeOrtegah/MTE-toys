@@ -5,6 +5,7 @@ import {
   createEtiqueta,
   updateEtiqueta,
   deleteEtiqueta,
+  obtenerEtiquetaVigente,
 } from "../../services/etiquetaService";
 import { invalidarCacheEtiquetas } from "../../hooks/useEtiquetaVigente";
 
@@ -18,12 +19,7 @@ const VACIO = {
 };
 
 function hoyEnRango(e) {
-  const ahora = new Date();
-  return (
-    e.activa &&
-    ahora >= new Date(e.fechaInicio) &&
-    ahora <= new Date(e.fechaFin)
-  );
+  return Boolean(obtenerEtiquetaVigente([e]));
 }
 
 function toInputDate(fecha) {

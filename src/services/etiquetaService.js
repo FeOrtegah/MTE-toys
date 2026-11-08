@@ -27,6 +27,30 @@ export const deleteEtiqueta = (id) =>
     auth: true,
   });
 
+// El selector de fecha del admin guarda solo "YYYY-MM-DD",
+// que JS interpreta como medianoche UTC. En Chile (UTC-3)
+// esa medianoche cae 3 horas ANTES de la medianoche local,
+// así que una etiqueta "hasta mañana" parecía vencer 3
+// horas antes de tiempo en la noche. Para evitarlo, el día
+// de término se extiende hasta el final de ese día en UTC
+// (24 h de margen), cubriendo cualquier huso horario en
+// Chile sin acortar la vigencia real que quiso el admin.
+function finDeDiaUTC(fecha) {
+  const d = new Date(fecha);
+
+  return new Date(
+    Date.UTC(
+      d.getUTCFullYear(),
+      d.getUTCMonth(),
+      d.getUTCDate(),
+      23,
+      59,
+      59,
+      999
+    )
+  );
+}
+
 // Dada la lista completa de etiquetas, devuelve la que
 // está vigente hoy (activa=true y dentro del rango de
 // fechas). Si hay varias vigentes, se usa la más reciente
@@ -42,7 +66,7 @@ export function obtenerEtiquetaVigente(etiquetas) {
     if (!e.activa) return false;
 
     const inicio = new Date(e.fechaInicio);
-    const fin = new Date(e.fechaFin);
+    const fin = finDeDiaUTC(e.fechaFin);
 
     return ahora >= inicio && ahora <= fin;
   });
