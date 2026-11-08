@@ -1,3 +1,9 @@
+// Si existe VITE_API_URL (definida en un .env local), se usa esa.
+// Si no existe y estamos en modo desarrollo (npm run dev), se
+// asume que el backend corre en localhost. Si no existe y estamos
+// en un build de producción (npm run build), SIEMPRE se usa la
+// API real: nunca debe quedar un build productivo apuntando a
+// localhost solo porque a alguien le faltó el archivo .env.
 const API_URL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV
@@ -132,6 +138,8 @@ export function mapProduct(p) {
         : null,
 
     envioGratis: Boolean(p.envioGratis),
+
+    etiquetaId: p.etiquetaId ?? null,
 
     type: "producto",
   };

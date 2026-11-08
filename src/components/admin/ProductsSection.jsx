@@ -8,6 +8,7 @@ import {
 } from "../../services/productService";
 
 import { uploadImages } from "../../services/uploadService";
+import { useEtiquetas } from "../../hooks/useEtiquetaVigente";
 
 function ProductsSection({ products, setProducts }) {
   const [editingId, setEditingId] = useState(null);
@@ -18,6 +19,8 @@ function ProductsSection({ products, setProducts }) {
 
   const [urlImagenEdit, setUrlImagenEdit] =
     useState("");
+
+  const etiquetasDisponibles = useEtiquetas();
 
   function startEdit(p) {
     setEditingId(p.id);
@@ -42,6 +45,7 @@ function ProductsSection({ products, setProducts }) {
       },
       edadMinima: p.edadMinima ?? "",
       edadMaxima: p.edadMaxima ?? "",
+      etiquetaId: p.etiquetaId || "",
     });
 
     setUrlImagenEdit("");
@@ -106,6 +110,8 @@ function ProductsSection({ products, setProducts }) {
           draft.edadMaxima === ""
             ? null
             : Number(draft.edadMaxima),
+
+        etiquetaId: draft.etiquetaId || null,
       };
 
       const savedProduct = await updateProduct(
@@ -134,6 +140,7 @@ function ProductsSection({ products, setProducts }) {
                 dimensiones: updatedData.dimensiones,
                 edadMinima: updatedData.edadMinima,
                 edadMaxima: updatedData.edadMaxima,
+                etiquetaId: updatedData.etiquetaId,
               }
             : p
         )
@@ -278,6 +285,7 @@ function ProductsSection({ products, setProducts }) {
               <th>Precio oferta</th>
               <th>Oferta</th>
               <th>Destacado</th>
+              <th>Etiqueta</th>
               <th>Estado</th>
               <th>Stock</th>
               <th>Acciones</th>
@@ -321,6 +329,33 @@ function ProductsSection({ products, setProducts }) {
 
                 <td>{p.enOferta ? "✅" : "—"}</td>
                 <td>{p.destacado ? "⭐" : "—"}</td>
+
+                <td>
+                  {(() => {
+                    const etiqueta =
+                      etiquetasDisponibles.find(
+                        (e) => e._id === p.etiquetaId
+                      );
+
+                    if (!etiqueta) return "—";
+
+                    return (
+                      <span
+                        style={{
+                          display: "inline-block",
+                          background: etiqueta.color,
+                          color: etiqueta.colorTexto,
+                          padding: "2px 10px",
+                          borderRadius: 999,
+                          fontSize: 12,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {etiqueta.texto}
+                      </span>
+                    );
+                  })()}
+                </td>
 
                 <td>
                   {p.activo ? (
@@ -628,6 +663,30 @@ function ProductsSection({ products, setProducts }) {
                     }
                   />
                 </div>
+              </div>
+
+              <div className="admin-modal-field">
+                <label>
+                  Etiqueta estacional/promocional
+                </label>
+
+                <select
+                  value={draft.etiquetaId || ""}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      etiquetaId: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Ninguna</option>
+
+                  {etiquetasDisponibles.map((e) => (
+                    <option key={e._id} value={e._id}>
+                      {e.texto}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="admin-modal-row">

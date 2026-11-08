@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createProduct } from "../../services/productService";
 import { uploadImages } from "../../services/uploadService";
+import { useEtiquetas } from "../../hooks/useEtiquetaVigente";
 
 const PRODUCTO_VACIO = {
   nombre: "",
@@ -21,6 +22,7 @@ const PRODUCTO_VACIO = {
   },
   edadMinima: "",
   edadMaxima: "",
+  etiquetaId: "",
 };
 
 function ProductCreateForm({ onCreated }) {
@@ -34,6 +36,8 @@ function ProductCreateForm({ onCreated }) {
     useState(false);
 
   const [urlImagen, setUrlImagen] = useState("");
+
+  const etiquetasDisponibles = useEtiquetas();
 
   async function handleImagenesChange(e) {
     const files = e.target.files;
@@ -173,6 +177,9 @@ function ProductCreateForm({ onCreated }) {
           productForm.edadMaxima === ""
             ? null
             : Number(productForm.edadMaxima),
+
+        etiquetaId:
+          productForm.etiquetaId || null,
       });
 
       onCreated(newProduct);
@@ -422,6 +429,34 @@ function ProductCreateForm({ onCreated }) {
           Envío gratis (el cliente no paga
           despacho con este producto)
         </label>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+          }}
+        >
+          <label>Etiqueta estacional/promocional</label>
+
+          <select
+            value={productForm.etiquetaId}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                etiquetaId: e.target.value,
+              })
+            }
+          >
+            <option value="">Ninguna</option>
+
+            {etiquetasDisponibles.map((e) => (
+              <option key={e._id} value={e._id}>
+                {e.texto}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="product-form-imagenes">
           <label className="btn-subir-imagen">

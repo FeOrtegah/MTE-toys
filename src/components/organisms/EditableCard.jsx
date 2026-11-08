@@ -18,7 +18,10 @@ import "../../css/EditableCard.css";
 //   titulo        - texto principal (opcional según sección)
 //   subtitulo     - texto secundario (opcional)
 //   camposTexto   - qué campos de texto mostrar en el form:
-//                   "titulo" | "tituloYSubtitulo" | "ninguno"
+//                   "titulo" | "tituloYSubtitulo" | "ninguno" |
+//                   "soloImagenYLink" (sin título/subtítulo,
+//                   pero sí con link; para banners cuyo texto
+//                   ya viene dibujado dentro de la imagen)
 //   onSave(data)  - se llama al guardar con {imagen,titulo,subtitulo,link}
 //   onDelete()    - se llama al eliminar (opcional, si no se pasa no hay botón eliminar)
 //   children      - el contenido visual normal de la tarjeta

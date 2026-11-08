@@ -6,6 +6,7 @@ import {
   updateEtiqueta,
   deleteEtiqueta,
 } from "../../services/etiquetaService";
+import { invalidarCacheEtiquetas } from "../../hooks/useEtiquetaVigente";
 
 const VACIO = {
   texto: "",
@@ -95,6 +96,7 @@ function LabelsSection() {
         setEtiquetas((prev) => [...prev, creada]);
       }
 
+      invalidarCacheEtiquetas();
       cancelEdit();
     } catch (err) {
       alert(err.message);
@@ -111,6 +113,7 @@ function LabelsSection() {
       setEtiquetas((prev) =>
         prev.filter((e) => e._id !== id)
       );
+      invalidarCacheEtiquetas();
     } catch (err) {
       alert(err.message);
     }

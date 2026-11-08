@@ -21,13 +21,11 @@ import {
 
 import ReviewSection from "../../components/organisms/ReviewSection";
 import RelatedProducts from "../../components/organisms/RelatedProducts";
-import { useEtiquetaVigente } from "../../hooks/useEtiquetaVigente";
+import { useEtiquetaDeProducto } from "../../hooks/useEtiquetaVigente";
 
 import "../../css/ProductDetail.css";
 
 function ProductDetail() {
-  const etiquetaVigente = useEtiquetaVigente();
-
   const { id } =
     useParams();
 
@@ -72,6 +70,10 @@ function ProductDetail() {
     added,
     setAdded,
   ] = useState(false);
+
+  const etiquetaVigente = useEtiquetaDeProducto(
+    product?.etiquetaId
+  );
 
   useEffect(() => {
     let cancelled = false;

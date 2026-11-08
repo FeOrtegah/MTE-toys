@@ -8,7 +8,7 @@ import {
   Link,
 } from "react-router-dom";
 
-import { useEtiquetaVigente } from "../../hooks/useEtiquetaVigente";
+import { useEtiquetaDeProducto } from "../../hooks/useEtiquetaVigente";
 
 function ProductCard({
   product,
@@ -19,7 +19,9 @@ function ProductCard({
     cart,
   } = useCart();
 
-  const etiquetaVigente = useEtiquetaVigente();
+  const etiquetaVigente = useEtiquetaDeProducto(
+    product.etiquetaId
+  );
 
   const isCombo =
     product.type ===

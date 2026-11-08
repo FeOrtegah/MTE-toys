@@ -20,19 +20,73 @@ function cargarEtiquetas() {
   return etiquetasPromise;
 }
 
-// Devuelve la etiqueta estacional/promocional vigente
-// hoy (Ciber, Navidad, Black Week, etc.) o null si no hay
-// ninguna activa en este momento.
-export function useEtiquetaVigente() {
+// El admin puede crear/editar/eliminar etiquetas desde el
+// panel sin recargar la página; esto limpia la caché para
+// que el siguiente componente que las necesite (ej: el
+// select del formulario de productos) pida la lista fresca.
+export function invalidarCacheEtiquetas() {
+  etiquetasPromise = null;
+}
+
+// Dado el id de la etiqueta asignada a un producto desde el
+// admin, devuelve esa etiqueta solo si además está vigente
+// hoy (dentro de su rango de fechas y activa). Si el
+// producto no tiene etiqueta asignada, o la asignada ya no
+// está vigente, devuelve null.
+export function useEtiquetaDeProducto(etiquetaId) {
   const [etiqueta, setEtiqueta] = useState(null);
 
   useEffect(() => {
+    if (!etiquetaId) {
+      setEtiqueta(null);
+      return;
+    }
+
     let cancelado = false;
 
     cargarEtiquetas()
       .then((etiquetas) => {
         if (cancelado) return;
-        setEtiqueta(obtenerEtiquetaVigente(etiquetas));
+
+        const asignada = etiquetas.find(
+          (e) => e._id === etiquetaId
+        );
+
+        if (!asignada) {
+          setEtiqueta(null);
+          return;
+        }
+
+        const vigente = obtenerEtiquetaVigente([
+          asignada,
+        ]);
+
+        setEtiqueta(vigente);
+      })
+      .catch((err) => {
+        console.error("Error al cargar etiquetas:", err);
+      });
+
+    return () => {
+      cancelado = true;
+    };
+  }, [etiquetaId]);
+
+  return etiqueta;
+}
+
+// Lista completa de etiquetas creadas (para selects de
+// admin, por ejemplo). Usa la misma caché que el hook
+// anterior.
+export function useEtiquetas() {
+  const [etiquetas, setEtiquetas] = useState([]);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    cargarEtiquetas()
+      .then((lista) => {
+        if (!cancelado) setEtiquetas(lista);
       })
       .catch((err) => {
         console.error("Error al cargar etiquetas:", err);
@@ -43,5 +97,5 @@ export function useEtiquetaVigente() {
     };
   }, []);
 
-  return etiqueta;
+  return etiquetas;
 }

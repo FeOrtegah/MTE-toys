@@ -48,6 +48,9 @@ function adaptProduct(p) {
 
     // Envío
     envioGratis: p.envioGratis ?? false,
+
+    // Etiqueta estacional/promocional asignada (id)
+    etiquetaId: p.etiquetaId ?? null,
   };
 }
 
