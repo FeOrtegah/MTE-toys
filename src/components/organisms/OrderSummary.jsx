@@ -22,6 +22,13 @@ function OrderSummary({
   enviando,
   onFinishOrder,
   umbralEnvioGratis,
+  cupon,
+  codigoCupon,
+  setCodigoCupon,
+  errorCupon,
+  validandoCupon,
+  onAplicarCupon,
+  onQuitarCupon,
 }) {
   const umbralTexto = (
     umbralEnvioGratis ?? 49990
@@ -78,6 +85,59 @@ function OrderSummary({
           )}
         </span>
       </div>
+
+      {/* CUPÓN */}
+
+      {cupon ? (
+        <div className="total order-coupon-applied">
+          <span>
+            Cupón {cupon.codigo}{" "}
+            <button
+              type="button"
+              className="order-coupon-remove"
+              onClick={onQuitarCupon}
+            >
+              Quitar
+            </button>
+          </span>
+
+          <span>
+            -${cupon.descuento.toLocaleString("es-CL")}
+          </span>
+        </div>
+      ) : (
+        <div className="order-coupon">
+          <div className="order-coupon-row">
+            <input
+              type="text"
+              placeholder="Código de descuento"
+              value={codigoCupon}
+              onChange={(e) =>
+                setCodigoCupon(e.target.value.toUpperCase())
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onAplicarCupon();
+                }
+              }}
+              maxLength={30}
+            />
+
+            <button
+              type="button"
+              onClick={onAplicarCupon}
+              disabled={validandoCupon}
+            >
+              {validandoCupon ? "..." : "Aplicar"}
+            </button>
+          </div>
+
+          {errorCupon && (
+            <p className="order-coupon-error">{errorCupon}</p>
+          )}
+        </div>
+      )}
 
       {/* ENVÍO */}
 

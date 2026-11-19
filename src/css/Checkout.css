@@ -748,3 +748,55 @@
   margin-top: 8px;
   line-height: 1.5;
 }
+
+/* ---------- Cupón de descuento ---------- */
+
+.order-coupon {
+  margin-bottom: 14px;
+}
+
+.order-coupon-row {
+  display: flex;
+  gap: 8px;
+}
+
+.order-coupon-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.order .order-coupon-row button {
+  width: auto;
+  margin: 0;
+  padding: 9px 14px;
+  font-size: 14px;
+}
+
+.order-coupon-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #c62828;
+}
+
+.order-coupon-applied {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.order .order-coupon-remove {
+  width: auto;
+  margin: 0 0 0 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #777;
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/api";
+import { validarCupon } from "../../services/cuponService";
 import {
   initWebpayTransaction,
   redirectToWebpay,
@@ -44,6 +45,12 @@ function CheckoutPago() {
 
   const [metodoEnvio, setMetodoEnvio] = useState("");
   const [metodoPago, setMetodoPago] = useState("webpay");
+
+  // Cupón: { codigo, descuento, descripcion } cuando está aplicado
+  const [cupon, setCupon] = useState(null);
+  const [codigoCupon, setCodigoCupon] = useState("");
+  const [errorCupon, setErrorCupon] = useState("");
+  const [validandoCupon, setValidandoCupon] = useState(false);
 
   const [umbralEnvioGratis, setUmbralEnvioGratis] = useState(
     DEFAULT_UMBRAL_ENVIO_GRATIS
@@ -106,7 +113,51 @@ function CheckoutPago() {
     umbralEnvioGratis,
   ]);
 
-  const totalFinal = totalProductos + costoEnvio;
+  const descuento = cupon?.descuento || 0;
+  const totalFinal = totalProductos - descuento + costoEnvio;
+
+  const clienteParaCupon = () => ({
+    rut: datosCheckout?.rut,
+    email: datosCheckout?.email,
+    telefono: datosCheckout?.telefono,
+    facturacion: datosCheckout?.facturacion,
+    envio: datosCheckout?.envio,
+  });
+
+  const aplicarCupon = async () => {
+    if (!codigoCupon.trim()) {
+      setErrorCupon("Ingresa un código");
+      return;
+    }
+
+    setValidandoCupon(true);
+    setErrorCupon("");
+
+    try {
+      const r = await validarCupon({
+        codigo: codigoCupon,
+        subtotal: totalProductos,
+        cliente: clienteParaCupon(),
+      });
+
+      setCupon({
+        codigo: r.codigo,
+        descuento: r.descuento,
+        descripcion: r.descripcion,
+      });
+    } catch (err) {
+      setCupon(null);
+      setErrorCupon(err.message || "No se pudo validar el código");
+    } finally {
+      setValidandoCupon(false);
+    }
+  };
+
+  const quitarCupon = () => {
+    setCupon(null);
+    setCodigoCupon("");
+    setErrorCupon("");
+  };
 
   useEffect(() => {
     if (todosConEnvioGratis) {
@@ -222,6 +273,8 @@ function CheckoutPago() {
         costoEnvio,
         totalProductos,
         total: totalFinal,
+        // El servidor recalcula el descuento; solo envía el código
+        cuponCodigo: cupon?.codigo || "",
       };
 
       const pedido = await createOrder(orderData);
@@ -314,6 +367,13 @@ function CheckoutPago() {
           setMetodoPago={setMetodoPago}
           costoEnvio={costoEnvio}
           totalFinal={totalFinal}
+          cupon={cupon}
+          codigoCupon={codigoCupon}
+          setCodigoCupon={setCodigoCupon}
+          errorCupon={errorCupon}
+          validandoCupon={validandoCupon}
+          onAplicarCupon={aplicarCupon}
+          onQuitarCupon={quitarCupon}
           enviando={enviando}
           onFinishOrder={finishOrder}
           umbralEnvioGratis={umbralEnvioGratis}

@@ -9,6 +9,7 @@ const TABS = [
   { key: "combos", label: "Combos", icon: "🎁" },
   { key: "envio", label: "Envío", icon: "🚚" },
   { key: "etiquetas", label: "Etiquetas", icon: "🏷️" },
+  { key: "cupones", label: "Cupones", icon: "🎟️" },
 ];
 
 function AdminTabs({ activeTab, onChange }) {
