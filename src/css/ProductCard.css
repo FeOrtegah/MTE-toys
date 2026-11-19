@@ -9,7 +9,10 @@ transition:.3s;
 overflow:hidden;
 display:flex;
 flex-direction:column;
-height:400px;
+/* Altura mínima (no fija): si la tarjeta lleva etiqueta, "envío gratis"
+   y precio anterior, crece en vez de cortar el botón "Agregar". */
+height:auto;
+min-height:400px;
 width:100%;
 box-sizing:border-box;
 }
@@ -125,13 +128,6 @@ line-clamp:2;
 flex-shrink:0;
 }
 
-.stars{
-color:#ffc400;
-margin:4px 0;
-flex-shrink:0;
-font-size:14px;
-}
-
 .old-price{
 text-decoration:line-through;
 color:#999;
@@ -179,7 +175,8 @@ box-shadow:none !important;
 .product-card{
 padding:14px;
 border-radius:12px;
-height:330px;
+height:auto;
+min-height:330px;
 }
 
 .product-image{

@@ -49,6 +49,12 @@ width:250px;
 min-width:250px;
 max-width:250px;
 flex:0 0 auto;
+display:flex;
+}
+
+/* Todas las tarjetas de la cinta miden lo mismo (la más alta manda) */
+.featured-item .product-card{
+height:auto;
 }
 
 .arrow{

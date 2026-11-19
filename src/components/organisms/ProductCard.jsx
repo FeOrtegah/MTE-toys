@@ -157,10 +157,6 @@ function ProductCard({
           Envío gratis
         </span>)}
 
-      <div className="stars">
-        ⭐⭐⭐⭐⭐
-      </div>
-
       {product.oldPrice && (
         <p className="old-price">
           $
