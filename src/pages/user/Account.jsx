@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
@@ -87,7 +88,7 @@ function Account() {
         </Link>
 
         <div className="account-header">
-          <div className="account-avatar">👤</div>
+          <div className="account-avatar"><Icon name="user" /></div>
           <div>
             <h1>Mi cuenta</h1>
             <p className="account-email">{email}</p>

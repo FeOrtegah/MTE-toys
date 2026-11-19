@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { markWhatsappNotified } from "../../services/orderService";
@@ -169,12 +170,12 @@ function BankTransfer() {
             ).catch(() => {});
           }}
         >
-          📱 Avisar por WhatsApp
+          <Icon name="smartphone" /> Avisar por WhatsApp
         </a>
 
         {avisoEnviado && (
           <p className="transfer-aviso-confirmado">
-            ✅ Listo, quedó registrado. Ahora solo
+            <Icon name="check-circle" /> Listo, quedó registrado. Ahora solo
             adjunta la captura de tu transferencia en
             el chat que se abrió.
           </p>

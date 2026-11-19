@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import {
   useCart,
 } from "../../context/CartContext";
@@ -194,7 +195,7 @@ function Cart() {
                         }
                         title="Eliminar"
                       >
-                        ✕
+                        <Icon name="close" />
                       </button>
 
                     </div>

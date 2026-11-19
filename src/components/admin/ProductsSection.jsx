@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useState, useMemo } from "react";
 
 import {
@@ -323,13 +324,16 @@ function ProductsSection({ products, setProducts }) {
       <h2>Productos</h2>
 
       <div className="admin-prod-filtros">
-        <input
-          type="search"
-          className="admin-prod-filtros-buscar"
-          placeholder="🔎 Buscar producto por nombre..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
+        <div className="admin-prod-filtros-buscar-caja">
+          <Icon name="search" />
+          <input
+            type="search"
+            className="admin-prod-filtros-buscar"
+            placeholder="Buscar producto por nombre..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </div>
 
         <select
           value={filtroMarca}
@@ -436,8 +440,8 @@ function ProductsSection({ products, setProducts }) {
                     : "—"}
                 </td>
 
-                <td>{p.enOferta ? "✅" : "—"}</td>
-                <td>{p.destacado ? "⭐" : "—"}</td>
+                <td>{p.enOferta ? <Icon name="check-circle" /> : "—"}</td>
+                <td>{p.destacado ? <Icon name="star" filled /> : "—"}</td>
 
                 <td>
                   {(() => {
@@ -659,7 +663,7 @@ function ProductsSection({ products, setProducts }) {
                 </label>
 
                 <p className="admin-field-hint">
-                  ⚠️ Estas medidas corresponden a
+                  <Icon name="warning" /> Estas medidas corresponden a
                   la caja del producto y se toman
                   como referencia para calcular el
                   envío.
@@ -745,7 +749,7 @@ function ProductsSection({ products, setProducts }) {
                 </label>
 
                 <p className="admin-field-hint">
-                  ⚠️ Ej: 0 a 12 = "0-12 meses", 12 a
+                  <Icon name="warning" /> Ej: 0 a 12 = "0-12 meses", 12 a
                   24 = "1-2 años". Se usa para el
                   filtro "Regalos por edad" del
                   inicio.

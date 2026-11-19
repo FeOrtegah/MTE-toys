@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
@@ -49,17 +50,17 @@ function AccountHome() {
 
         <div className="account-home-actions">
           <Link to="/mi-cuenta/compras" className="account-home-action">
-            <span className="account-home-icon">📦</span>
+            <span className="account-home-icon"><Icon name="package" /></span>
             Mis compras
           </Link>
 
           <Link to="/mi-cuenta/perfil" className="account-home-action">
-            <span className="account-home-icon">👤</span>
+            <span className="account-home-icon"><Icon name="user" /></span>
             Mi perfil
           </Link>
 
           <Link to="/contacto" className="account-home-action">
-            <span className="account-home-icon">❓</span>
+            <span className="account-home-icon"><Icon name="help" /></span>
             Ayuda
           </Link>
         </div>
@@ -91,7 +92,7 @@ function AccountHome() {
                     <span className={`order-mini-badge ${estado.className}`}>
                       {estado.label}
                     </span>
-                    <div className="order-mini-thumb">📦</div>
+                    <div className="order-mini-thumb"><Icon name="package" /></div>
                     <p>
                       {order.items?.length || 0} producto
                       {order.items?.length === 1 ? "" : "s"} · {formatFecha(order.createdAt)}

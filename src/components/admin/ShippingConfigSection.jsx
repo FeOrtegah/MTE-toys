@@ -57,7 +57,7 @@ function ShippingConfigSection() {
         setDocId(creado._id);
       }
 
-      setMensaje("Guardado ✅");
+      setMensaje("Guardado");
     } catch (err) {
       setMensaje(
         `Error al guardar: ${err.message}`

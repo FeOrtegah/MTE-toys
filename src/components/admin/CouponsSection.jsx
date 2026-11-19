@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useEffect, useState } from "react";
 
 import {
@@ -333,7 +334,7 @@ function CouponsSection() {
                   <td>
                     {c.usosActuales}/{c.usosMaximos ?? "∞"}
                   </td>
-                  <td>{fecha(c.fechaInicio)} → {fecha(c.fechaFin)}</td>
+                  <td>{fecha(c.fechaInicio)} <Icon name="arrow-right" /> {fecha(c.fechaFin)}</td>
                   <td><span className={clase}>{texto}</span></td>
                   <td className="admin-actions">
                     <button className="btn-editar" onClick={() => verUsos(c)}>

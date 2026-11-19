@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import {
   useState,
   useEffect,
@@ -467,8 +468,8 @@ function Products() {
         }
       >
         {filtersOpen
-          ? "✕ Cerrar filtros"
-          : "☰ Filtros"}
+          ? (<><Icon name="close" /> Cerrar filtros</>)
+          : (<><Icon name="sliders" /> Filtros</>)}
       </button>
 
       {filtersOpen && (
@@ -506,7 +507,7 @@ function Products() {
                   setFiltersOpen(false)
                 }
               >
-                ✕
+                <Icon name="close" />
               </button>
 
             </div>
@@ -563,7 +564,7 @@ function Products() {
                   handleOfertaToggle
                 }
               />
-              🏷️ Solo productos en oferta
+              <Icon name="tag" /> Solo productos en oferta
             </label>
 
           </div>
@@ -620,7 +621,7 @@ function Products() {
                 setFiltersOpen(false)
               }
             >
-              🔍 Buscar
+              <Icon name="search" /> Buscar
             </button>
           </div>
 

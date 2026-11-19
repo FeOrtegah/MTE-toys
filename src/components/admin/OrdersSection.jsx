@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useState, useMemo } from "react";
 
 import {
@@ -428,7 +429,7 @@ function OrdersSection({ orders, setOrders }) {
                       >
                         {o.metodoPago ===
                         "transferencia"
-                          ? "💸 Transferencia"
+                          ? (<><Icon name="transfer" /> Transferencia</>)
                           : "Webpay"}
                       </small>
 
@@ -445,8 +446,8 @@ function OrdersSection({ orders, setOrders }) {
                             }}
                           >
                             {o.avisoWhatsappEnviado
-                              ? "✅ Avisó por WhatsApp"
-                              : "⏳ Sin avisar"}
+                              ? (<><Icon name="check-circle" /> Avisó por WhatsApp</>)
+                              : (<><Icon name="hourglass" /> Sin avisar</>)}
                           </small>
                         </>
                       )}
@@ -466,7 +467,7 @@ function OrdersSection({ orders, setOrders }) {
                     <td>
                       {esRetiroEnSede ? (
                         <span className="badge-retiro-sede">
-                          📍 Retiro en sede
+                          <Icon name="pin" /> Retiro en sede
                         </span>
                       ) : (
                         o.metodoEnvio || "—"

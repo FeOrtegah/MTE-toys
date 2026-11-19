@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import visaLogo from "../../assets/Visa-Logo.png";
 import mastercardLogo from "../../assets/mastercard-logo.png";
 import mapaZonasEnvio from "../../assets/mapa-zonas-envio.jpeg";
@@ -161,7 +162,7 @@ function OrderSummary({
 
       {metodoEnvio === "retiro_local" && (
         <p className="order-pickup-address">
-          📍 {DIRECCION_SEDE}
+          <Icon name="pin" /> {DIRECCION_SEDE}
         </p>
       )}
 

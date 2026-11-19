@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import "../../css/AddedToCartModal.css";
@@ -39,7 +40,7 @@ function AddedToCartModal() {
         }
       >
         <div className="added-check">
-          ✓
+          <Icon name="check" />
         </div>
 
         <h2>

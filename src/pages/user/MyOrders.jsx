@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
@@ -73,7 +74,7 @@ function MyOrders() {
                   <div className="order-card-items">
                     {order.items?.map((item, i) => (
                       <div className="order-card-item" key={i}>
-                        <span className="order-mini-thumb">📦</span>
+                        <span className="order-mini-thumb"><Icon name="package" /></span>
                         <span className="order-card-item-name">
                           {item.nombre} × {item.cantidad}
                         </span>

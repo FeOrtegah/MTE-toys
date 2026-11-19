@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import "../../css/Contact.css";
 
 function Contact() {
@@ -15,8 +16,8 @@ alt="WhatsApp"
 </span>
 
 </div>
-      <span>🚚 Envíos rápidos</span>
-      <span>🎁 Ofertas especiales</span>
+      <span><Icon name="truck" /> Envíos rápidos</span>
+      <span><Icon name="gift" /> Ofertas especiales</span>
     </div>
   );
 }

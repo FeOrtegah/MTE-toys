@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { Link } from "react-router-dom";
 import "../../css/Footer.css";
 import LogoMTE from "../../assets/LogoMTE.png";
@@ -34,10 +35,10 @@ function Footer() {
 
       <div className="footer-section">
         <h3>Contacto</h3>
-        <p>📞 +56 979541850</p>
-        <p>📞 +56 950550864</p>
-        <p>📧 Ventas@mtetoys.cl</p>
-        <p>📍 Santiago, Chile</p>
+        <p><Icon name="phone" /> +56 979541850</p>
+        <p><Icon name="phone" /> +56 950550864</p>
+        <p><Icon name="mail" /> Ventas@mtetoys.cl</p>
+        <p><Icon name="pin" /> Santiago, Chile</p>
       </div>
 
       <div className="footer-section">

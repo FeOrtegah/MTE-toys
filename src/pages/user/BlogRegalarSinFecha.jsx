@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { Link } from "react-router-dom";
 
 export default function BlogRegalarSinFecha() {
@@ -189,7 +190,7 @@ export default function BlogRegalarSinFecha() {
         </p>
 
         <Link to="/quienes-somos" className="qs-blog-back">
-          ← Volver a Quiénes somos
+          <Icon name="arrow-left" /> Volver a Quiénes somos
         </Link>
       </div>
     </section>

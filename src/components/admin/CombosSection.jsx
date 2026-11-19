@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useState } from "react";
 
 import {
@@ -497,7 +498,7 @@ function CombosSection({ combos, setCombos, products }) {
                 </td>
 
                 <td>
-                  {combo.destacado ? "⭐" : "—"}
+                  {combo.destacado ? <Icon name="star" filled /> : "—"}
                 </td>
 
                 <td>

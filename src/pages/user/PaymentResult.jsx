@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -6,22 +7,26 @@ import "../../css/PaymentResult.css";
 
 const CONTENIDO = {
   exito: {
-    icono: "✅",
+    icono: "check-circle",
+    color: "#28a745",
     titulo: "¡Pago realizado con éxito!",
     mensaje: "Tu pedido fue confirmado. Te enviaremos un correo con los detalles de tu compra.",
   },
   rechazado: {
-    icono: "❌",
+    icono: "x-circle",
+    color: "#d93025",
     titulo: "El pago fue rechazado",
     mensaje: "Transbank rechazó la transacción. Puedes intentarlo nuevamente o usar otro medio de pago.",
   },
   cancelado: {
-    icono: "⚠️",
+    icono: "warning",
+    color: "#e8a200",
     titulo: "Pago cancelado",
     mensaje: "Cancelaste el pago en Webpay. Tu carrito sigue guardado, puedes intentarlo de nuevo cuando quieras.",
   },
   error: {
-    icono: "⚠️",
+    icono: "warning",
+    color: "#e8a200",
     titulo: "Ocurrió un problema",
     mensaje: "No pudimos confirmar el estado de tu pago. Si el dinero fue descontado de tu cuenta, contáctanos.",
   },
@@ -44,7 +49,9 @@ function PaymentResult() {
   return (
     <main className="payment-result-page">
       <div className="payment-result-box">
-        <div className="payment-result-icon">{info.icono}</div>
+        <div className="payment-result-icon" style={{ color: info.color }}>
+          <Icon name={info.icono} size="1em" />
+        </div>
         <h1>{info.titulo}</h1>
         <p>{info.mensaje}</p>
 

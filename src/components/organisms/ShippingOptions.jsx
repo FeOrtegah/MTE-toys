@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import {
   COSTO_LOGISTICA_360,
   DIRECCION_SEDE,
@@ -27,7 +28,7 @@ function ShippingOptions({
         <h2>Opciones de envío</h2>
 
         <p className="shipping-free-msg">
-          🎉 ¡Tu compra incluye envío gratis! No
+          <Icon name="party" /> ¡Tu compra incluye envío gratis! No
           necesitas elegir un método de despacho.
         </p>
       </div>
@@ -44,7 +45,7 @@ function ShippingOptions({
 
       {envioGratisSoloLogistica && (
         <p className="shipping-free-msg">
-          🎉 ¡Tu compra supera los ${umbralTexto}! El
+          <Icon name="party" /> ¡Tu compra supera los ${umbralTexto}! El
           envío por Logística 360 es{" "}
           <strong>gratis</strong>.
         </p>
@@ -251,7 +252,7 @@ function ShippingOptions({
 
       {metodoEnvio === "retiro_local" && (
         <p className="shipping-pickup-address">
-          📍 Retira tu pedido en:{" "}
+          <Icon name="pin" /> Retira tu pedido en:{" "}
           <strong>{DIRECCION_SEDE}</strong>
           <br />
           <span className="shipping-pickup-note">
@@ -267,7 +268,7 @@ function ShippingOptions({
         "chilexpress",
       ].includes(metodoEnvio) && (
         <p className="shipping-cod-notice">
-          💵 Este envío es{" "}
+          <Icon name="banknote" /> Este envío es{" "}
           <strong>por pagar</strong>: cuando el paquete
           llegue a la sucursal de destino o a la
           dirección del destinatario, la persona que lo

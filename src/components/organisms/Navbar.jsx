@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import {
   Link,
 } from "react-router-dom";
@@ -117,7 +118,7 @@ function Navbar() {
           />
 
           <button type="button">
-            🔍
+            <Icon name="search" />
           </button>
 
           {filteredProducts.length >
@@ -175,7 +176,7 @@ function Navbar() {
               to="/admin"
               className="admin-link"
             >
-              ⚙️ Admin
+              <Icon name="gear" /> Admin
             </Link>
           )}
 
@@ -184,14 +185,14 @@ function Navbar() {
               to="/mi-cuenta"
               className="user"
             >
-              👤
+              <Icon name="user" />
             </Link>
           ) : (
             <Link
               to="/login"
               className="user"
             >
-              👤
+              <Icon name="user" />
             </Link>
           )}
 
@@ -199,7 +200,7 @@ function Navbar() {
             to="/carrito"
             className="cart"
           >
-            🛒
+            <Icon name="cart" />
 
             <span className="cart-count">
               {cart.reduce(
@@ -231,7 +232,7 @@ function Navbar() {
         </Link>
 
         <Link to="/productos?oferta=1" className="menu-oferta">
-          🏷️ Ofertas
+          <Icon name="tag" /> Ofertas
         </Link>
 
         <Link to="/marcas">

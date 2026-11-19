@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -1535,7 +1536,7 @@ function Checkout() {
           {modoDireccion === "guardada" &&
             direccionSeleccionadaId && (
               <p className="checkout-address-summary">
-                ✅ Usaremos tus datos guardados
+                <Icon name="check-circle" /> Usaremos tus datos guardados
                 para este pedido.
               </p>
             )}

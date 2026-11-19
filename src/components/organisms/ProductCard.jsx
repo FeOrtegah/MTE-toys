@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import "../../css/ProductCard.css";
 
 import {
@@ -229,8 +230,8 @@ function ProductCard({
           : maxStockReached
           ? "Stock máximo"
           : isCombo
-          ? "🛒 Agregar combo"
-          : "🛒 Agregar"}
+          ? (<><Icon name="cart" /> Agregar combo</>)
+          : (<><Icon name="cart" /> Agregar</>)}
       </button>
 
     </article>

@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext";
 import {
@@ -16,7 +17,7 @@ function Estrellas({ valor, tamaño = "normal" }) {
     >
       {[1, 2, 3, 4, 5].map((n) => (
         <span key={n}>
-          {n <= valor ? "★" : "☆"}
+          <Icon name="star" filled={n <= valor} />
         </span>
       ))}
     </span>
@@ -169,7 +170,7 @@ function ReviewSection({ productoId, tipo }) {
                     : ""
                 }
               >
-                ★
+                <Icon name="star" filled />
               </button>
             ))}
           </div>
@@ -245,7 +246,7 @@ function ReviewSection({ productoId, tipo }) {
                     }
                     aria-label="Eliminar reseña"
                   >
-                    🗑️
+                    <Icon name="trash" />
                   </button>
                 )}
               </div>

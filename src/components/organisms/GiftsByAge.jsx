@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
@@ -373,14 +374,14 @@ function GiftsByAge() {
                       empezarEdicion(rango, index)
                     }
                   >
-                    ✏️
+                    <Icon name="pencil" />
                   </button>
 
                   <button
                     type="button"
                     onClick={() => eliminar(rango)}
                   >
-                    🗑️
+                    <Icon name="trash" />
                   </button>
                 </div>
               )}

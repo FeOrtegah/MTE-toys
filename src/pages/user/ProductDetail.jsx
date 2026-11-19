@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import {
   useParams,
   useNavigate,
@@ -450,25 +451,25 @@ function ProductDetail() {
             {!hasStock
               ? "No disponible"
               : added
-              ? "✓ Agregado"
+              ? (<><Icon name="check" /> Agregado</>)
               : tipo ===
                 "combo"
-              ? "🛒 Agregar combo"
-              : "🛒 Agregar al carrito"}
+              ? (<><Icon name="cart" /> Agregar combo</>)
+              : (<><Icon name="cart" /> Agregar al carrito</>)}
           </button>
 
           <ul className="detail-benefits">
 
             <li>
-              🚚 Envío rápido a todo Chile
+              <Icon name="truck" /> Envío rápido a todo Chile
             </li>
 
             <li>
-              🔒 Compra 100% segura
+              <Icon name="lock" /> Compra 100% segura
             </li>
 
             <li>
-              ↩️ Cambios dentro de 10 días
+              <Icon name="return" /> Cambios dentro de 10 días
             </li>
 
           </ul>
@@ -485,7 +486,7 @@ function ProductDetail() {
                 </h3>
 
                 <p className="detail-dimensiones-hint">
-                  ⚠️ Estas medidas corresponden a
+                  <Icon name="warning" /> Estas medidas corresponden a
                   la caja del producto y se toman
                   como referencia para calcular el
                   envío.

@@ -1,15 +1,16 @@
+import Icon from "../atoms/Icon.jsx";
 const TABS = [
-  { key: "pedidos", label: "Pedidos", icon: "📦" },
+  { key: "pedidos", label: "Pedidos", icon: "package" },
   {
     key: "crear-producto",
     label: "Crear producto",
-    icon: "➕",
+    icon: "plus",
   },
-  { key: "productos", label: "Productos", icon: "🧸" },
-  { key: "combos", label: "Combos", icon: "🎁" },
-  { key: "envio", label: "Envío", icon: "🚚" },
-  { key: "etiquetas", label: "Etiquetas", icon: "🏷️" },
-  { key: "cupones", label: "Cupones", icon: "🎟️" },
+  { key: "productos", label: "Productos", icon: "bear" },
+  { key: "combos", label: "Combos", icon: "gift" },
+  { key: "envio", label: "Envío", icon: "truck" },
+  { key: "etiquetas", label: "Etiquetas", icon: "tag" },
+  { key: "cupones", label: "Cupones", icon: "ticket" },
 ];
 
 function AdminTabs({ activeTab, onChange }) {
@@ -27,7 +28,7 @@ function AdminTabs({ activeTab, onChange }) {
           onClick={() => onChange(tab.key)}
         >
           <span className="admin-tab-icon">
-            {tab.icon}
+            <Icon name={tab.icon} />
           </span>
           {tab.label}
         </button>

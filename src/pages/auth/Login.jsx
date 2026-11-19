@@ -1,3 +1,4 @@
+import Icon from "../../components/atoms/Icon.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "../../context/UserContext";
@@ -385,7 +386,7 @@ function Login() {
         </div>
 
         <div className="login-form-panel">
-          <p className="login-plus">✦</p>
+          <p className="login-plus"><Icon name="sparkle" filled /></p>
 
           <h1>¡Bienvenido de nuevo!</h1>
 

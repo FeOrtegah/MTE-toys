@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 // Selector "Usar dirección guardada" / "Nuevo destino de envío",
 // mismo patrón visual que el selector de método de pago.
 // Solo se muestra si el usuario está logueado y tiene al
@@ -97,14 +98,14 @@ function SavedAddressPicker({
                 onClick={() => onDelete(d)}
                 aria-label={`Eliminar ${d.nombre}`}
               >
-                🗑️
+                <Icon name="trash" />
               </button>
             </div>
           ))}
 
           {seleccionada && (
             <p className="saved-address-preview">
-              📍 {seleccionada.direccion}{" "}
+              <Icon name="pin" /> {seleccionada.direccion}{" "}
               {seleccionada.numero}
               {seleccionada.departamento
                 ? `, ${seleccionada.departamento}`
@@ -119,7 +120,7 @@ function SavedAddressPicker({
             <p className="saved-address-limit">
               Ya tienes {MAXIMO_DIRECCIONES}{" "}
               direcciones guardadas (el
-              máximo). Elimina una con 🗑️ si
+              máximo). Elimina una con <Icon name="trash" /> si
               quieres guardar una distinta.
             </p>
           )}

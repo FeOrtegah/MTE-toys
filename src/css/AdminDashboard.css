@@ -101,10 +101,24 @@ gap:10px;
 margin:12px 0 16px;
 }
 
-.admin-prod-filtros-buscar{
+.admin-prod-filtros-buscar-caja{
+position:relative;
 flex:1 1 260px;
 min-width:200px;
-padding:10px 12px;
+display:flex;
+align-items:center;
+}
+
+.admin-prod-filtros-buscar-caja .icon{
+position:absolute;
+left:12px;
+color:#888;
+pointer-events:none;
+}
+
+.admin-prod-filtros-buscar{
+width:100%;
+padding:10px 12px 10px 38px;
 border:1px solid #ccc;
 border-radius:8px;
 font-size:14px;

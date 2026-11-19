@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useState } from "react";
 import { createProduct } from "../../services/productService";
 import { uploadImages } from "../../services/uploadService";
@@ -265,7 +266,7 @@ function ProductCreateForm({ onCreated }) {
         </label>
 
         <p className="admin-field-hint">
-          ⚠️ Estas medidas corresponden a la caja
+          <Icon name="warning" /> Estas medidas corresponden a la caja
           del producto y se toman como referencia
           para calcular el envío.
         </p>
@@ -338,7 +339,7 @@ function ProductCreateForm({ onCreated }) {
         </label>
 
         <p className="admin-field-hint">
-          ⚠️ Ej: 0 a 12 = "0-12 meses", 12 a 24 =
+          <Icon name="warning" /> Ej: 0 a 12 = "0-12 meses", 12 a 24 =
           "1-2 años", 144 a 1188 = "12-99 años". Se
           usa para el filtro "Regalos por edad" del
           inicio.

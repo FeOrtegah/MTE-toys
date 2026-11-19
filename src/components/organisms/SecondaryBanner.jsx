@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
@@ -194,14 +195,14 @@ function SecondaryBanner() {
             className="banner-btn left"
             onClick={previous}
           >
-            ❮
+            <Icon name="chevron-left" />
           </button>
 
           <button
             className="banner-btn right"
             onClick={next}
           >
-            ❯
+            <Icon name="chevron-right" />
           </button>
 
           <div className="dots">

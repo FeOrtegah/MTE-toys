@@ -1,3 +1,4 @@
+import Icon from "../atoms/Icon.jsx";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { uploadImages } from "../../services/uploadService";
@@ -147,7 +148,7 @@ function EditableCard({
         onClick={abrirEdicion}
         aria-label="Editar"
       >
-        ✏️
+        <Icon name="pencil" />
       </button>
 
       {editando &&
