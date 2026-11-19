@@ -1,0 +1,97 @@
+/* Botón de chat siempre visible, abajo a la derecha */
+.wsp-flotante{
+position:fixed;
+right:20px;
+bottom:20px;
+z-index:1000;
+display:flex;
+align-items:center;
+gap:12px;
+padding:8px 22px 8px 8px;
+background:#25d366;
+color:white;
+border-radius:999px;
+text-decoration:none;
+box-shadow:0 8px 22px rgba(0,0,0,.28);
+transition:transform .25s ease, box-shadow .25s ease;
+animation:wspEntrada .5s ease-out .8s both;
+}
+
+.wsp-flotante:hover{
+transform:translateY(-3px) scale(1.03);
+box-shadow:0 12px 28px rgba(0,0,0,.32);
+}
+
+.wsp-flotante-logo{
+position:relative;
+width:48px;
+height:48px;
+border-radius:50%;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-shrink:0;
+}
+
+.wsp-flotante-logo img{
+width:30px;
+height:30px;
+object-fit:contain;
+}
+
+/* Anillo que late para llamar la atención sin molestar */
+.wsp-flotante-logo::after{
+content:"";
+position:absolute;
+inset:0;
+border-radius:50%;
+border:2px solid white;
+animation:wspPulso 2.4s ease-out infinite;
+}
+
+.wsp-flotante-texto{
+display:flex;
+flex-direction:column;
+line-height:1.2;
+text-align:left;
+}
+
+.wsp-flotante-texto strong{
+font-size:15px;
+}
+
+.wsp-flotante-texto small{
+font-size:12px;
+opacity:.92;
+}
+
+@keyframes wspPulso{
+0%{ transform:scale(1); opacity:.9; }
+100%{ transform:scale(1.55); opacity:0; }
+}
+
+@keyframes wspEntrada{
+from{ opacity:0; transform:translateY(20px); }
+to{ opacity:1; transform:translateY(0); }
+}
+
+/* En celular queda solo el círculo, para no tapar contenido */
+@media(max-width:640px){
+.wsp-flotante{
+right:14px;
+bottom:14px;
+padding:6px;
+}
+
+.wsp-flotante-texto{
+display:none;
+}
+}
+
+@media(prefers-reduced-motion:reduce){
+.wsp-flotante,
+.wsp-flotante-logo::after{
+animation:none;
+}
+}

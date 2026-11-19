@@ -118,7 +118,7 @@ function Navbar() {
           />
 
           <button type="button">
-            <Icon name="search" />
+            <Icon name="search" mono />
           </button>
 
           {filteredProducts.length >
@@ -176,7 +176,7 @@ function Navbar() {
               to="/admin"
               className="admin-link"
             >
-              <Icon name="gear" /> Admin
+              <Icon name="gear" mono /> Admin
             </Link>
           )}
 
@@ -185,14 +185,14 @@ function Navbar() {
               to="/mi-cuenta"
               className="user"
             >
-              <Icon name="user" />
+              <Icon name="user" mono />
             </Link>
           ) : (
             <Link
               to="/login"
               className="user"
             >
-              <Icon name="user" />
+              <Icon name="user" mono />
             </Link>
           )}
 
@@ -200,7 +200,7 @@ function Navbar() {
             to="/carrito"
             className="cart"
           >
-            <Icon name="cart" />
+            <Icon name="cart" mono />
 
             <span className="cart-count">
               {cart.reduce(
@@ -232,7 +232,7 @@ function Navbar() {
         </Link>
 
         <Link to="/productos?oferta=1" className="menu-oferta">
-          <Icon name="tag" /> Ofertas
+          <Icon name="tag" mono /> Ofertas
         </Link>
 
         <Link to="/marcas">

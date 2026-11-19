@@ -170,7 +170,7 @@ function BankTransfer() {
             ).catch(() => {});
           }}
         >
-          <Icon name="smartphone" /> Avisar por WhatsApp
+          <Icon name="smartphone" mono /> Avisar por WhatsApp
         </a>
 
         {avisoEnviado && (

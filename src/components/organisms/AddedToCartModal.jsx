@@ -40,7 +40,7 @@ function AddedToCartModal() {
         }
       >
         <div className="added-check">
-          <Icon name="check" />
+          <Icon name="check" mono />
         </div>
 
         <h2>

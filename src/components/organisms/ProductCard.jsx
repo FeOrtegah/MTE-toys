@@ -230,8 +230,8 @@ function ProductCard({
           : maxStockReached
           ? "Stock máximo"
           : isCombo
-          ? (<><Icon name="cart" /> Agregar combo</>)
-          : (<><Icon name="cart" /> Agregar</>)}
+          ? (<><Icon name="cart" mono /> Agregar combo</>)
+          : (<><Icon name="cart" mono /> Agregar</>)}
       </button>
 
     </article>

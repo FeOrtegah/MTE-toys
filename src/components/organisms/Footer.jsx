@@ -35,10 +35,10 @@ function Footer() {
 
       <div className="footer-section">
         <h3>Contacto</h3>
-        <p><Icon name="phone" /> +56 979541850</p>
-        <p><Icon name="phone" /> +56 950550864</p>
-        <p><Icon name="mail" /> Ventas@mtetoys.cl</p>
-        <p><Icon name="pin" /> Santiago, Chile</p>
+        <p><Icon name="phone" mono /> +56 979541850</p>
+        <p><Icon name="phone" mono /> +56 950550864</p>
+        <p><Icon name="mail" mono /> Ventas@mtetoys.cl</p>
+        <p><Icon name="pin" mono /> Santiago, Chile</p>
       </div>
 
       <div className="footer-section">

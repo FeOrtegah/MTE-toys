@@ -28,7 +28,7 @@ function AdminTabs({ activeTab, onChange }) {
           onClick={() => onChange(tab.key)}
         >
           <span className="admin-tab-icon">
-            <Icon name={tab.icon} />
+            <Icon name={tab.icon} mono={activeTab === tab.key} />
           </span>
           {tab.label}
         </button>

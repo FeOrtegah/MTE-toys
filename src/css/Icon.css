@@ -1,6 +1,19 @@
-/* Iconos propios (componente Icon): heredan color y tamaño del texto */
+/* Iconos propios (componente Icon): heredan tamaño del texto; los colores
+   salen de las variables que define cada icono (o del color del texto en
+   modo mono). */
 .icon{
 display:inline-block;
 vertical-align:-0.2em;
 flex-shrink:0;
+stroke:var(--s,currentColor);
 }
+
+.icon .f{ fill:var(--f,none); }
+.icon .b{ fill:var(--b,none); }
+.icon .a{ fill:var(--a,currentColor); stroke:none; }
+.icon .c{ fill:var(--c,none); }
+.icon .w{ fill:var(--w,#fff); }
+.icon .n{ stroke:none; }
+.icon .k1{ stroke:var(--k1,currentColor); }
+.icon .k2{ stroke:var(--k2,currentColor); }
+.icon .k3{ stroke:var(--k3,currentColor); }

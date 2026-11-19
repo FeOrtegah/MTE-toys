@@ -451,11 +451,11 @@ function ProductDetail() {
             {!hasStock
               ? "No disponible"
               : added
-              ? (<><Icon name="check" /> Agregado</>)
+              ? (<><Icon name="check" mono /> Agregado</>)
               : tipo ===
                 "combo"
-              ? (<><Icon name="cart" /> Agregar combo</>)
-              : (<><Icon name="cart" /> Agregar al carrito</>)}
+              ? (<><Icon name="cart" mono /> Agregar combo</>)
+              : (<><Icon name="cart" mono /> Agregar al carrito</>)}
           </button>
 
           <ul className="detail-benefits">

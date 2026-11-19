@@ -468,8 +468,8 @@ function Products() {
         }
       >
         {filtersOpen
-          ? (<><Icon name="close" /> Cerrar filtros</>)
-          : (<><Icon name="sliders" /> Filtros</>)}
+          ? (<><Icon name="close" mono /> Cerrar filtros</>)
+          : (<><Icon name="sliders" mono /> Filtros</>)}
       </button>
 
       {filtersOpen && (
@@ -507,7 +507,7 @@ function Products() {
                   setFiltersOpen(false)
                 }
               >
-                <Icon name="close" />
+                <Icon name="close" mono />
               </button>
 
             </div>
@@ -621,7 +621,7 @@ function Products() {
                 setFiltersOpen(false)
               }
             >
-              <Icon name="search" /> Buscar
+              <Icon name="search" mono /> Buscar
             </button>
           </div>
 

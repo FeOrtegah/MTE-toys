@@ -50,7 +50,7 @@ function PaymentResult() {
     <main className="payment-result-page">
       <div className="payment-result-box">
         <div className="payment-result-icon" style={{ color: info.color }}>
-          <Icon name={info.icono} size="1em" />
+          <Icon name={info.icono} size="1em" mono />
         </div>
         <h1>{info.titulo}</h1>
         <p>{info.mensaje}</p>

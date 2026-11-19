@@ -35,6 +35,7 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import Account from "./pages/user/Account";
 import AccountHome from "./pages/user/AccountHome";
 import MyOrders from "./pages/user/MyOrders";
+import WhatsAppFlotante from "./components/organisms/WhatsAppFlotante";
 
 function App() {
   const [showNavbar, setShowNavbar] = useState(true);
@@ -229,6 +230,8 @@ function App() {
       <Footer />
 
       <AddedToCartModal />
+
+      <WhatsAppFlotante />
 
     </div>
   );

@@ -195,7 +195,7 @@ function Cart() {
                         }
                         title="Eliminar"
                       >
-                        <Icon name="close" />
+                        <Icon name="close" mono />
                       </button>
 
                     </div>
