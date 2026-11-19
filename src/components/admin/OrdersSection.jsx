@@ -8,6 +8,7 @@ import {
   markAsShipped,
   hardDeleteOrder,
   confirmPayment,
+  resendConfirmationEmail,
 } from "../../services/orderService";
 
 const ESTADOS_PEDIDO = {
@@ -176,6 +177,30 @@ function OrdersSection({ orders, setOrders }) {
       );
     } catch (err) {
       alert(err.message);
+    }
+  }
+
+  async function handleResendEmail(id) {
+    if (
+      !confirm(
+        "¿Reenviar el correo de confirmación al cliente?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const respuesta =
+        await resendConfirmationEmail(id);
+
+      alert(
+        respuesta.message || "Correo reenviado"
+      );
+    } catch (err) {
+      alert(
+        err.message ||
+          "No se pudo reenviar el correo"
+      );
     }
   }
 
@@ -591,6 +616,21 @@ function OrdersSection({ orders, setOrders }) {
                           }
                         >
                           Marcar como enviado
+                        </button>
+                      )}
+
+                      {(o.estado === "pagado" ||
+                        o.estado === "preparando" ||
+                        o.estado === "enviado") && (
+                        <button
+                          className="btn-guardar"
+                          onClick={() =>
+                            handleResendEmail(
+                              o._id
+                            )
+                          }
+                        >
+                          Reenviar correo
                         </button>
                       )}
 

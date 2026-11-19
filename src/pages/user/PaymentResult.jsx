@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import CreateAccountPrompt from "../../components/organisms/CreateAccountPrompt";
+import RetiroEnSede from "../../components/organisms/RetiroEnSede";
 import "../../css/PaymentResult.css";
 
 const CONTENIDO = {
@@ -57,6 +58,10 @@ function PaymentResult() {
 
         {pedido && estado === "exito" && (
           <p className="payment-result-order">N° de pedido: {pedido}</p>
+        )}
+
+        {pedido && estado === "exito" && (
+          <RetiroEnSede pedidoId={pedido} />
         )}
 
         {estado === "exito" && <CreateAccountPrompt />}

@@ -34,6 +34,18 @@ export const hardDeleteOrder = (id) =>
     auth: true,
   });
 
+// Pública: dirección de retiro de un pedido "Retiro en sede"
+// (para mostrarla aunque el correo no llegue)
+export const getInfoRetiro = (id) =>
+  request(`/orders/${id}/retiro`);
+
+// Admin: vuelve a enviar el correo de confirmación de un pedido pagado
+export const resendConfirmationEmail = (id) =>
+  request(`/orders/${id}/reenviar-correo`, {
+    method: "POST",
+    auth: true,
+  });
+
 // Pública: la llama el cliente al hacer clic en el
 // botón de WhatsApp en la página de transferencia
 export const markWhatsappNotified = (id) =>

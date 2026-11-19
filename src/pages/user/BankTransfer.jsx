@@ -2,6 +2,7 @@ import Icon from "../../components/atoms/Icon.jsx";
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { markWhatsappNotified } from "../../services/orderService";
+import RetiroEnSede from "../../components/organisms/RetiroEnSede";
 import CreateAccountPrompt from "../../components/organisms/CreateAccountPrompt";
 import "../../css/Policy.css";
 import "../../css/BankTransfer.css";
@@ -192,6 +193,8 @@ function BankTransfer() {
           despacho.
         </p>
       </section>
+
+      <RetiroEnSede pedidoId={pedido._id} />
 
       <CreateAccountPrompt />
 
