@@ -359,19 +359,37 @@ header.with-contact.navbar-hide {
     font-size: 12px;
   }
 
+  /* Siempre en una sola fila. Si caben todos quedan centrados; si no,
+     se desliza con el dedo y se puede llegar a ambos extremos.
+     (justify-content:center cortaba el lado izquierdo y no dejaba
+     desplazar hasta él.) */
   .menu {
-  gap: 8px;
-  padding: 0 10px;
+  gap: 4px;
+  padding: 0 8px;
+  justify-content: flex-start;
   overflow-x: auto;
-  justify-content: center;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  scrollbar-width: none;
   }
 
   .menu::-webkit-scrollbar {
     display: none;
   }
 
+  .menu > :first-child {
+    margin-left: auto;
+  }
+
+  .menu > :last-child {
+    margin-right: auto;
+  }
+
   .menu a {
+    flex: 0 0 auto;
     white-space: nowrap;
     padding: 8px 12px;
     font-size: 14px;
@@ -379,6 +397,11 @@ header.with-contact.navbar-hide {
 }
 
 @media (max-width: 600px) {
+  .menu a {
+    padding: 8px 9px;
+    font-size: 13px;
+  }
+
   .contact {
     gap: 15px;
     font-size: 11px;
@@ -424,6 +447,16 @@ header.with-contact.navbar-hide {
 }
 
 @media (max-width: 400px) {
+  .menu {
+    gap: 2px;
+    padding: 0 6px;
+  }
+
+  .menu a {
+    padding: 8px 7px;
+    font-size: 13px;
+  }
+
   .navbar {
     padding: 0 12px;
     gap: 6px;
@@ -445,5 +478,13 @@ header.with-contact.navbar-hide {
   .actions {
     gap: 8px;
     font-size: 18px;
+  }
+}
+
+/* Celulares muy angostos (320 px): un poco más compacto para que quepan los 5 */
+@media (max-width: 340px) {
+  .menu a {
+    padding: 8px 5px;
+    font-size: 12px;
   }
 }
