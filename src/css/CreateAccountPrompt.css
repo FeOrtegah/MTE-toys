@@ -1,0 +1,36 @@
+.create-account-prompt{
+margin:24px auto 8px;
+padding:20px 22px;
+max-width:520px;
+background:#f4fbf6;
+border:1px solid #cdebd6;
+border-radius:14px;
+text-align:center;
+}
+
+.create-account-prompt h2{
+margin:0 0 8px;
+font-size:20px;
+}
+
+.create-account-prompt p{
+margin:0 0 14px;
+font-size:14.5px;
+line-height:1.5;
+color:#444;
+}
+
+.create-account-btn{
+display:inline-block;
+padding:12px 22px;
+border-radius:10px;
+background:#43b96d;
+color:#fff;
+font-weight:700;
+text-decoration:none;
+transition:.2s;
+}
+
+.create-account-btn:hover{
+background:#37a15d;
+}

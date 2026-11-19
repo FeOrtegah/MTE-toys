@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { markWhatsappNotified } from "../../services/orderService";
+import CreateAccountPrompt from "../../components/organisms/CreateAccountPrompt";
 import "../../css/Policy.css";
 import "../../css/BankTransfer.css";
 
@@ -190,6 +191,8 @@ function BankTransfer() {
           despacho.
         </p>
       </section>
+
+      <CreateAccountPrompt />
 
       <button
         type="button"

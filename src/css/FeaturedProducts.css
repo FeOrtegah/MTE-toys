@@ -9,34 +9,46 @@ font-size:32px;
 margin-bottom:40px;
 }
 
-.featured-wrapper{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:15px;
-width:100%;
+.featured-carousel{
+overflow:hidden;
+padding:10px 0 20px;
 max-width:1280px;
 margin:0 auto;
+-webkit-mask-image:linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+mask-image:linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
 }
 
-.featured-products{
+.featured-track{
 display:flex;
+align-items:stretch;
+gap:24px;
+width:max-content;
+cursor:grab;
+touch-action:pan-y;
+user-select:none;
+}
+
+.featured-track:active{
+cursor:grabbing;
+}
+
+/* Pocos productos: caben todos, quedan centrados y sin moverse */
+.featured-carousel-quieto{
+-webkit-mask-image:none;
+mask-image:none;
+}
+
+.featured-carousel-quieto .featured-track{
+width:auto;
 justify-content:center;
-gap:25px;
-overflow-x:auto;
-scroll-behavior:smooth;
-scroll-snap-type:x mandatory;
--webkit-overflow-scrolling:touch;
-flex:1 1 0%;
-min-width:0;
+cursor:default;
 }
 
 .featured-item{
 width:250px;
 min-width:250px;
 max-width:250px;
-flex-shrink:0;
-scroll-snap-align:start;
+flex:0 0 auto;
 }
 
 .arrow{
@@ -82,31 +94,13 @@ margin-bottom:22px;
 padding:0 15px;
 }
 
-/* En mobile el swipe con el dedo reemplaza a las flechas:
-   ocultarlas evita que compriman el ancho de forma
-   despareja y rompan el centrado de las tarjetas. */
-.arrow{
-display:none;
-}
-
-.featured-wrapper{
-gap:0;
-}
-
 .featured-item{
 width:200px;
 min-width:200px;
 max-width:200px;
-scroll-snap-align:center;
 }
 
-.featured-products{
-width:100%;
+.featured-track{
 gap:15px;
-justify-content:flex-start;
-/* Relleno lateral = mitad del ancho disponible menos
-   mitad de la tarjeta, así la primera y última tarjeta
-   también pueden llegar a quedar centradas. */
-padding:0 calc(50% - 100px);
 }
 }

@@ -4,6 +4,7 @@ import { useCart } from "../../context/CartContext";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/api";
 import { validarCupon } from "../../services/cuponService";
+import { guardarDatosInvitado } from "../../services/guestCheckoutData";
 import {
   initWebpayTransaction,
   redirectToWebpay,
@@ -278,6 +279,10 @@ function CheckoutPago() {
       };
 
       const pedido = await createOrder(orderData);
+
+      // Invitado: se recuerdan sus datos para ofrecerle crear la cuenta
+      // al terminar la compra.
+      if (!user) guardarDatosInvitado(datosCheckout);
 
       if (
         user &&

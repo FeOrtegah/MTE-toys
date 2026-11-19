@@ -1,229 +1,110 @@
-import {
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+import { useState, useEffect, useRef } from "react";
 
-import {
-  getCatalogItems,
-} from "../../services/api";
+import { getCatalogItems } from "../../services/api";
+import useCarruselInfinito from "../../hooks/useCarruselInfinito";
 
 import ProductCard from "./ProductCard";
 
 import "../../css/FeaturedProducts.css";
 
 function FeaturedProducts() {
-  const slider =
-    useRef();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [
-    products,
-    setProducts,
-  ] = useState([]);
+  // Solo se mueve si los productos no caben en pantalla
+  const [desborda, setDesborda] = useState(false);
+  const carouselRef = useRef(null);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-  const [
-    canScrollLeft,
-    setCanScrollLeft,
-  ] = useState(false);
-
-  const [
-    canScrollRight,
-    setCanScrollRight,
-  ] = useState(false);
+  const { trackRef, carouselProps, trackProps } = useCarruselInfinito({
+    activo: desborda,
+    dependencias: [products],
+  });
 
   useEffect(() => {
     getCatalogItems()
       .then((data) => {
         const destacados = data
-          .filter(
-            (p) =>
-              p.destacado ===
-                true &&
-              p.activo !== false
-          )
+          .filter((p) => p.destacado === true && p.activo !== false)
           .sort((a, b) =>
-            (a.name || "").localeCompare(
-              b.name || "",
-              "es"
-            )
+            (a.name || "").localeCompare(b.name || "", "es")
           );
 
         setProducts(destacados);
       })
       .catch((err) =>
-        console.error(
-          "Error al cargar destacados:",
-          err
-        )
+        console.error("Error al cargar destacados:", err)
       )
-      .finally(() =>
-        setLoading(false)
-      );
+      .finally(() => setLoading(false));
   }, []);
 
-  function updateScrollState() {
-    const container =
-      slider.current;
-
-    if (!container) return;
-
-    const maxScroll =
-      container.scrollWidth -
-      container.clientWidth;
-
-    setCanScrollLeft(
-      container.scrollLeft >
-        2
-    );
-
-    setCanScrollRight(
-      container.scrollLeft <
-        maxScroll - 2
-    );
-  }
-
+  // ¿Caben todos los productos en el ancho disponible?
   useEffect(() => {
-    const container =
-      slider.current;
+    function medir() {
+      const carousel = carouselRef.current;
+      const track = trackRef.current;
+      if (!carousel || !track || products.length === 0) return;
 
-    if (!container) return;
+      const item = track.querySelector(".featured-item");
+      if (!item) return;
 
-    updateScrollState();
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      const anchoSet = products.length * (item.offsetWidth + gap) - gap;
 
-    container.addEventListener(
-      "scroll",
-      updateScrollState
-    );
+      setDesborda(anchoSet > carousel.clientWidth);
+    }
 
-    window.addEventListener(
-      "resize",
-      updateScrollState
-    );
+    medir();
+    window.addEventListener("resize", medir);
 
-    return () => {
-      container.removeEventListener(
-        "scroll",
-        updateScrollState
-      );
-
-      window.removeEventListener(
-        "resize",
-        updateScrollState
-      );
-    };
-  }, [products]);
-
-  function move(direction) {
-    const container =
-      slider.current;
-
-    if (!container) return;
-
-    const firstItem =
-      container.querySelector(
-        ".featured-item"
-      );
-
-    if (!firstItem) return;
-
-    const gap =
-      parseFloat(
-        getComputedStyle(
-          container
-        ).columnGap ||
-          getComputedStyle(
-            container
-          ).gap ||
-          0
-      );
-
-    const step =
-      firstItem.getBoundingClientRect()
-        .width + gap;
-
-    container.scrollBy({
-      left:
-        direction * step,
-      behavior:
-        "smooth",
-    });
-  }
+    return () => window.removeEventListener("resize", medir);
+  }, [products, trackRef]);
 
   if (loading) {
-    return (
-      <p>
-        Cargando productos...
-      </p>
-    );
+    return <p>Cargando productos...</p>;
   }
 
-  if (
-    products.length ===
-    0
-  ) {
+  if (products.length === 0) {
     return null;
   }
 
+  const renderItem = (product, key) => (
+    <div className="featured-item" key={key}>
+      <ProductCard product={product} />
+    </div>
+  );
+
   return (
-    <section className="featured">
+    <section className="featured" id="productos-destacados">
+      <h2>Productos destacados</h2>
 
-      <h2>
-        Productos destacados
-      </h2>
-
-      <div className="featured-wrapper">
-
-        <button
-          className="arrow"
-          onClick={() =>
-            move(-1)
-          }
-          disabled={
-            !canScrollLeft
-          }
-        >
-          ❮
-        </button>
-
+      {/* Mismo comportamiento que "Conoce nuestras marcas": cinta
+          continua que se desplaza sola, se pausa con el mouse encima
+          y se arrastra con el mouse o el dedo. La lista se duplica
+          para que el giro no tenga saltos. */}
+      <div
+        className={
+          desborda
+            ? "featured-carousel"
+            : "featured-carousel featured-carousel-quieto"
+        }
+        ref={carouselRef}
+        {...carouselProps}
+      >
         <div
-          className="featured-products"
-          ref={slider}
+          className="featured-track"
+          ref={trackRef}
+          {...trackProps}
         >
-          {products.map(
-            (product) => (
-              <div
-                className="featured-item"
-                key={`${product.type}-${product.id}`}
-              >
-                <ProductCard
-                  product={
-                    product
-                  }
-                />
-              </div>
-            )
+          {products.map((p) =>
+            renderItem(p, `${p.type}-${p.id}`)
           )}
+
+          {desborda &&
+            products.map((p) =>
+              renderItem(p, `dup-${p.type}-${p.id}`)
+            )}
         </div>
-
-        <button
-          className="arrow"
-          onClick={() =>
-            move(1)
-          }
-          disabled={
-            !canScrollRight
-          }
-        >
-          ❯
-        </button>
-
       </div>
-
     </section>
   );
 }

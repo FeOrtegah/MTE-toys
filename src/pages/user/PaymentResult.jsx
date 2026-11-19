@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import CreateAccountPrompt from "../../components/organisms/CreateAccountPrompt";
 import "../../css/PaymentResult.css";
 
 const CONTENIDO = {
@@ -50,6 +51,8 @@ function PaymentResult() {
         {pedido && estado === "exito" && (
           <p className="payment-result-order">N° de pedido: {pedido}</p>
         )}
+
+        {estado === "exito" && <CreateAccountPrompt />}
 
         <div className="payment-result-actions">
           {estado === "exito" ? (

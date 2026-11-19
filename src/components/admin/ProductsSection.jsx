@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import {
   updateProduct,
@@ -13,6 +13,11 @@ import { useEtiquetas } from "../../hooks/useEtiquetaVigente";
 function ProductsSection({ products, setProducts }) {
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState({});
+
+  // Buscador y filtros de la tabla
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
 
   const [subiendoImagenes, setSubiendoImagenes] =
     useState(false);
@@ -269,9 +274,105 @@ function ProductsSection({ products, setProducts }) {
     ? products.find((pr) => pr.id === editingId)
     : null;
 
+  // Las marcas se guardan en el campo "categoría" del producto
+  const marcasDisponibles = useMemo(
+    () =>
+      [
+        ...new Set(
+          products.map((p) => p.category).filter(Boolean)
+        ),
+      ].sort((a, b) => a.localeCompare(b, "es")),
+    [products]
+  );
+
+  const productosFiltrados = useMemo(() => {
+    const q = busqueda
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    return products.filter((p) => {
+      if (q) {
+        const nombre = (p.name || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+        if (!nombre.includes(q)) return false;
+      }
+
+      if (filtroMarca && p.category !== filtroMarca) {
+        return false;
+      }
+
+      if (filtroEstado === "activos" && !p.activo) return false;
+      if (filtroEstado === "inactivos" && p.activo) return false;
+      if (filtroEstado === "sin-stock" && p.stock !== 0) return false;
+      if (filtroEstado === "destacados" && !p.destacado) return false;
+      if (filtroEstado === "oferta" && !p.enOferta) return false;
+
+      return true;
+    });
+  }, [products, busqueda, filtroMarca, filtroEstado]);
+
+  const hayFiltros = busqueda || filtroMarca || filtroEstado;
+
   return (
     <section className="admin-section">
       <h2>Productos</h2>
+
+      <div className="admin-prod-filtros">
+        <input
+          type="search"
+          className="admin-prod-filtros-buscar"
+          placeholder="🔎 Buscar producto por nombre..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+
+        <select
+          value={filtroMarca}
+          onChange={(e) => setFiltroMarca(e.target.value)}
+        >
+          <option value="">Todas las marcas</option>
+          {marcasDisponibles.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={filtroEstado}
+          onChange={(e) => setFiltroEstado(e.target.value)}
+        >
+          <option value="">Todos los estados</option>
+          <option value="activos">Activos</option>
+          <option value="inactivos">Inactivos</option>
+          <option value="sin-stock">Sin stock</option>
+          <option value="destacados">Destacados</option>
+          <option value="oferta">En oferta</option>
+        </select>
+
+        {hayFiltros && (
+          <button
+            type="button"
+            className="admin-prod-filtros-limpiar"
+            onClick={() => {
+              setBusqueda("");
+              setFiltroMarca("");
+              setFiltroEstado("");
+            }}
+          >
+            Limpiar
+          </button>
+        )}
+
+        <span className="admin-prod-filtros-contador">
+          {productosFiltrados.length} de {products.length}
+        </span>
+      </div>
 
       <div className="admin-table-wrapper">
         <table className="admin-table">
@@ -293,7 +394,7 @@ function ProductsSection({ products, setProducts }) {
           </thead>
 
           <tbody>
-            {products.map((p) => (
+            {productosFiltrados.map((p) => (
               <tr
                 key={p.id}
                 className={[
@@ -306,11 +407,19 @@ function ProductsSection({ products, setProducts }) {
                     className="admin-thumb"
                     src={p.image}
                     alt={p.name}
+                    loading="lazy"
                   />
                 </td>
 
-                <td>{p.name}</td>
-                <td>{p.description || "—"}</td>
+                <td className="admin-col-nombre">{p.name}</td>
+                <td
+                  className="admin-col-descripcion"
+                  title={p.description || ""}
+                >
+                  <span className="admin-descripcion-corta">
+                    {p.description || "—"}
+                  </span>
+                </td>
                 <td>{p.category}</td>
 
                 <td>
@@ -381,6 +490,14 @@ function ProductsSection({ products, setProducts }) {
                 </td>
               </tr>
             ))}
+
+            {productosFiltrados.length === 0 && (
+              <tr>
+                <td colSpan={12}>
+                  No hay productos que coincidan con la búsqueda.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

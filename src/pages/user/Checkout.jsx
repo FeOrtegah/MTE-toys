@@ -84,7 +84,7 @@ function Checkout() {
     },
   });
 
-  const [mismosDatos, setMismosDatos] = useState(true);
+  const [recibeOtraPersona, setRecibeOtraPersona] = useState(false);
 
   // ===================================================
   // DIRECCIONES GUARDADAS
@@ -150,7 +150,7 @@ function Checkout() {
       direccion._id
     );
 
-    setMismosDatos(false);
+    setRecibeOtraPersona(true);
 
     setForm((prev) => ({
       ...prev,
@@ -229,27 +229,24 @@ function Checkout() {
     }
   }
 
-  // Los datos de envío "reales" para este pedido: si
-  // "mismosDatos" está marcado, son una copia de la
-  // facturación; si no, son los campos de envío propios.
+  // Datos de entrega "reales" del pedido: la dirección es siempre
+  // la misma; quien recibe es el comprador salvo que se marque
+  // "Recibe otra persona".
   function obtenerDatosEnvioActuales() {
-    if (mismosDatos) {
-      return {
-        nombreReceptor:
-          `${form.nombre} ${form.apellidos}`.trim(),
-        telefono: form.telefono,
-        direccion: form.facturacion.direccion,
-        numero: form.facturacion.numero,
-        departamento:
-          form.facturacion.departamento,
-        region: form.facturacion.region,
-        comuna: form.facturacion.comuna,
-        indicaciones:
-          form.envio.indicaciones,
-      };
-    }
-
-    return form.envio;
+    return {
+      nombreReceptor: recibeOtraPersona
+        ? form.envio.nombreReceptor
+        : `${form.nombre} ${form.apellidos}`.trim(),
+      telefono: recibeOtraPersona
+        ? form.envio.telefono
+        : form.telefono,
+      direccion: form.facturacion.direccion,
+      numero: form.facturacion.numero,
+      departamento: form.facturacion.departamento,
+      region: form.facturacion.region,
+      comuna: form.facturacion.comuna,
+      indicaciones: form.envio.indicaciones,
+    };
   }
 
   // ===================================================
@@ -563,24 +560,7 @@ function Checkout() {
         "Ingresa un celular chileno válido";
     }
 
-    // FACTURACIÓN
-
-    const f = form.facturacion;
-
-    const errorNombreFacturacion = validarNombre(
-      f.nombre,
-      "El nombre de facturación"
-    );
-
-    if (errorNombreFacturacion) {
-      nuevosErrores["facturacion.nombre"] =
-        errorNombreFacturacion;
-    }
-
-    if (!validarRut(f.rut)) {
-      nuevosErrores["facturacion.rut"] =
-        "El RUT de facturación no es válido";
-    }
+    // DIRECCIÓN (el nombre y el RUT son los del comprador, ya validados arriba)
 
     const errorDireccionFacturacion = validarDireccion(
       f.direccion
@@ -627,76 +607,26 @@ function Checkout() {
         errorComunaFacturacion;
     }
 
-    // ENVÍO
+    // ENTREGA: la dirección es la misma de arriba (se pide una sola vez);
+    // solo se piden nombre y celular si recibe otra persona.
 
-    const e = mismosDatos
-      ? {
-          nombreReceptor:
-            `${form.nombre} ${form.apellidos}`.trim(),
-          telefono: form.telefono,
-          direccion: f.direccion,
-          numero: f.numero,
-          departamento: f.departamento,
-          region: f.region,
-          comuna: f.comuna,
-          indicaciones: form.envio.indicaciones,
-        }
-      : form.envio;
+    const e = obtenerDatosEnvioActuales();
 
-    const errorNombreReceptor = validarNombre(
-      e.nombreReceptor,
-      "El nombre del receptor"
-    );
+    if (recibeOtraPersona) {
+      const errorNombreReceptor = validarNombre(
+        e.nombreReceptor,
+        "El nombre de quien recibe"
+      );
 
-    if (errorNombreReceptor) {
-      nuevosErrores["envio.nombreReceptor"] =
-        errorNombreReceptor;
-    }
+      if (errorNombreReceptor) {
+        nuevosErrores["envio.nombreReceptor"] =
+          errorNombreReceptor;
+      }
 
-    if (!validarTelefono(e.telefono)) {
-      nuevosErrores["envio.telefono"] =
-        "Ingresa un celular chileno válido";
-    }
-
-    const errorDireccionEnvio = validarDireccion(
-      e.direccion
-    );
-
-    if (errorDireccionEnvio) {
-      nuevosErrores["envio.direccion"] =
-        errorDireccionEnvio;
-    }
-
-    const errorNumeroEnvio = validarNumero(e.numero);
-
-    if (errorNumeroEnvio) {
-      nuevosErrores["envio.numero"] =
-        errorNumeroEnvio;
-    }
-
-    const errorDepartamentoEnvio =
-      validarDepartamento(e.departamento);
-
-    if (errorDepartamentoEnvio) {
-      nuevosErrores["envio.departamento"] =
-        errorDepartamentoEnvio;
-    }
-
-    const errorRegionEnvio = validarRegion(e.region);
-
-    if (errorRegionEnvio) {
-      nuevosErrores["envio.region"] =
-        errorRegionEnvio;
-    }
-
-    const errorComunaEnvio = validarComuna(
-      e.comuna,
-      e.region
-    );
-
-    if (errorComunaEnvio) {
-      nuevosErrores["envio.comuna"] =
-        errorComunaEnvio;
+      if (!validarTelefono(e.telefono)) {
+        nuevosErrores["envio.telefono"] =
+          "Ingresa un celular chileno válido";
+      }
     }
 
     const errorIndicaciones = validarIndicaciones(
@@ -755,19 +685,6 @@ function Checkout() {
     if (campo.startsWith("facturacion.")) {
       const nombreCampo = campo.split(".")[1];
       const valor = form.facturacion[nombreCampo];
-
-      if (nombreCampo === "nombre") {
-        error = validarNombre(
-          valor,
-          "El nombre de facturación"
-        );
-      }
-
-      if (nombreCampo === "rut") {
-        error = validarRut(valor)
-          ? ""
-          : "El RUT de facturación no es válido";
-      }
 
       if (nombreCampo === "direccion") {
         error = validarDireccion(valor);
@@ -847,46 +764,17 @@ function Checkout() {
   // MISMO DATOS
   // ===================================================
 
-  const handleMismosDatos = (e) => {
+  const handleRecibeOtraPersona = (e) => {
     const checked = e.target.checked;
 
-    setMismosDatos(checked);
+    setRecibeOtraPersona(checked);
 
-    if (checked) {
-      setForm((prev) => ({
-        ...prev,
-
-        envio: {
-          nombreReceptor:
-            `${prev.nombre} ${prev.apellidos}`.trim(),
-
-          telefono: prev.telefono,
-
-          direccion:
-            prev.facturacion.direccion,
-
-          numero:
-            prev.facturacion.numero,
-
-          departamento:
-            prev.facturacion.departamento,
-
-          region:
-            prev.facturacion.region,
-
-          comuna:
-            prev.facturacion.comuna,
-
-          indicaciones:
-            prev.envio.indicaciones,
-        },
-      }));
-
+    if (!checked) {
       setErrores((prev) => {
         const limpio = { ...prev };
 
         Object.keys(limpio)
-          .filter((k) => k.startsWith("envio."))
+          .filter((k) => k.startsWith("envio.") && k !== "envio.indicaciones")
           .forEach((k) => delete limpio[k]);
 
         return limpio;
@@ -950,12 +838,8 @@ function Checkout() {
       ),
 
       facturacion: {
-        nombre: normalizarEspacios(
-          form.facturacion.nombre
-        ),
-        rut: limpiarRut(
-          form.facturacion.rut
-        ),
+        nombre: `${normalizarEspacios(form.nombre)} ${normalizarEspacios(form.apellidos)}`.trim(),
+        rut: limpiarRut(form.rut),
         direccion: normalizarEspacios(
           form.facturacion.direccion
         ),
@@ -1098,7 +982,7 @@ function Checkout() {
 
           {/* CLIENTE */}
 
-          <h2>Datos del cliente</h2>
+          <h2>Tus datos</h2>
 
           <div className="row">
 
@@ -1245,121 +1129,10 @@ function Checkout() {
           </div>
 
           {/* =================================================
-              FACTURACIÓN
+              DIRECCIÓN DE ENTREGA (una sola vez)
           ================================================= */}
 
-          <h2>
-            Información de facturación
-          </h2>
-
-          <div className="field-container">
-
-            <label htmlFor="fact-nombre">
-              Nombre de facturación *
-            </label>
-
-            <input
-              id="fact-nombre"
-              name="nombre"
-              placeholder="Nombre de facturación *"
-              value={
-                form.facturacion.nombre
-              }
-              onChange={
-                handleFacturacionChange
-              }
-              onBlur={() =>
-                validarCampo(
-                  "facturacion.nombre"
-                )
-              }
-              className={
-                errores[
-                  "facturacion.nombre"
-                ]
-                  ? "input-error"
-                  : ""
-              }
-              maxLength={100}
-            />
-
-            <ErrorCampo nombre="facturacion.nombre" />
-
-          </div>
-
-          <div className="row">
-
-            <div className="field-container">
-
-              <label htmlFor="fact-rut">
-                RUT de facturación *
-              </label>
-
-              <input
-                id="fact-rut"
-                name="rut"
-                placeholder="RUT de facturación *"
-                value={
-                  form.facturacion.rut
-                }
-                onChange={
-                  handleFacturacionChange
-                }
-                onBlur={() =>
-                  validarCampo(
-                    "facturacion.rut"
-                  )
-                }
-                className={
-                  errores[
-                    "facturacion.rut"
-                  ]
-                    ? "input-error"
-                    : ""
-                }
-                maxLength={12}
-              />
-
-              <ErrorCampo nombre="facturacion.rut" />
-
-            </div>
-
-            <div className="field-container">
-
-              <label htmlFor="fact-numero">
-                Número de domicilio *
-              </label>
-
-              <input
-                id="fact-numero"
-                name="numero"
-                placeholder="Número de domicilio *"
-                value={
-                  form.facturacion.numero
-                }
-                onChange={
-                  handleFacturacionChange
-                }
-                onBlur={() =>
-                  validarCampo(
-                    "facturacion.numero"
-                  )
-                }
-                className={
-                  errores[
-                    "facturacion.numero"
-                  ]
-                    ? "input-error"
-                    : ""
-                }
-                maxLength={7}
-              />
-
-              <ErrorCampo nombre="facturacion.numero" />
-
-            </div>
-
-          </div>
+          <h2>Dirección de entrega</h2>
 
           <div className="field-container">
 
@@ -1396,6 +1169,43 @@ function Checkout() {
 
           </div>
 
+          <div className="row">
+
+            <div className="field-container">
+
+              <label htmlFor="fact-numero">
+                Número de domicilio *
+              </label>
+
+              <input
+                id="fact-numero"
+                name="numero"
+                placeholder="Número de domicilio *"
+                value={
+                  form.facturacion.numero
+                }
+                onChange={
+                  handleFacturacionChange
+                }
+                onBlur={() =>
+                  validarCampo(
+                    "facturacion.numero"
+                  )
+                }
+                className={
+                  errores[
+                    "facturacion.numero"
+                  ]
+                    ? "input-error"
+                    : ""
+                }
+                maxLength={7}
+              />
+
+              <ErrorCampo nombre="facturacion.numero" />
+
+            </div>
+
           <div className="field-container">
 
             <label htmlFor="fact-depto">
@@ -1429,6 +1239,8 @@ function Checkout() {
             />
 
             <ErrorCampo nombre="facturacion.departamento" />
+
+          </div>
 
           </div>
 
@@ -1545,7 +1357,7 @@ function Checkout() {
               ENVÍO
           ================================================= */}
 
-          <h2>Datos de envío</h2>
+          <h2>Quién recibe</h2>
 
           <div className="checkout-toggle-group">
 
@@ -1553,13 +1365,13 @@ function Checkout() {
 
               <input
                 type="checkbox"
-                checked={mismosDatos}
+                checked={recibeOtraPersona}
                 onChange={
-                  handleMismosDatos
+                  handleRecibeOtraPersona
                 }
               />
 
-              Enviar a la misma dirección de facturación
+              Recibe otra persona
 
             </label>
 
@@ -1603,7 +1415,7 @@ function Checkout() {
 
           </div>
 
-          {!mismosDatos && (
+          {recibeOtraPersona && (
             <>
 
               <div className="field-container">
@@ -1677,224 +1489,6 @@ function Checkout() {
 
               </div>
 
-              <div className="field-container">
-
-                <label htmlFor="env-direccion">
-                  Dirección / calle *
-                </label>
-
-                <input
-                  id="env-direccion"
-                  name="direccion"
-                  placeholder="Dirección / calle *"
-                  value={
-                    form.envio.direccion
-                  }
-                  onChange={
-                    handleEnvioChange
-                  }
-                  onBlur={() =>
-                    validarCampo(
-                      "envio.direccion"
-                    )
-                  }
-                  className={
-                    errores[
-                      "envio.direccion"
-                    ]
-                      ? "input-error"
-                      : ""
-                  }
-                  maxLength={150}
-                />
-
-                <ErrorCampo nombre="envio.direccion" />
-
-              </div>
-
-              <div className="row">
-
-                <div className="field-container">
-
-                  <label htmlFor="env-numero">
-                    Número de domicilio *
-                  </label>
-
-                  <input
-                    id="env-numero"
-                    name="numero"
-                    placeholder="Número de domicilio *"
-                    value={
-                      form.envio.numero
-                    }
-                    onChange={
-                      handleEnvioChange
-                    }
-                    onBlur={() =>
-                      validarCampo(
-                        "envio.numero"
-                      )
-                    }
-                    className={
-                      errores[
-                        "envio.numero"
-                      ]
-                        ? "input-error"
-                        : ""
-                    }
-                    maxLength={7}
-                  />
-
-                  <ErrorCampo nombre="envio.numero" />
-
-                </div>
-
-                <div className="field-container">
-
-                  <label htmlFor="env-depto">
-                    Departamento (opcional)
-                  </label>
-
-                  <input
-                    id="env-depto"
-                    name="departamento"
-                    placeholder="Depto / oficina (opcional)"
-                    value={
-                      form.envio
-                        .departamento
-                    }
-                    onChange={
-                      handleEnvioChange
-                    }
-                    onBlur={() =>
-                      validarCampo(
-                        "envio.departamento"
-                      )
-                    }
-                    className={
-                      errores[
-                        "envio.departamento"
-                      ]
-                        ? "input-error"
-                        : ""
-                    }
-                    maxLength={20}
-                  />
-
-                  <ErrorCampo nombre="envio.departamento" />
-
-                </div>
-
-              </div>
-
-              <div className="row">
-
-                <div className="field-container">
-
-                  <label htmlFor="env-region">
-                    Región *
-                  </label>
-
-                  <select
-                    id="env-region"
-                    name="region"
-                    value={
-                      form.envio.region
-                    }
-                    onChange={
-                      handleEnvioChange
-                    }
-                    onBlur={() =>
-                      validarCampo(
-                        "envio.region"
-                      )
-                    }
-                    className={
-                      errores[
-                        "envio.region"
-                      ]
-                        ? "input-error"
-                        : ""
-                    }
-                  >
-
-                    <option value="">
-                      Selecciona una región
-                    </option>
-
-                    {REGIONES.map(
-                      (region) => (
-                        <option
-                          key={region}
-                          value={region}
-                        >
-                          {region}
-                        </option>
-                      )
-                    )}
-
-                  </select>
-
-                  <ErrorCampo nombre="envio.region" />
-
-                </div>
-
-                <div className="field-container">
-
-                  <label htmlFor="env-comuna">
-                    Comuna *
-                  </label>
-
-                  <select
-                    id="env-comuna"
-                    name="comuna"
-                    value={
-                      form.envio.comuna
-                    }
-                    onChange={
-                      handleEnvioChange
-                    }
-                    onBlur={() =>
-                      validarCampo(
-                        "envio.comuna"
-                      )
-                    }
-                    disabled={
-                      !form.envio.region
-                    }
-                    className={
-                      errores[
-                        "envio.comuna"
-                      ]
-                        ? "input-error"
-                        : ""
-                    }
-                  >
-
-                    <option value="">
-                      {form.envio.region
-                        ? "Selecciona una comuna"
-                        : "Primero elige una región"}
-                    </option>
-
-                    {comunasEnvio.map(
-                      (comuna) => (
-                        <option
-                          key={comuna}
-                          value={comuna}
-                        >
-                          {comuna}
-                        </option>
-                      )
-                    )}
-
-                  </select>
-
-                  <ErrorCampo nombre="envio.comuna" />
-
-                </div>
-
-              </div>
 
             </>
           )}
