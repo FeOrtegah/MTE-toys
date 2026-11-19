@@ -258,6 +258,12 @@ function Checkout() {
   const [continuando, setContinuando] = useState(false);
   const [errorGeneral, setErrorGeneral] = useState("");
 
+  // Con una dirección guardada los datos del comprador (nombre, RUT,
+  // correo, celular) vienen del perfil y no se muestran. Si faltan o
+  // son inválidos, se muestran al apretar "Continuar" para completarlos.
+  const [mostrarDatosComprador, setMostrarDatosComprador] =
+    useState(false);
+
   // ===================================================
   // EMAIL
   // ===================================================
@@ -563,6 +569,8 @@ function Checkout() {
 
     // DIRECCIÓN (el nombre y el RUT son los del comprador, ya validados arriba)
 
+    const f = form.facturacion;
+
     const errorDireccionFacturacion = validarDireccion(
       f.direccion
     );
@@ -644,6 +652,7 @@ function Checkout() {
     return {
       valido: Object.keys(nuevosErrores).length === 0,
       datosEnvio: e,
+      errores: nuevosErrores,
     };
   };
 
@@ -798,9 +807,45 @@ function Checkout() {
     const resultado = validarFormulario();
 
     if (!resultado.valido) {
-      setErrorGeneral(
-        "Revisa los campos marcados en rojo antes de continuar."
-      );
+      const camposComprador = [
+        "nombre",
+        "apellidos",
+        "rut",
+        "email",
+        "telefono",
+      ];
+
+      const usandoGuardada = modoDireccion === "guardada";
+
+      const faltanDatosComprador =
+        usandoGuardada &&
+        camposComprador.some((c) => resultado.errores[c]);
+
+      const faltanDatosDireccion =
+        usandoGuardada &&
+        Object.keys(resultado.errores).some(
+          (c) => !camposComprador.includes(c)
+        );
+
+      if (faltanDatosComprador) {
+        // Se muestran los campos que faltan (antes quedaban ocultos
+        // y el botón parecía no hacer nada)
+        setMostrarDatosComprador(true);
+      }
+
+      if (faltanDatosDireccion) {
+        setErrorGeneral(
+          "Esta dirección guardada tiene datos incompletos o inválidos. Elige \"Nuevo destino de envío\" e ingrésala de nuevo."
+        );
+      } else if (faltanDatosComprador) {
+        setErrorGeneral(
+          "Completa tus datos de contacto (nombre, RUT, correo y celular) para continuar."
+        );
+      } else {
+        setErrorGeneral(
+          "Revisa los campos marcados en rojo antes de continuar."
+        );
+      }
 
       setTimeout(() => {
         const primerError =
@@ -811,8 +856,10 @@ function Checkout() {
             behavior: "smooth",
             block: "center",
           });
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
         }
-      }, 50);
+      }, 80);
 
       return;
     }
@@ -978,7 +1025,8 @@ function Checkout() {
               />
             )}
 
-          {modoDireccion === "nueva" && (
+          {(modoDireccion === "nueva" ||
+            mostrarDatosComprador) && (
             <>
 
           {/* CLIENTE */}
@@ -1128,6 +1176,12 @@ function Checkout() {
             <ErrorCampo nombre="email" />
 
           </div>
+
+            </>
+          )}
+
+          {modoDireccion === "nueva" && (
+            <>
 
           {/* =================================================
               DIRECCIÓN DE ENTREGA (una sola vez)
